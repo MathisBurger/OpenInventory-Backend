@@ -1,0 +1,10 @@
+{
+  "name": "Testhost Client",
+
+  "database": {
+      "username": "root",
+      "password": "",
+      "database": "openinv",
+      "host": "localhost:3306"
+  }
+}
