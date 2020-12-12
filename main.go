@@ -12,6 +12,9 @@ func main() {
 	if installation.Install() {
 		app := fiber.New()
 
+		// Logger configuration
+		app.Use(logger.New())
+
 		// Web
 		app.Static("/", "./web")
 
@@ -21,9 +24,9 @@ func main() {
 
 		// POST Requests
 		app.Post("/api/login", controller.LoginController)
+		app.Post("/api/check-creds", controller.CheckCredsController)
 
 		// App Configuration
-		app.Use(logger.New())
 		app.Listen(":8080")
 	} else {
 		fmt.Println("Please fix errors first to launch webserver")

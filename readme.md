@@ -1,0 +1,5 @@
+# OpenInventory Backend
+
+
+## API Documentation
+
