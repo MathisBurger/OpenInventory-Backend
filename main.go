@@ -4,15 +4,27 @@ import (
 	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/controller"
 	"github.com/MathisBurger/OpenInventory-Backend/installation"
-	"net/http"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
 	if installation.Install() {
-		http.HandleFunc("/", controller.DefaultController)
-		http.HandleFunc("/info", controller.InformationController)
-		fmt.Println("Server running on port 3000")
-		http.ListenAndServe(":3000", nil)
+		app := fiber.New()
+
+		// Web
+		app.Static("/", "./web")
+
+		// Basic GET Requests
+		app.Get("/api", controller.DefaultController)
+		app.Get("/api/info", controller.InformationController)
+
+		// POST Requests
+		app.Post("/api/login", controller.LoginController)
+
+		// App Configuration
+		app.Use(logger.New())
+		app.Listen(":8080")
 	} else {
 		fmt.Println("Please fix errors first to launch webserver")
 	}

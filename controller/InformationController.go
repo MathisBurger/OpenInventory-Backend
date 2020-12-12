@@ -1,15 +1,14 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	"net/http"
+	"github.com/gofiber/fiber/v2"
 )
 
-func InformationController(writer http.ResponseWriter, request *http.Request) {
+func InformationController(c *fiber.Ctx) error {
 	response, err := models.GetInformationResponse()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Fprintf(writer, string(response))
+	return c.Send(response)
 }

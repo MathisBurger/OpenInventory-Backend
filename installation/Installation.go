@@ -23,7 +23,11 @@ func Install() bool {
 				fmt.Println("Configuration parsed successfully")
 				if TestMySQLConnection(cfg) {
 					fmt.Println("Checking for tables...")
-					CheckForTables(cfg)
+					if CheckForTables(cfg) {
+						return true
+					} else {
+						return false
+					}
 				} else {
 					return false
 				}
