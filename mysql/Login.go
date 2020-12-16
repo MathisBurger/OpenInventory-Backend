@@ -1,21 +1,20 @@
 package OwnSQL
 
 import (
-	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"time"
 )
 
 type UserStruct struct {
-	Id            int       `json:"id"`
-	Username      string    `json:"username"`
-	Password      string    `json:"password"`
-	Token         string    `json:"token"`
-	Root          bool      `json:"root"`
-	Mail          string    `json:"mail"`
-	Displayname   string    `json:"displayname"`
-	Register_date time.Time `json:"register_date"`
-	Status        string    `json:"status"`
+	Id           int       `json:"id"`
+	Username     string    `json:"username"`
+	Password     string    `json:"password"`
+	Token        string    `json:"token"`
+	Root         bool      `json:"root"`
+	Mail         string    `json:"mail"`
+	Displayname  string    `json:"displayname"`
+	RegisterDate time.Time `json:"register_date"`
+	Status       string    `json:"status"`
 }
 
 func MySQL_login(username string, password string) (bool, string) {
@@ -37,9 +36,9 @@ func MySQL_login(username string, password string) (bool, string) {
 		}
 		answers = append(answers, user.Username)
 	}
+	defer resp.Close()
 	defer stmt.Close()
 	defer conn.Close()
-	fmt.Println("len", len(answers))
 	if len(answers) == 1 {
 		stmt, err = conn.Prepare("UPDATE inv_users SET token = ? WHERE displayname=?")
 		if err != nil {
@@ -68,12 +67,14 @@ func MySQL_loginWithToken(username string, password string, token string) bool {
 	var answers []string
 	for resp.Next() {
 		var user UserStruct
-		err2 = resp.Scan(&user.Username)
+		err2 = resp.Scan(&user.Displayname)
 		if err2 != nil {
 		}
-		answers = append(answers, user.Username)
+		answers = append(answers, user.Displayname)
 	}
-	fmt.Println(len(answers))
+	defer resp.Close()
+	defer stmt.Close()
+	defer conn.Close()
 	if len(answers) == 1 {
 		return true
 	} else {

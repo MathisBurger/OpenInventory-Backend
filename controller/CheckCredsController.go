@@ -7,15 +7,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type LoginWithTokenRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Token    string `json:"token"`
-}
-
 func CheckCredsController(c *fiber.Ctx) error {
 	raw := string(c.Body())
-	obj := LoginWithTokenRequest{}
+	obj := models.LoginWithTokenRequest{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		response, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
