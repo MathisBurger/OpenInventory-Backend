@@ -12,9 +12,15 @@ type database struct {
 	Host     string `json:"host"`
 }
 
+type serverconfig struct {
+	Prefork bool   `json:"prefork"`
+	Port    string `json:"port"`
+}
+
 type Config struct {
-	name string   `json:"name"`
-	Db   database `json:"database"`
+	name      string       `json:"name"`
+	Db        database     `json:"database"`
+	ServerCFG serverconfig `json:"server-config"`
 }
 
 func ParseConfig() (c *Config, err error) {

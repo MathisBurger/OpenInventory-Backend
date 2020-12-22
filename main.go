@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	config2 "github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/controller"
 	"github.com/MathisBurger/OpenInventory-Backend/installation"
 	"github.com/gofiber/fiber/v2"
@@ -11,7 +12,10 @@ import (
 
 func main() {
 	if installation.Install() {
-		app := fiber.New()
+		config, _ := config2.ParseConfig()
+		app := fiber.New(fiber.Config{
+			Prefork: config.ServerCFG.Prefork,
+		})
 
 		// Logger configuration
 		app.Use(logger.New())
@@ -25,9 +29,10 @@ func main() {
 		app.Post("/login", controller.LoginController)
 		app.Post("/check-creds", controller.CheckCredsController)
 		app.Post("/table-management/getAllTables", controller.GetAllTablesController)
+		app.Post("/table-management/createTable", controller.CreateTableController)
 
 		// App Configuration
-		app.Listen(":8080")
+		app.Listen(":" + config.ServerCFG.Port)
 	} else {
 		fmt.Println("Please fix errors first to launch webserver")
 	}

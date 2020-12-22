@@ -1,10 +1,15 @@
 {
-  "name": "Testhost Client",
+  "name": "Test Enviroment",
 
-  "database": {
-      "username": "root",
-      "password": "",
-      "database": "openinv",
-      "host": "localhost:3306"
+  "database":{
+    "username": "root",
+    "password": "",
+    "host": "localhost:3306",
+    "database": "oopen_inv"
+  },
+
+  "server-config": {
+    "prefork": false,
+    "port": "8080"
   }
 }
