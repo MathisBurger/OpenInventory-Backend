@@ -30,6 +30,7 @@ func main() {
 		app.Post("/check-creds", controller.CheckCredsController)
 		app.Post("/table-management/getAllTables", controller.GetAllTablesController)
 		app.Post("/table-management/createTable", controller.CreateTableController)
+		app.Get("/table-management/getTableContent", controller.GetTableContentController)
 
 		// App Configuration
 		app.Listen(":" + config.ServerCFG.Port)

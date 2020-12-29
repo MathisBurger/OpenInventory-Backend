@@ -5,6 +5,7 @@ import (
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
 	"github.com/gofiber/fiber/v2"
+	"strconv"
 )
 
 func GetAllTablesController(c *fiber.Ctx) error {
@@ -21,7 +22,7 @@ func GetAllTablesController(c *fiber.Ctx) error {
 	tables := OwnSQL.GetAllTables(obj.Username, obj.Password, obj.Token)
 	var compiledTables []string
 	for _, table := range tables {
-		cache := "['" + table.Name + "','" + string(table.Entries) + "','" + table.CreatedAt + "']"
+		cache := "['" + table.Name + "','" + strconv.Itoa(table.Entries) + "','" + table.CreatedAt + "']"
 		compiledTables = append(compiledTables, cache)
 	}
 	msg := ""

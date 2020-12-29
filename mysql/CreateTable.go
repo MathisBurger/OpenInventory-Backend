@@ -3,6 +3,7 @@ package OwnSQL
 import (
 	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 )
 
 func CreateTable(displayname string, password string, token string, Tablename string, RowConfig []models.RowConfigModel) bool {
@@ -10,10 +11,15 @@ func CreateTable(displayname string, password string, token string, Tablename st
 	if !perms {
 		return false
 	} else {
+		if !CheckColumnNames(RowConfig) {
+			return false
+		}
 		cache := ""
 		for _, row := range RowConfig {
 			typeString := checkType(row)
 			if typeString == "" {
+				fmt.Println("hitler")
+				fmt.Println(typeString)
 				return false
 			}
 			cache += typeString
@@ -52,7 +58,7 @@ func checkType(row models.RowConfigModel) string {
 		return "`" + row.Name + "` float,"
 	case "BOOLEAN":
 		return "`" + row.Name + "` tinyint(1),"
-	case "String8Chars":
+	case "STRING8Chars":
 		return "`" + row.Name + "` VARCHAR(8),"
 	case "STRING16Chars":
 		return "`" + row.Name + "` VARCHAR(16),"
@@ -63,6 +69,17 @@ func checkType(row models.RowConfigModel) string {
 	case "STRING1024Chars":
 		return "`" + row.Name + "` VARCHAR(1024),"
 	default:
+		fmt.Println("incorrect type:", row.Type)
 		return ""
 	}
+}
+
+func CheckColumnNames(columns []models.RowConfigModel) bool {
+	var names []string
+	for _, el := range columns {
+		if utils.ContainsStr(names, el.Name) {
+			return false
+		}
+	}
+	return true
 }

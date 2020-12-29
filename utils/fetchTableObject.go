@@ -32,5 +32,6 @@ func QueryToJson(db *sql.DB, query string, args ...interface{}) ([]byte, error) 
 
 		objects = append(objects, object)
 	}
+	defer rows.Close()
 	return json.MarshalIndent(objects, "", "\t")
 }
