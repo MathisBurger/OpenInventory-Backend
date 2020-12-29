@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
+	"strings"
 )
 
 func CreateTable(displayname string, password string, token string, Tablename string, RowConfig []models.RowConfigModel) bool {
@@ -18,8 +19,10 @@ func CreateTable(displayname string, password string, token string, Tablename st
 		for _, row := range RowConfig {
 			typeString := checkType(row)
 			if typeString == "" {
-				fmt.Println("hitler")
 				fmt.Println(typeString)
+				return false
+			}
+			if strings.Compare(row.Name, "") != 0 {
 				return false
 			}
 			cache += typeString

@@ -36,7 +36,7 @@ func parse(val string) (ans []models.RowConfigModel) {
 		raws = strings.ReplaceAll(raws, "]", "")
 		raws = strings.ReplaceAll(raws, "-", "_")
 		spl := strings.Split(raws, ";")
-		ans = append(ans, models.RowConfigModel{spl[0], spl[1]})
+		ans = append(ans, models.RowConfigModel{spl[0], CheckTableName(spl[1])})
 	}
 	return
 }
