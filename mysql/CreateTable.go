@@ -80,9 +80,10 @@ func checkType(row models.RowConfigModel) string {
 func CheckColumnNames(columns []models.RowConfigModel) bool {
 	var names []string
 	for _, el := range columns {
-		if utils.ContainsStr(names, el.Name) {
+		if utils.ContainsStr(names, el.Name) || utils.ContainsStr(names, "id") || utils.ContainsStr(names, "ID") {
 			return false
 		}
+
 	}
 	return true
 }
