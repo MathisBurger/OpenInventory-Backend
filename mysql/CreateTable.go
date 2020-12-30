@@ -22,7 +22,7 @@ func CreateTable(displayname string, password string, token string, Tablename st
 				fmt.Println(typeString)
 				return false
 			}
-			if strings.Compare(row.Name, "") != 0 {
+			if strings.Compare(row.Name, "") == 0 {
 				return false
 			}
 			cache += typeString

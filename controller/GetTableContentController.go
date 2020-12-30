@@ -25,7 +25,8 @@ func GetTableContentController(c *fiber.Ctx) error {
 		conn := OwnSQL.GetConn()
 		json, err := utils.QueryToJson(conn, stmt)
 		if err != nil {
-			panic(err)
+			resp, _ := models.GetJsonResponse("Invalid table name", "alert alert-danger", "ok", "None", 200)
+			return c.Send(resp)
 		}
 		return c.JSON(models.GetTableContentResponseModel{
 			Message:    "successful",
