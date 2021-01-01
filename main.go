@@ -32,6 +32,7 @@ func main() {
 		app.Post("/table-management/createTable", controller.CreateTableController)
 		app.Post("/table-management/getTableContent", controller.GetTableContentController)
 		app.Post("/table-management/AddTableEntry", controller.AddTableEntryController)
+		app.Post("/table-management/getTableColumns", controller.GetTableColumnsController)
 
 		// App Configuration
 		app.Listen(":" + config.ServerCFG.Port)
