@@ -33,6 +33,7 @@ func main() {
 		app.Post("/table-management/getTableContent", controller.GetTableContentController)
 		app.Post("/table-management/AddTableEntry", controller.AddTableEntryController)
 		app.Post("/table-management/getTableColumns", controller.GetTableColumnsController)
+		app.Post("/table-management/RemoveTableEntry", controller.RemoveTableEntryController)
 
 		// App Configuration
 		app.Listen(":" + config.ServerCFG.Port)

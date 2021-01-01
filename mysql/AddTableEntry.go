@@ -45,23 +45,27 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 			}
 		}
 		builder.WriteString(") VALUES (NULL, ")
+		fmt.Println("length:", len(columns))
 		for i, _ := range columns {
 			if i == (len(columns) - 2) {
 				builder.WriteString("?")
+				break
+			} else {
+				builder.WriteString("?, ")
 			}
 		}
 		builder.WriteString(");")
 		stmt, err = conn.Prepare(builder.String())
 		if err != nil {
-			fmt.Println(err.Error())
+			defer conn.Close()
 			return false
 		}
 
 		values := ParseToArray(row)
 		_, err = stmt.Exec(values...)
 		if err != nil {
-			fmt.Println("err err error")
-			fmt.Println(err)
+			defer stmt.Close()
+			defer conn.Close()
 			return false
 		}
 		stmt, _ = conn.Prepare("SELECT `entries` FROM `inv_tables` WHERE `name`=?")
@@ -81,6 +85,9 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 		entries += 1
 		stmt, _ = conn.Prepare("UPDATE `inv_tables` SET `entries`=? WHERE `name`=?;")
 		stmt.Exec(entries, Tablename)
+		defer resp.Close()
+		defer stmt.Close()
+		defer conn.Close()
 		return true
 	}
 }
