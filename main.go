@@ -21,23 +21,28 @@ func main() {
 		app.Use(logger.New())
 		app.Use(cors.New())
 
+		// Static Web Files
+		app.Static("/", "./web")
+		app.Static("/login", "./web/index.html")
+		app.Static("/dashboard", "./web/index.html")
+
 		// Basic GET Requests
-		app.Get("/", controller.DefaultController)
-		app.Get("/info", controller.InformationController)
+		app.Get("/api", controller.DefaultController)
+		app.Get("/api/info", controller.InformationController)
 
 		// POST Requests
-		app.Post("/login", controller.LoginController)
-		app.Post("/check-creds", controller.CheckCredsController)
-		app.Post("/table-management/getAllTables", controller.GetAllTablesController)
-		app.Post("/table-management/createTable", controller.CreateTableController)
-		app.Post("/table-management/getTableContent", controller.GetTableContentController)
-		app.Post("/table-management/AddTableEntry", controller.AddTableEntryController)
-		app.Post("/table-management/getTableColumns", controller.GetTableColumnsController)
-		app.Post("/table-management/RemoveTableEntry", controller.RemoveTableEntryController)
-		app.Post("/table-management/DeleteTable", controller.DeleteTableController)
-		app.Post("/table-management/ListUser", controller.ListUserController)
-		app.Post("/table-management/AddUser", controller.AddUserController)
-		app.Post("/table-management/DeleteUser", controller.DeleteUserController)
+		app.Post("/api/login", controller.LoginController)
+		app.Post("/api/check-creds", controller.CheckCredsController)
+		app.Post("/api/table-management/getAllTables", controller.GetAllTablesController)
+		app.Post("/api/table-management/createTable", controller.CreateTableController)
+		app.Post("/api/table-management/getTableContent", controller.GetTableContentController)
+		app.Post("/api/table-management/AddTableEntry", controller.AddTableEntryController)
+		app.Post("/api/table-management/getTableColumns", controller.GetTableColumnsController)
+		app.Post("/api/table-management/RemoveTableEntry", controller.RemoveTableEntryController)
+		app.Post("/api/table-management/DeleteTable", controller.DeleteTableController)
+		app.Post("/api/table-management/ListUser", controller.ListUserController)
+		app.Post("/api/table-management/AddUser", controller.AddUserController)
+		app.Post("/api/table-management/DeleteUser", controller.DeleteUserController)
 
 		// App Configuration
 		app.Listen(":" + config.ServerCFG.Port)
