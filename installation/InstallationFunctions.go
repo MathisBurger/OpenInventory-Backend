@@ -83,8 +83,8 @@ func CheckForTables(cfg *config.Config) bool {
 	for _, tab := range outstandingTables {
 		GenerateTable(conn, tab)
 	}
-	defer tables.Close()
-	defer conn.Close()
+	tables.Close()
+	conn.Close()
 	return true
 }
 

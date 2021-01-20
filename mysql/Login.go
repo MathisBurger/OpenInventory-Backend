@@ -36,9 +36,9 @@ func MySQL_login(username string, password string) (bool, string) {
 		}
 		answers = append(answers, user.Username)
 	}
-	defer resp.Close()
-	defer stmt.Close()
-	defer conn.Close()
+	resp.Close()
+	stmt.Close()
+	conn.Close()
 	if len(answers) == 1 {
 		stmt, err = conn.Prepare("UPDATE inv_users SET token = ? WHERE displayname=?")
 		if err != nil {
@@ -72,9 +72,9 @@ func MySQL_loginWithToken(username string, password string, token string) bool {
 		}
 		answers = append(answers, user.Displayname)
 	}
-	defer resp.Close()
-	defer stmt.Close()
-	defer conn.Close()
+	resp.Close()
+	stmt.Close()
+	conn.Close()
 	if len(answers) == 1 {
 		return true
 	} else {
@@ -102,9 +102,9 @@ func MySQL_loginWithToken_ROOT(username string, password string, token string) b
 		}
 		answers = append(answers, user.Displayname)
 	}
-	defer resp.Close()
-	defer stmt.Close()
-	defer conn.Close()
+	resp.Close()
+	stmt.Close()
+	conn.Close()
 	if len(answers) == 1 {
 		return true
 	} else {

@@ -24,6 +24,8 @@ func DeleteUserController(c *fiber.Ctx) error {
 		stmt, _ := conn.Prepare("DELETE FROM `inv_users` WHERE `username`=?;")
 		res, _ := stmt.Exec(obj.User)
 		aff, _ := res.RowsAffected()
+		stmt.Close()
+		conn.Close()
 		if aff == 0 {
 			resp, _ := models.GetJsonResponse("This user does not exist", "alert alert-warning", "ok", "None", 200)
 			return c.Send(resp)

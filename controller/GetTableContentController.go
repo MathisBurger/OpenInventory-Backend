@@ -28,6 +28,7 @@ func GetTableContentController(c *fiber.Ctx) error {
 			resp, _ := models.GetJsonResponse("Invalid table name", "alert alert-danger", "ok", "None", 200)
 			return c.Send(resp)
 		}
+		conn.Close()
 		return c.JSON(models.GetTableContentResponseModel{
 			Message:    "successful",
 			Alert:      "alert alert-success",

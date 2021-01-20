@@ -28,9 +28,9 @@ func ListUserController(c *fiber.Ctx) error {
 			}
 			answers = append(answers, cache)
 		}
-		defer res.Close()
-		defer stmt.Close()
-		defer conn.Close()
+		res.Close()
+		stmt.Close()
+		conn.Close()
 		return c.JSON(models.ListUserResponseModel{
 			Message: "successfully fetched user",
 			Alert:   "alert alert-success",

@@ -47,8 +47,8 @@ func CreateTable(displayname string, password string, token string, Tablename st
 		stmt.Exec()
 		stmt, _ = conn.Prepare("INSERT INTO `inv_tables` (`id`, `name`, `entries`, `created_at`) VALUES (NULL, ?, '0', current_timestamp);")
 		stmt.Exec(Tablename)
-		defer stmt.Close()
-		defer conn.Close()
+		stmt.Close()
+		conn.Close()
 		return true
 	}
 }

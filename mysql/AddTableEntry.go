@@ -64,8 +64,8 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 		values := ParseToArray(row)
 		_, err = stmt.Exec(values...)
 		if err != nil {
-			defer stmt.Close()
-			defer conn.Close()
+			stmt.Close()
+			conn.Close()
 			return false
 		}
 		stmt, _ = conn.Prepare("SELECT `entries` FROM `inv_tables` WHERE `name`=?")
@@ -85,9 +85,9 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 		entries += 1
 		stmt, _ = conn.Prepare("UPDATE `inv_tables` SET `entries`=? WHERE `name`=?;")
 		stmt.Exec(entries, Tablename)
-		defer resp.Close()
-		defer stmt.Close()
-		defer conn.Close()
+		resp.Close()
+		stmt.Close()
+		conn.Close()
 		return true
 	}
 }

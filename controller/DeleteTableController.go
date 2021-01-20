@@ -26,6 +26,8 @@ func DeleteTableController(c *fiber.Ctx) error {
 		stmt, _ = conn.Prepare("DELETE FROM `inv_tables` WHERE `name`=?")
 		stmt.Exec(obj.TableName)
 		resp, _ := models.GetJsonResponse("Successfully deleted table", "alert alert-success", "ok", "None", 200)
+		stmt.Close()
+		conn.Close()
 		return c.Send(resp)
 	} else {
 		resp, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)

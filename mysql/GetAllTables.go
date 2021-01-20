@@ -25,9 +25,9 @@ func GetAllTables(username string, password string, token string) []models.Table
 			}
 			tables = append(tables, models.TableModel{table.ID, table.Name, table.Entries, table.CreatedAt})
 		}
-		defer resp.Close()
-		defer stmt.Close()
-		defer conn.Close()
+		resp.Close()
+		stmt.Close()
+		conn.Close()
 		return tables
 	}
 }

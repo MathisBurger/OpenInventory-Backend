@@ -9,7 +9,7 @@
   },
 
   "server-config": {
-    "prefork": false,
+    "prefork": true,
     "port": "8080"
   }
 }
