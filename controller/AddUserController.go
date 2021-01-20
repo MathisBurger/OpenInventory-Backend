@@ -31,8 +31,8 @@ func AddUserController(c *fiber.Ctx) error {
 			panic(err.Error())
 		}
 		stmt.Exec(obj.User.Username, utils.HashWithSalt(obj.User.Password), "None", obj.User.Root, obj.User.Mail, obj.User.Username, obj.User.Status)
-		stmt.Close()
-		conn.Close()
+		defer stmt.Close()
+		defer conn.Close()
 		resp, _ := models.GetJsonResponse("Successfully added user", "alert alert-success", "ok", "None", 200)
 		return c.Send(resp)
 	} else {

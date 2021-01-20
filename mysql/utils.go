@@ -14,7 +14,7 @@ func GetConn() (conn *sql.DB) {
 	connstr := cfg.Db.Username + ":" + cfg.Db.Password + "@tcp(" + cfg.Db.Host + ")/" + cfg.Db.Database
 	conn, err = sql.Open("mysql", connstr)
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 		return
 	} else {
 		return

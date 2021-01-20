@@ -84,7 +84,7 @@ func CheckForTables(cfg *config.Config) bool {
 		GenerateTable(conn, tab)
 	}
 	tables.Close()
-	conn.Close()
+	defer conn.Close()
 	return true
 }
 
@@ -111,5 +111,5 @@ func InsertDefaultUser(conn *sql.DB) {
 		panic(err.Error())
 	}
 	stmt.Exec(hash)
-	stmt.Close()
+	defer stmt.Close()
 }

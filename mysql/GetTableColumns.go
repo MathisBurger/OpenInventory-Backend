@@ -31,9 +31,9 @@ func GetTableColumns(displayname string, password string, token string, Tablenam
 			}
 			answers = append(answers, cache)
 		}
-		resp.Close()
-		stmt.Close()
-		conn.Close()
+		defer resp.Close()
+		defer stmt.Close()
+		defer conn.Close()
 		return answers
 	}
 }

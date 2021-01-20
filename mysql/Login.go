@@ -1,6 +1,7 @@
 package OwnSQL
 
 import (
+	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"time"
 )
@@ -18,15 +19,16 @@ type UserStruct struct {
 }
 
 func MySQL_login(username string, password string) (bool, string) {
+	fmt.Println("Starts")
 	conn := GetConn()
 	hash := utils.HashWithSalt(password)
 	stmt, err := conn.Prepare("SELECT * FROM inv_users WHERE displayname=? AND password=?")
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 	resp, err2 := stmt.Query(username, hash)
 	if err2 != nil {
-		panic(err2)
+		panic(err2.Error())
 	}
 	var answers []string
 	for resp.Next() {
@@ -36,9 +38,9 @@ func MySQL_login(username string, password string) (bool, string) {
 		}
 		answers = append(answers, user.Username)
 	}
-	resp.Close()
-	stmt.Close()
-	conn.Close()
+	defer resp.Close()
+	defer stmt.Close()
+	defer conn.Close()
 	if len(answers) == 1 {
 		stmt, err = conn.Prepare("UPDATE inv_users SET token = ? WHERE displayname=?")
 		if err != nil {
@@ -72,9 +74,9 @@ func MySQL_loginWithToken(username string, password string, token string) bool {
 		}
 		answers = append(answers, user.Displayname)
 	}
-	resp.Close()
-	stmt.Close()
-	conn.Close()
+	defer resp.Close()
+	defer stmt.Close()
+	defer conn.Close()
 	if len(answers) == 1 {
 		return true
 	} else {
@@ -102,9 +104,9 @@ func MySQL_loginWithToken_ROOT(username string, password string, token string) b
 		}
 		answers = append(answers, user.Displayname)
 	}
-	resp.Close()
-	stmt.Close()
-	conn.Close()
+	defer resp.Close()
+	defer stmt.Close()
+	defer conn.Close()
 	if len(answers) == 1 {
 		return true
 	} else {

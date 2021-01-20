@@ -50,9 +50,9 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 		entries -= 1
 		stmt, _ = conn.Prepare("UPDATE `inv_tables` SET `entries`=? WHERE `name`=?;")
 		stmt.Exec(entries, obj.TableName)
-		resp.Close()
-		stmt.Close()
-		conn.Close()
+		defer resp.Close()
+		defer stmt.Close()
+		defer conn.Close()
 		res, _ := models.GetJsonResponse("Successfully deleted entry", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
 	} else {
