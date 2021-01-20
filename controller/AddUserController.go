@@ -6,6 +6,7 @@ import (
 	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
+	"strings"
 )
 
 func AddUserController(c *fiber.Ctx) error {
@@ -23,14 +24,23 @@ func AddUserController(c *fiber.Ctx) error {
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
+	if !checkUsernameLength(obj.User.Username) {
+		resp, _ := models.GetJsonResponse("This username is too long", "alert alert-warning", "ok", "None", 200)
+		return c.Send(resp)
+	}
+	if !checkPasswordLength(obj.User.Username) {
+		resp, _ := models.GetJsonResponse("This password is too long", "alert alert-warning", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	status := OwnSQL.MySQL_loginWithToken_ROOT(obj.Username, obj.Password, obj.Token)
+	hash := utils.HashWithSalt(obj.User.Password)
 	if status {
 		conn := OwnSQL.GetConn()
 		stmt, err := conn.Prepare("INSERT INTO `inv_users` (`id`, `username`, `password`, `token`, `root`, `mail`, `displayname`, `register_date`, `status`) VALUES (NULL, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), ?);")
 		if err != nil {
 			panic(err.Error())
 		}
-		stmt.Exec(obj.User.Username, utils.HashWithSalt(obj.User.Password), "None", obj.User.Root, obj.User.Mail, obj.User.Username, obj.User.Status)
+		stmt.Exec(obj.User.Username, hash, "None", obj.User.Root, obj.User.Mail, obj.User.Username, obj.User.Status)
 		defer stmt.Close()
 		defer conn.Close()
 		resp, _ := models.GetJsonResponse("Successfully added user", "alert alert-success", "ok", "None", 200)
@@ -49,4 +59,14 @@ func checkAddUserRequest(obj models.AddUserRequestModel) bool {
 	} else {
 		return false
 	}
+}
+
+func checkUsernameLength(username string) bool {
+	split := strings.Split(username, "")
+	return len(split) > 32
+}
+
+func checkPasswordLength(hash string) bool {
+	split := strings.Split(hash, "")
+	return len(split) > 1024
 }
