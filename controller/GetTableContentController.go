@@ -17,6 +17,10 @@ func GetTableContentController(c *fiber.Ctx) error {
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
+	if !checkGetTableContentRequest(obj) {
+		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	if !OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
 		resp, _ := models.GetJsonResponse("You do not have the permission to perform this command", "alert alert-warning", "Failed", "None", 200)
 		return c.Send(resp)
@@ -36,5 +40,13 @@ func GetTableContentController(c *fiber.Ctx) error {
 			HttpStatus: 200,
 			Elements:   strings.ReplaceAll(strings.ReplaceAll(string(json), "\n", ""), "\t", ""),
 		})
+	}
+}
+
+func checkGetTableContentRequest(obj models.GetTableContentRequestModel) bool {
+	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" {
+		return true
+	} else {
+		return false
 	}
 }

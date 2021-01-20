@@ -16,6 +16,10 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
+	if !checkGetTableColumnsRequest(obj) {
+		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	columns := OwnSQL.GetTableColumns(obj.Username, obj.Password, obj.Token, obj.TableName)
 	if fmt.Sprintf("%T", columns) == "bool" {
 		resp, _ := models.GetJsonResponse("Error while fetching Array", "alert alert-danger", "ok", "None", 200)
@@ -26,5 +30,13 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 			Alert:   "alert alert-success",
 			Columns: columns,
 		})
+	}
+}
+
+func checkGetTableColumnsRequest(obj models.GetTableColumnsRequestModel) bool {
+	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" {
+		return true
+	} else {
+		return false
 	}
 }

@@ -16,6 +16,10 @@ func CreateTableController(c *fiber.Ctx) error {
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
+	if !checkCreateTableRequestModel(obj) {
+		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	status := OwnSQL.CreateTable(obj.Username, obj.Password, obj.Token, obj.TableName, parse(obj.RowConfig))
 	if status {
 		resp, _ := models.GetJsonResponse("successful", "alert alert-success", "ok", "None", 200)
@@ -43,4 +47,12 @@ func parse(val string) (ans []models.RowConfigModel) {
 
 func CheckTableName(name string) string {
 	return strings.ReplaceAll(name, "-", "_")
+}
+
+func checkCreateTableRequestModel(obj models.CreateTableRequestModel) bool {
+	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.RowConfig != "" {
+		return true
+	} else {
+		return true
+	}
 }

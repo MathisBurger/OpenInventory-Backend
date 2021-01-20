@@ -19,6 +19,10 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 		}
 		return c.Send(response)
 	}
+	if !checkRemoveTableEntryRequest(obj) {
+		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	if OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
 		fmt.Println(obj)
 		conn := OwnSQL.GetConn()
@@ -54,5 +58,13 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 	} else {
 		resp, _ := models.GetJsonResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
+	}
+}
+
+func checkRemoveTableEntryRequest(obj models.RemoveTableEntryRequestModel) bool {
+	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.RowID > 0 {
+		return true
+	} else {
+		return false
 	}
 }

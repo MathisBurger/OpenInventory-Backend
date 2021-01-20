@@ -15,6 +15,10 @@ func ListUserController(c *fiber.Ctx) error {
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
+	if !checkCheckCredsRequestModel(obj) {
+		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	if OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
 		conn := OwnSQL.GetConn()
 		stmt, _ := conn.Prepare("SELECT `username`, `root`, `mail`, `register_date`, `status` FROM `inv_users`;")

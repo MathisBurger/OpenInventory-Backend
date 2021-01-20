@@ -9,9 +9,13 @@ import (
 
 func DeleteTableController(c *fiber.Ctx) error {
 	raw := string(c.Body())
-	obj := models.CreateTableRequestModel{}
+	obj := models.DeleteTableRequestModel{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
+		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
+	if !checkDeleteTableRequest(obj) {
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
@@ -32,5 +36,13 @@ func DeleteTableController(c *fiber.Ctx) error {
 	} else {
 		resp, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
+	}
+}
+
+func checkDeleteTableRequest(obj models.DeleteTableRequestModel) bool {
+	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" {
+		return true
+	} else {
+		return false
 	}
 }

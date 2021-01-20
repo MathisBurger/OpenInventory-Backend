@@ -18,6 +18,10 @@ func CheckCredsController(c *fiber.Ctx) error {
 		}
 		return c.Send(response)
 	}
+	if !checkCheckCredsRequestModel(obj) {
+		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	status := OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token)
 	if status {
 		response, err := models.GetJsonResponse("Login successful", "alert alert-success", "ok", "None", 200)
@@ -31,5 +35,13 @@ func CheckCredsController(c *fiber.Ctx) error {
 			panic(err)
 		}
 		return c.Send(response)
+	}
+}
+
+func checkCheckCredsRequestModel(obj models.LoginWithTokenRequest) bool {
+	if obj.Username != "" && obj.Password != "" && obj.Token != "" {
+		return true
+	} else {
+		return false
 	}
 }

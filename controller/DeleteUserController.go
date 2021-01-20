@@ -18,6 +18,10 @@ func DeleteUserController(c *fiber.Ctx) error {
 		}
 		return c.Send(response)
 	}
+	if !checkDeleteUserRequest(obj) {
+		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	status := OwnSQL.MySQL_loginWithToken_ROOT(obj.Username, obj.Password, obj.Token)
 	if status {
 		conn := OwnSQL.GetConn()
@@ -36,5 +40,13 @@ func DeleteUserController(c *fiber.Ctx) error {
 	} else {
 		resp, _ := models.GetJsonResponse("You do not have the permission to execute this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
+	}
+}
+
+func checkDeleteUserRequest(obj models.DeleteUserRequestModel) bool {
+	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != "" {
+		return true
+	} else {
+		return false
 	}
 }

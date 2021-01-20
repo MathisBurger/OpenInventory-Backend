@@ -18,6 +18,10 @@ func LoginController(c *fiber.Ctx) error {
 		}
 		return c.Send(response)
 	}
+	if !checkLoginRequest(obj) {
+		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	status, token := OwnSQL.MySQL_login(obj.Username, obj.Password)
 	if status {
 		response, err := models.GetJsonResponse("Login successful", "alert alert-success", "ok", token, 200)
@@ -31,5 +35,13 @@ func LoginController(c *fiber.Ctx) error {
 			panic(err)
 		}
 		return c.Send(response)
+	}
+}
+
+func checkLoginRequest(obj models.LoginRequest) bool {
+	if obj.Username != "" && obj.Password != "" {
+		return true
+	} else {
+		return false
 	}
 }

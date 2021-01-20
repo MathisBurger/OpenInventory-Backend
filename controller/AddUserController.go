@@ -19,6 +19,10 @@ func AddUserController(c *fiber.Ctx) error {
 		}
 		return c.Send(response)
 	}
+	if !checkAddUserRequest(obj) {
+		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	status := OwnSQL.MySQL_loginWithToken_ROOT(obj.Username, obj.Password, obj.Token)
 	if status {
 		conn := OwnSQL.GetConn()
@@ -34,5 +38,15 @@ func AddUserController(c *fiber.Ctx) error {
 	} else {
 		resp, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
+	}
+}
+
+func checkAddUserRequest(obj models.AddUserRequestModel) bool {
+	struct1 := models.AddUserStruct{"", "", false, "", ""}
+	struct2 := models.AddUserStruct{"", "", true, "", ""}
+	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != struct1 && obj.User != struct2 {
+		return true
+	} else {
+		return false
 	}
 }

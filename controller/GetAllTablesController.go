@@ -19,6 +19,10 @@ func GetAllTablesController(c *fiber.Ctx) error {
 		}
 		return c.Send(response)
 	}
+	if !checkCheckCredsRequestModel(obj) {
+		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	tables := OwnSQL.GetAllTables(obj.Username, obj.Password, obj.Token)
 	var compiledTables []string
 	for _, table := range tables {
