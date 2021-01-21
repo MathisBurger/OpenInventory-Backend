@@ -63,5 +63,5 @@ func checkCreateTableRequestModel(obj models.CreateTableRequestModel) bool {
 
 func checkTableNameLength(name string) bool {
 	split := strings.Split(name, "")
-	return len(split) > 16 && len(split) != 0
+	return len(split) < 16 && len(split) != 0
 }
