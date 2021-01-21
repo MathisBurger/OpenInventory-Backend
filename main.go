@@ -43,7 +43,8 @@ func main() {
 		app.Post("/api/table-management/ListUser", controller.ListUserController)
 		app.Post("/api/table-management/AddUser", controller.AddUserController)
 		app.Post("/api/table-management/DeleteUser", controller.DeleteUserController)
-		//app.Post("/api/table-management/editTableEntry", controller.EditTableEntryController)
+		app.Post("/api/table-management/editTableEntry", controller.EditTableEntryController)
+		app.Post("/api/table-management/renameTableColumn", controller.RenameTableColumnController)
 
 		// App Configuration
 		app.Listen(":" + config.ServerCFG.Port)

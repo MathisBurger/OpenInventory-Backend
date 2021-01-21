@@ -10,17 +10,17 @@ type ColumnNameStruct2 struct {
 	MAX_LENGTH  interface{} `json:"CHARACTER_MAXIMUM_LENGTH"`
 }
 
-func GetTableColumns(displayname string, password string, token string, Tablename string) interface{} {
+func GetTableColumns(displayname string, password string, token string, Tablename string) []ColumnNameStruct2 {
 	perms := MySQL_loginWithToken(displayname, password, token)
 	if !perms {
-		return false
+		return []ColumnNameStruct2{}
 	} else {
 		conn := GetConn()
 		stmt, _ := conn.Prepare("select COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME=?;")
 		resp, err := stmt.Query("table_" + Tablename)
 		if err != nil {
 			fmt.Println(err.Error())
-			return false
+			return []ColumnNameStruct2{}
 		}
 		var answers []ColumnNameStruct2
 		for resp.Next() {
