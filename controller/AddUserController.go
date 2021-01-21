@@ -32,6 +32,10 @@ func AddUserController(c *fiber.Ctx) error {
 		resp, _ := models.GetJsonResponse("This password is too long", "alert alert-warning", "ok", "None", 200)
 		return c.Send(resp)
 	}
+	if !checkEmail(obj.User.Mail) {
+		resp, _ := models.GetJsonResponse("Your mail is not a email-address", "alert alert-warning", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	status := OwnSQL.MySQL_loginWithToken_ROOT(obj.Username, obj.Password, obj.Token)
 	hash := utils.HashWithSalt(obj.User.Password)
 	if status {
@@ -69,4 +73,12 @@ func checkUsernameLength(username string) bool {
 func checkPasswordLength(hash string) bool {
 	split := strings.Split(hash, "")
 	return len(split) < 1024
+}
+
+func checkEmail(mail string) bool {
+	if strings.Contains(mail, "@") && len(strings.Split(mail, ".")) > 0 {
+		return true
+	} else {
+		return false
+	}
 }
