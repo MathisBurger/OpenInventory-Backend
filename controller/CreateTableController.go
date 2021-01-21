@@ -20,6 +20,10 @@ func CreateTableController(c *fiber.Ctx) error {
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
+	if !checkTableNameLength(obj.TableName) {
+		resp, _ := models.GetJsonResponse("Table name is too long", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	status := OwnSQL.CreateTable(obj.Username, obj.Password, obj.Token, obj.TableName, parse(obj.RowConfig))
 	if status {
 		resp, _ := models.GetJsonResponse("successful", "alert alert-success", "ok", "None", 200)
@@ -55,4 +59,9 @@ func checkCreateTableRequestModel(obj models.CreateTableRequestModel) bool {
 	} else {
 		return true
 	}
+}
+
+func checkTableNameLength(name string) bool {
+	split := strings.Split(name, "")
+	return len(split) > 16 && len(split) != 0
 }
