@@ -68,5 +68,5 @@ func checkUsernameLength(username string) bool {
 
 func checkPasswordLength(hash string) bool {
 	split := strings.Split(hash, "")
-	return len(split) > 1024
+	return len(split) < 1024
 }
