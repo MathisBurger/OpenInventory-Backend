@@ -63,7 +63,7 @@ func checkAddUserRequest(obj models.AddUserRequestModel) bool {
 
 func checkUsernameLength(username string) bool {
 	split := strings.Split(username, "")
-	return len(split) > 32
+	return len(split) < 32
 }
 
 func checkPasswordLength(hash string) bool {
