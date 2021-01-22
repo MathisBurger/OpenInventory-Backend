@@ -2,11 +2,10 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
 	"github.com/gofiber/fiber/v2"
-	"strings"
+	"strconv"
 )
 
 type RenameTableColumnRequestModel struct {
@@ -32,13 +31,18 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 	}
 	conn := OwnSQL.GetConn()
 	columns := OwnSQL.GetTableColumns(obj.Username, obj.Password, obj.Token, obj.TableName)
+	if len(columns) == 0 {
+		resp, _ := models.GetJsonResponse("You do not havew the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		return c.Send(resp)
+	}
 	for _, val := range columns {
 		if val.COLUMN_NAME == obj.OldName {
 			var length string
 			if val.MAX_LENGTH == nil {
 				length = ""
 			} else {
-				length = strings.ReplaceAll(strings.Split(fmt.Sprintf("%s", val.MAX_LENGTH), "=")[1], ")", "")
+				i, _ := val.MAX_LENGTH.(int64)
+				length = strconv.Itoa(int(i))
 			}
 			if val.DATA_TYPE == "int" {
 				length = "11"
