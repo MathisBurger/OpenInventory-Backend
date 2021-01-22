@@ -41,7 +41,7 @@ func CreateTable(displayname string, password string, token string, Tablename st
 		conn := GetConn()
 		stmt, err := conn.Prepare(creationString)
 		if err != nil {
-			fmt.Println("Error with sql syntax")
+			utils.LogError("[CreateTable.go, 44, SQL-StatementError] " + err.Error())
 			return false
 		}
 		stmt.Exec()

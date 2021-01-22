@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,6 +14,7 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 	obj := models.GetTableColumnsRequestModel{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
+		utils.LogError("[GetTableColumnsController.go, 17, InputError] " + err.Error())
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}

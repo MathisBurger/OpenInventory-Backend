@@ -5,12 +5,14 @@ import (
 	config2 "github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/controller"
 	"github.com/MathisBurger/OpenInventory-Backend/installation"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
+	utils.LogError("nigga")
 	if installation.Install() {
 		config, _ := config2.ParseConfig()
 		app := fiber.New(fiber.Config{

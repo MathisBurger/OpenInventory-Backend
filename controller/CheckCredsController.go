@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,7 +15,7 @@ func CheckCredsController(c *fiber.Ctx) error {
 	if err != nil {
 		response, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
-			panic(err)
+			utils.LogError("[CheckCredsController.go, 18, InputError] " + err.Error())
 		}
 		return c.Send(response)
 	}
@@ -26,13 +27,13 @@ func CheckCredsController(c *fiber.Ctx) error {
 	if status {
 		response, err := models.GetJsonResponse("Login successful", "alert alert-success", "ok", "None", 200)
 		if err != nil {
-			panic(err)
+			utils.LogError("[CheckCredsController.go, 30, ParsingError] " + err.Error())
 		}
 		return c.Send(response)
 	} else {
 		response, err := models.GetJsonResponse("Login failed", "alert alert-warning", "ok", "None", 200)
 		if err != nil {
-			panic(err)
+			utils.LogError("[CheckCredsController.go, 36, ParsingError] " + err.Error())
 		}
 		return c.Send(response)
 	}

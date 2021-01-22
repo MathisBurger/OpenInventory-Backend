@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 )
@@ -15,7 +16,7 @@ func GetAllTablesController(c *fiber.Ctx) error {
 	if err != nil {
 		response, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
-			panic(err)
+			utils.LogError("[GetAllTablesController.go, 19, InputError] " + err.Error())
 		}
 		return c.Send(response)
 	}
@@ -35,7 +36,7 @@ func GetAllTablesController(c *fiber.Ctx) error {
 	}
 	mdl, err := models.GetJsonResponse(msg, "alert alert-success", "ok", "None", 200)
 	if err != nil {
-		panic(err)
+		utils.LogError("[GetAllTablesController.go, 39, ParsingError] " + err.Error())
 	}
 	return c.Send(mdl)
 }

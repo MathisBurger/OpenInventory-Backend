@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -12,6 +13,7 @@ func DeleteTableController(c *fiber.Ctx) error {
 	obj := models.DeleteTableRequestModel{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
+		utils.LogError("[DeleteTableController.go, 16, InputError] " + err.Error())
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
@@ -24,6 +26,7 @@ func DeleteTableController(c *fiber.Ctx) error {
 		stmt, _ := conn.Prepare("DROP TABLE `table_" + obj.TableName + "`;")
 		_, err := stmt.Exec()
 		if err != nil {
+			utils.LogError("[DeleteTableController.go, 29, SQL-StatementExecutionError] " + err.Error())
 			resp, _ := models.GetJsonResponse("This table does not exist", "alert alert-warning", "ok", "None", 200)
 			return c.Send(resp)
 		}

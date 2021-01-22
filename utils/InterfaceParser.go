@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 )
 
+// not longer in use (OUTDATED)
 func GetBytes(key interface{}) ([]byte, error) {
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)

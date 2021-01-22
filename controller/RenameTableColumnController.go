@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 )
@@ -22,6 +23,7 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 	obj := RenameTableColumnRequestModel{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
+		utils.LogError("[RenameTableColumnController.go, 26, InputError] " + err.Error())
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
@@ -50,11 +52,13 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 			stmt, err := conn.Prepare("ALTER TABLE `table_" + obj.TableName + "` CHANGE `" + obj.OldName + "`  `" + obj.NewName + "` " + val.DATA_TYPE +
 				"(" + length + ") NULL DEFAULT NULL;")
 			if err != nil {
+				utils.LogError("[RenameTableColumnController.go, 55, SQL-StatementError] " + err.Error())
 				resp, _ := models.GetJsonResponse("Error with column name statement", "alert alert-danger", "ok", "None", 200)
 				return c.Send(resp)
 			}
 			_, err = stmt.Exec()
 			if err != nil {
+				utils.LogError("[RenameTableColumnController.go, 61, SQL-StatementError] " + err.Error())
 				resp, _ := models.GetJsonResponse("Error while changing column name", "alert alert-danger", "ok", "None", 200)
 				return c.Send(resp)
 			}

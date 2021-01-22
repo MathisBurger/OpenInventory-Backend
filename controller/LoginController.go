@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -12,9 +13,10 @@ func LoginController(c *fiber.Ctx) error {
 	obj := models.LoginRequest{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
+		utils.LogError("[LoginController.go, 15, InputError] " + err.Error())
 		response, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
-			panic(err)
+			utils.LogError("[LoginController.go, 19, ParsingError] " + err.Error())
 		}
 		return c.Send(response)
 	}
@@ -26,13 +28,13 @@ func LoginController(c *fiber.Ctx) error {
 	if status {
 		response, err := models.GetJsonResponse("Login successful", "alert alert-success", "ok", token, 200)
 		if err != nil {
-			panic(err)
+			utils.LogError("[LoginController.go, 31, ParsingError] " + err.Error())
 		}
 		return c.Send(response)
 	} else {
 		response, err := models.GetJsonResponse("Login failed", "alert alert-warning", "ok", "None", 200)
 		if err != nil {
-			panic(err)
+			utils.LogError("[LoginController.go, 37, ParsingError] " + err.Error())
 		}
 		return c.Send(response)
 	}

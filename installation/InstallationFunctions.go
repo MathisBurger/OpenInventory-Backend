@@ -108,7 +108,7 @@ func InsertDefaultUser(conn *sql.DB) {
 	hash := utils.HashWithSalt("Admin123")
 	stmt, err := conn.Prepare("INSERT INTO inv_users (id, username, password, token, root, mail, displayname, register_date, status) VALUES (NULL, 'root', ?, 'None', '1', 'example@mail.de', 'root', current_timestamp(), 'enabled');")
 	if err != nil {
-		panic(err.Error())
+		utils.LogError("[InstallationFunctions.go, 111, SQL-StatementError] " + err.Error())
 	}
 	stmt.Exec(hash)
 	defer stmt.Close()

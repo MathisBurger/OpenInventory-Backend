@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,7 +15,7 @@ func DeleteUserController(c *fiber.Ctx) error {
 	if err != nil {
 		response, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
-			panic(err)
+			utils.LogError("[DeleteUserController.go, 18, InputError] " + err.Error())
 		}
 		return c.Send(response)
 	}

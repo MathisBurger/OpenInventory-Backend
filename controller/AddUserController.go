@@ -16,7 +16,7 @@ func AddUserController(c *fiber.Ctx) error {
 	if err != nil {
 		response, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
-			panic(err)
+			utils.LogError("[AddUserController.go, 19, InputError] " + err.Error())
 		}
 		return c.Send(response)
 	}
@@ -42,7 +42,7 @@ func AddUserController(c *fiber.Ctx) error {
 		conn := OwnSQL.GetConn()
 		stmt, err := conn.Prepare("INSERT INTO `inv_users` (`id`, `username`, `password`, `token`, `root`, `mail`, `displayname`, `register_date`, `status`) VALUES (NULL, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), ?);")
 		if err != nil {
-			panic(err.Error())
+			utils.LogError("[AddUserController.gp, 45, SQL-StatementError] " + err.Error())
 		}
 		stmt.Exec(obj.User.Username, hash, "None", obj.User.Root, obj.User.Mail, obj.User.Username, obj.User.Status)
 		defer stmt.Close()

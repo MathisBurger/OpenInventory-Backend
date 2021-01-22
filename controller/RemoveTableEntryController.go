@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,9 +14,10 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 	obj := models.RemoveTableEntryRequestModel{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
+		utils.LogError("[RemoveTableEntryController.go, 17, InputError] " + err.Error())
 		response, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
-			panic(err)
+			utils.LogError("[RemoveTableEntryController.go, 20, ParsingError] " + err.Error())
 		}
 		return c.Send(response)
 	}
@@ -36,14 +38,14 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 		stmt, _ = conn.Prepare("SELECT `entries` FROM `inv_tables` WHERE `name`=?")
 		resp, err := stmt.Query(obj.TableName)
 		if err != nil {
-			panic(err.Error())
+			utils.LogError("[RemoveTableEntryController.go, 41, SQL-StatementError] " + err.Error())
 		}
 		entries := 0
 		for resp.Next() {
 			var entry OwnSQL.Entries
 			err = resp.Scan(&entry.Entries)
 			if err != nil {
-				panic(err.Error())
+				utils.LogError("[RemoveTableEntryController.go, 41, SQL-ScanningError] " + err.Error())
 			}
 			entries = entry.Entries
 		}

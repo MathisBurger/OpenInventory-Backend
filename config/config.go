@@ -26,6 +26,7 @@ type Config struct {
 func ParseConfig() (c *Config, err error) {
 	f, err := os.Open("./config/config.json")
 	if err != nil {
+
 		return
 	}
 	c = new(Config)

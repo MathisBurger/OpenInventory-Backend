@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -21,6 +22,7 @@ func EditTableEntryController(c *fiber.Ctx) error {
 	obj := editTableEntryRequestModel{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
+		utils.LogError("[EditTableEntryController.go, 25, InputError] " + err.Error())
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
@@ -45,11 +47,12 @@ func EditTableEntryController(c *fiber.Ctx) error {
 	sql += " WHERE `id`=?"
 	stmt, err := conn.Prepare(sql)
 	if err != nil {
-		panic(err.Error())
+		utils.LogError("[EditTableEntryController.go, 50, SQL-StatementError] " + err.Error())
 	}
 	values = append(values, obj.ObjectID)
 	_, err = stmt.Exec(values...)
 	if err != nil {
+		utils.LogError("[EditTableEntryController.go, 55, SQL-StatementError] " + err.Error())
 		resp, _ := models.GetJsonResponse("Illegal row-map", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}

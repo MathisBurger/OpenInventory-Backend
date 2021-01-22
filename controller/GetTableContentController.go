@@ -14,6 +14,7 @@ func GetTableContentController(c *fiber.Ctx) error {
 	obj := models.GetTableContentRequestModel{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
+		utils.LogError("[GetTableContentController.go, 17, InputError] " + err.Error())
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
@@ -29,6 +30,7 @@ func GetTableContentController(c *fiber.Ctx) error {
 		conn := OwnSQL.GetConn()
 		json, err := utils.QueryToJson(conn, stmt)
 		if err != nil {
+			utils.LogError("[GetTableContentController.go, 33, SQL-StatementError] " + err.Error())
 			resp, _ := models.GetJsonResponse("Invalid table name", "alert alert-danger", "ok", "None", 200)
 			return c.Send(resp)
 		}
