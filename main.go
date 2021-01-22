@@ -30,7 +30,12 @@ func main() {
 		app.Get("/api", controller.DefaultController)
 		app.Get("/api/info", controller.InformationController)
 
-		// POST Requests
+		// user management
+		app.Post("/api/user-management/ListUser", controller.ListUserController)
+		app.Post("/api/user-management/AddUser", controller.AddUserController)
+		app.Post("/api/user-management/DeleteUser", controller.DeleteUserController)
+
+		// table management
 		app.Post("/api/login", controller.LoginController)
 		app.Post("/api/check-creds", controller.CheckCredsController)
 		app.Post("/api/table-management/getAllTables", controller.GetAllTablesController)
@@ -40,11 +45,9 @@ func main() {
 		app.Post("/api/table-management/getTableColumns", controller.GetTableColumnsController)
 		app.Post("/api/table-management/RemoveTableEntry", controller.RemoveTableEntryController)
 		app.Post("/api/table-management/DeleteTable", controller.DeleteTableController)
-		app.Post("/api/table-management/ListUser", controller.ListUserController)
-		app.Post("/api/table-management/AddUser", controller.AddUserController)
-		app.Post("/api/table-management/DeleteUser", controller.DeleteUserController)
 		app.Post("/api/table-management/editTableEntry", controller.EditTableEntryController)
 		app.Post("/api/table-management/renameTableColumn", controller.RenameTableColumnController)
+		app.Post("/api/table-management/renameTable", controller.RenameTableController)
 
 		// App Configuration
 		app.Listen(":" + config.ServerCFG.Port)

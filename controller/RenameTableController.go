@@ -31,9 +31,21 @@ func RenameTableController(c *fiber.Ctx) error {
 		resp, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	} else {
-
+		conn := OwnSQL.GetConn()
+		stmt, err := conn.Prepare("ALTER TABLE `table_" + obj.TableName + "` RENAME `table_" + obj.NewName + "`;")
+		if err != nil {
+			panic(err)
+		}
+		_, err = stmt.Exec()
+		if err != nil {
+			resp, _ := models.GetJsonResponse("This table does not exists", "alert alert-warning", "ok", "None", 200)
+			return c.Send(resp)
+		}
+		stmt, _ = conn.Prepare("UPDATE `inv_tables` SET `name`=? WHERE `name`=?")
+		stmt.Exec(obj.NewName, obj.TableName)
+		resp, _ := models.GetJsonResponse("Successfully updated tablename", "alert alert-success", "ok", "None", 200)
+		return c.Send(resp)
 	}
-	return nil
 }
 
 func checkRenameTableRequest(obj RenameTableRequest) bool {
