@@ -101,7 +101,7 @@ func GenerateTable(conn *sql.DB, name string) {
 		conn.Exec(creationString)
 		break
 	case "inv_permissions":
-		creationString := "CREATE TABLE `oopen_inv`.`inv_permissions` ( `ID` INT NOT NULL AUTO_INCREMENT , `name` TEXT NOT NULL , `color` VARCHAR(9) NOT NULL , `visible` BOOLEAN NOT NULL , PRIMARY KEY (`ID`))"
+		creationString := "CREATE TABLE `inv_permissions` ( `ID` INT NOT NULL AUTO_INCREMENT , `name` TEXT NOT NULL , `color` VARCHAR(9) NOT NULL , `permission-level` INT NOT NULL , PRIMARY KEY (`ID`))"
 		conn.Exec(creationString)
 		InsertDefaultPermissionGroups(conn)
 		break
@@ -121,12 +121,12 @@ func InsertDefaultUser(conn *sql.DB) {
 }
 
 func InsertDefaultPermissionGroups(conn *sql.DB) {
-	stmt, err := conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `visible`) VALUES (NULL, 'default.everyone', '8C8C8C', '1');")
+	stmt, err := conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, 'default.everyone', '8C8C8C', '1');")
 	if err != nil {
 		utils.LogError("[InstallationFunctions.go, 126, SQL-StatementError] " + err.Error())
 	}
 	stmt.Exec()
-	stmt, err = conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `visible`) VALUES (NULL, 'default.root', '8C8C8C', '1');")
+	stmt, err = conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, 'default.root', '8C8C8C', '100');")
 	if err != nil {
 		utils.LogError("[InstallationFunctions.go, 131, SQL-StatementError] " + err.Error())
 	}
