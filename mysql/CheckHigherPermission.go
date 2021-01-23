@@ -55,7 +55,7 @@ func CheckUserHasHigherPermission(conn *sql.DB, username string, permLevel int, 
 	}
 	if permLevel > 0 {
 		defer stmt.Close()
-		return highestPermission > permLevel
+		return highestPermission >= permLevel
 	} else if permName != "" {
 		stmt, err = conn.Prepare("SELECT `permission-level` FROM `inv_permissions` WHERE `name`=?")
 		if err != nil {
@@ -76,7 +76,7 @@ func CheckUserHasHigherPermission(conn *sql.DB, username string, permLevel int, 
 		}
 		defer resp.Close()
 		defer stmt.Close()
-		return highestPermission > wantedPermissionLevel
+		return highestPermission >= wantedPermissionLevel
 	} else {
 		utils.LogError("[CheckHigherPermission.go, 81, InputError] " + err.Error())
 		return false
