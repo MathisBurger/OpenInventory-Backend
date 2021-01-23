@@ -70,7 +70,7 @@ func CheckForTables(cfg *config.Config) bool {
 		fmt.Println("All required tables are existing")
 		return true
 	}
-	requiredTables := [2]string{"inv_users", "inv_tables"}
+	requiredTables := [3]string{"inv_users", "inv_tables", "inv_permissions"}
 	var outstandingTables []string
 	for _, el := range requiredTables {
 		if !utils.ContainsStr(activeTables, el) {
@@ -91,25 +91,45 @@ func CheckForTables(cfg *config.Config) bool {
 func GenerateTable(conn *sql.DB, name string) {
 	switch name {
 	case "inv_users":
-		creationString := "CREATE TABLE inv_users(id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32), password VARCHAR(1024), token VARCHAR(32), root TINYINT(1), mail VARCHAR(128), displayname VARCHAR(32), register_date DATETIME, status VARCHAR(16));"
+		creationString := "CREATE TABLE inv_users(id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32), password VARCHAR(1024), token VARCHAR(32), permissions TEXT, root TINYINT(1), mail VARCHAR(128), displayname VARCHAR(32), register_date DATETIME, status VARCHAR(16));"
 		conn.Exec(creationString)
 		InsertDefaultUser(conn)
 		fmt.Println("Created default user")
 		break
 	case "inv_tables":
-		creationString := "CREATE TABLE inv_tables(id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, name VARCHAR(32), entries INT(6), created_at DATETIME);"
+		creationString := "CREATE TABLE inv_tables(id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, name VARCHAR(32), entries INT(6), permissions TEXT, created_at DATETIME);"
 		conn.Exec(creationString)
 		break
+	case "inv_permissions":
+		creationString := "CREATE TABLE `oopen_inv`.`inv_permissions` ( `ID` INT NOT NULL AUTO_INCREMENT , `name` TEXT NOT NULL , `color` VARCHAR(9) NOT NULL , `visible` BOOLEAN NOT NULL , PRIMARY KEY (`ID`))"
+		conn.Exec(creationString)
+		InsertDefaultPermissionGroups(conn)
+		break
+
 	}
 	fmt.Println("created table", name)
 }
 
 func InsertDefaultUser(conn *sql.DB) {
 	hash := utils.HashWithSalt("Admin123")
-	stmt, err := conn.Prepare("INSERT INTO inv_users (id, username, password, token, root, mail, displayname, register_date, status) VALUES (NULL, 'root', ?, 'None', '1', 'example@mail.de', 'root', current_timestamp(), 'enabled');")
+	stmt, err := conn.Prepare("INSERT INTO inv_users (id, username, password, token, permissions, root, mail, displayname, register_date, status) VALUES (NULL, 'root', 'default.everyone;default.root', ?, 'None', '1', 'example@mail.de', 'root', current_timestamp(), 'enabled');")
 	if err != nil {
-		utils.LogError("[InstallationFunctions.go, 111, SQL-StatementError] " + err.Error())
+		utils.LogError("[InstallationFunctions.go, 117, SQL-StatementError] " + err.Error())
 	}
 	stmt.Exec(hash)
+	defer stmt.Close()
+}
+
+func InsertDefaultPermissionGroups(conn *sql.DB) {
+	stmt, err := conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `visible`) VALUES (NULL, 'default.everyone', '8C8C8C', '1');")
+	if err != nil {
+		utils.LogError("[InstallationFunctions.go, 126, SQL-StatementError] " + err.Error())
+	}
+	stmt.Exec()
+	stmt, err = conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `visible`) VALUES (NULL, 'default.root', '8C8C8C', '1');")
+	if err != nil {
+		utils.LogError("[InstallationFunctions.go, 131, SQL-StatementError] " + err.Error())
+	}
+	stmt.Exec()
 	defer stmt.Close()
 }
