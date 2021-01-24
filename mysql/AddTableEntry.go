@@ -39,7 +39,6 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 				if row[column.COLUMN_NAME] != nil {
 					columns = append(columns, column.COLUMN_NAME)
 				} else {
-					fmt.Println(column.COLUMN_NAME)
 					defer resp.Close()
 					defer stmt.Close()
 					defer conn.Close()
@@ -47,63 +46,85 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 				}
 			}
 		}
-		var builder strings.Builder
-		builder.WriteString("INSERT INTO `table_" + Tablename + "`(`id`, ")
-		for i, el := range columns {
-			if i == (len(columns) - 1) {
-				builder.WriteString("`" + el + "`")
-			} else {
-				builder.WriteString("`" + el + "`, ")
-			}
-
+		stmt, _ = conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
+		type cacheStruct struct {
+			MinPermLvl int `json:"min-perm-lvl"`
 		}
-		builder.WriteString(") VALUES (NULL, ")
-		for i, _ := range columns {
-			if i == (len(columns) - 1) {
-				builder.WriteString("?")
-				break
-			} else {
-				builder.WriteString("?, ")
-			}
-		}
-		builder.WriteString(");")
-		fmt.Println(builder.String())
-		stmt, err = conn.Prepare(builder.String())
-		if err != nil {
-			utils.LogError("[AddTableEntry.go, 73, SQL-StatementError] " + err.Error())
-			defer conn.Close()
-			return false
-		}
-		values := ParseToArray(row, columns)
-		fmt.Println(values[len(values)-1])
-		_, err = stmt.Exec(values...)
-		if err != nil {
-			utils.LogError("[AddTableEntry.go, 81, SQL-StatementError] " + err.Error())
-			defer stmt.Close()
-			defer conn.Close()
-			return false
-		}
-		stmt, _ = conn.Prepare("SELECT `entries` FROM `inv_tables` WHERE `name`=?")
 		resp, err = stmt.Query(Tablename)
 		if err != nil {
-			utils.LogError("[AddTableEntry.go, 89, SQL-StatementError] " + err.Error())
+			utils.LogError("[AddTableEntry.go, 55, SQL-ScanningError] " + err.Error())
 		}
-		entries := 0
+		minPermLvl := 0
 		for resp.Next() {
-			var entry Entries
-			err = resp.Scan(&entry.Entries)
+			var cache cacheStruct
+			err = resp.Scan(&cache.MinPermLvl)
 			if err != nil {
-				utils.LogError("[AddTableEntry.go, 96, SQL-ScanningError] " + err.Error())
+				utils.LogError("[AddTableEntry.go, 62, SQL-ScanningError] " + err.Error())
 			}
-			entries = entry.Entries
+			minPermLvl = cache.MinPermLvl
 		}
-		entries += 1
-		stmt, _ = conn.Prepare("UPDATE `inv_tables` SET `entries`=? WHERE `name`=?;")
-		stmt.Exec(entries, Tablename)
 		defer resp.Close()
-		defer stmt.Close()
-		defer conn.Close()
-		return true
+		if CheckUserHasHigherPermission(conn, displayname, minPermLvl, "") {
+			var builder strings.Builder
+			builder.WriteString("INSERT INTO `table_" + Tablename + "`(`id`, ")
+			for i, el := range columns {
+				if i == (len(columns) - 1) {
+					builder.WriteString("`" + el + "`")
+				} else {
+					builder.WriteString("`" + el + "`, ")
+				}
+
+			}
+			builder.WriteString(") VALUES (NULL, ")
+			for i, _ := range columns {
+				if i == (len(columns) - 1) {
+					builder.WriteString("?")
+					break
+				} else {
+					builder.WriteString("?, ")
+				}
+			}
+			builder.WriteString(");")
+			fmt.Println(builder.String())
+			stmt, err = conn.Prepare(builder.String())
+			if err != nil {
+				utils.LogError("[AddTableEntry.go, 73, SQL-StatementError] " + err.Error())
+				defer conn.Close()
+				return false
+			}
+			values := ParseToArray(row, columns)
+			fmt.Println(values[len(values)-1])
+			_, err = stmt.Exec(values...)
+			if err != nil {
+				utils.LogError("[AddTableEntry.go, 81, SQL-StatementError] " + err.Error())
+				defer stmt.Close()
+				defer conn.Close()
+				return false
+			}
+			stmt, _ = conn.Prepare("SELECT `entries` FROM `inv_tables` WHERE `name`=?")
+			resp, err = stmt.Query(Tablename)
+			if err != nil {
+				utils.LogError("[AddTableEntry.go, 89, SQL-StatementError] " + err.Error())
+			}
+			entries := 0
+			for resp.Next() {
+				var entry Entries
+				err = resp.Scan(&entry.Entries)
+				if err != nil {
+					utils.LogError("[AddTableEntry.go, 96, SQL-ScanningError] " + err.Error())
+				}
+				entries = entry.Entries
+			}
+			entries += 1
+			stmt, _ = conn.Prepare("UPDATE `inv_tables` SET `entries`=? WHERE `name`=?;")
+			stmt.Exec(entries, Tablename)
+			defer resp.Close()
+			defer stmt.Close()
+			defer conn.Close()
+			return true
+		} else {
+			return false
+		}
 	}
 }
 func ParseToArray(input map[string]interface{}, columns []string) []interface{} {

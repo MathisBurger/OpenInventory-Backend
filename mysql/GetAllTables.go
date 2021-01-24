@@ -22,11 +22,13 @@ func GetAllTables(username string, password string, token string) []models.Table
 		var tables []models.TableModel
 		for resp.Next() {
 			var table models.TableModel
-			err = resp.Scan(&table.ID, &table.Name, &table.Entries, &table.CreatedAt)
+			err = resp.Scan(&table.ID, &table.Name, &table.Entries, &table.MinPermLvl, &table.CreatedAt)
 			if err != nil {
 				panic(err)
 			}
-			tables = append(tables, models.TableModel{table.ID, table.Name, table.Entries, table.CreatedAt})
+			if CheckUserHasHigherPermission(conn, username, table.MinPermLvl, "") {
+				tables = append(tables, table)
+			}
 		}
 		defer resp.Close()
 		defer stmt.Close()

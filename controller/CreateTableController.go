@@ -26,7 +26,7 @@ func CreateTableController(c *fiber.Ctx) error {
 		resp, _ := models.GetJsonResponse("Table name is too long", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
-	status := OwnSQL.CreateTable(obj.Username, obj.Password, obj.Token, obj.TableName, parse(obj.RowConfig))
+	status := OwnSQL.CreateTable(obj.Username, obj.Password, obj.Token, obj.TableName, parse(obj.RowConfig), obj.MinPermLvl)
 	if status {
 		resp, _ := models.GetJsonResponse("successful", "alert alert-success", "ok", "None", 200)
 		return c.Send(resp)

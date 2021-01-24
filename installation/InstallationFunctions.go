@@ -97,7 +97,7 @@ func GenerateTable(conn *sql.DB, name string) {
 		fmt.Println("Created default user")
 		break
 	case "inv_tables":
-		creationString := "CREATE TABLE inv_tables(id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, name VARCHAR(32), entries INT(6), permissions TEXT, created_at DATETIME);"
+		creationString := "CREATE TABLE inv_tables(`id` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(32), `entries` INT(6), `min-perm-lvl` INT(6), `created_at` DATETIME);"
 		conn.Exec(creationString)
 		break
 	case "inv_permissions":
