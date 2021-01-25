@@ -19,12 +19,12 @@ func GetTableContentController(c *fiber.Ctx) error {
 		return c.Send(resp)
 	}
 	if !checkGetTableContentRequest(obj) {
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if !OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
-		resp, _ := models.GetJsonResponse("You do not have the permission to perform this command", "alert alert-warning", "Failed", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-warning", "Failed", "None", 200)
+		return c.Send(res)
 	} else {
 		stmt := "SELECT * FROM `table_" + obj.TableName + "`;"
 		conn := OwnSQL.GetConn()
