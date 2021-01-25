@@ -52,6 +52,7 @@ func main() {
 		// permission management
 		app.Post("/api/permission-management/createPermissionGroup", controller.CreatePermissionGroupController)
 		app.Post("api/permission-management/addUserToPermissionGroup", controller.AddUserToPermissionGroupController)
+		app.Post("/api/permission-management/deletePermissionGroup", controller.DeletePermissionGroupController)
 
 		// App Configuration
 		app.Listen(":" + config.ServerCFG.Port)

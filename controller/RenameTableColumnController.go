@@ -72,8 +72,8 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 					"(" + length + ") NULL DEFAULT NULL;")
 				if err != nil {
 					utils.LogError("[RenameTableColumnController.go, 55, SQL-StatementError] " + err.Error())
-					resp, _ := models.GetJsonResponse("Error with column name statement", "alert alert-danger", "ok", "None", 200)
-					return c.Send(resp)
+					res, _ := models.GetJsonResponse("Error with column name statement", "alert alert-danger", "ok", "None", 200)
+					return c.Send(res)
 				}
 				_, err = stmt.Exec()
 				if err != nil {

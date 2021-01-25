@@ -10,3 +10,14 @@ func ContainsStr(arr []string, search string) (contains bool) {
 	}
 	return
 }
+
+func RemoveValueFromArray(arr []string, val string) []string {
+	var resp []string
+	for _, v := range arr {
+		if v == val {
+			continue
+		}
+		resp = append(resp, v)
+	}
+	return resp
+}
