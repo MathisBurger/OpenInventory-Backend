@@ -40,11 +40,17 @@ func AddUserController(c *fiber.Ctx) error {
 	hash := utils.HashWithSalt(obj.User.Password)
 	if status {
 		conn := OwnSQL.GetConn()
-		stmt, err := conn.Prepare("INSERT INTO `inv_users` (`id`, `username`, `password`, `token`, `permissions`, `root`, `mail`, `displayname`, `register_date`, `status`) VALUES (NULL, ?, ?, ?, 'default.everyone', ?, ?, ?, CURRENT_TIMESTAMP(), ?);")
+		stmt, err := conn.Prepare("INSERT INTO `inv_users` (`id`, `username`, `password`, `token`, `permissions`, `root`, `mail`, `displayname`, `register_date`, `status`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), ?);")
 		if err != nil {
 			utils.LogError("[AddUserController.gp, 45, SQL-StatementError] " + err.Error())
 		}
-		stmt.Exec(obj.User.Username, hash, "None", obj.User.Root, obj.User.Mail, obj.User.Username, obj.User.Status)
+		var perms string
+		if obj.User.Root {
+			perms = "default.everyone;default.root"
+		} else {
+			perms = "default.everyone"
+		}
+		stmt.Exec(obj.User.Username, hash, "None", perms, obj.User.Root, obj.User.Mail, obj.User.Username, obj.User.Status)
 		defer stmt.Close()
 		defer conn.Close()
 		resp, _ := models.GetJsonResponse("Successfully added user", "alert alert-success", "ok", "None", 200)

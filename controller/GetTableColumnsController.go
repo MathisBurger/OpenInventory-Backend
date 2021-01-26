@@ -22,6 +22,7 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
+	// login is checked in function below
 	columns := OwnSQL.GetTableColumns(obj.Username, obj.Password, obj.Token, obj.TableName)
 	if fmt.Sprintf("%T", columns) == "bool" {
 		resp, _ := models.GetJsonResponse("Error while fetching Array", "alert alert-danger", "ok", "None", 200)

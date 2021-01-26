@@ -21,6 +21,7 @@ func AddTableEntryController(c *fiber.Ctx) error {
 		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
+	// Login is checked in function below
 	status := OwnSQL.AddTableEntry(obj.Username, obj.Password, obj.Token, obj.TableName, obj.Row)
 	if status {
 		resp, _ := models.GetJsonResponse("successful", "alert alert-success", "ok", "None", 200)
