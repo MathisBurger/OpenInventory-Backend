@@ -1,7 +1,6 @@
 package OwnSQL
 
 import (
-	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"time"
 )
@@ -23,7 +22,6 @@ type DisplayNameStruct struct {
 }
 
 func MySQL_login(username string, password string) (bool, string) {
-	fmt.Println("Starts")
 	conn := GetConn()
 	hash := utils.HashWithSalt(password)
 	stmt, err := conn.Prepare("SELECT * FROM inv_users WHERE displayname=? AND password=?")

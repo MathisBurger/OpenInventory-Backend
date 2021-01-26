@@ -31,7 +31,7 @@ func GetAllTablesController(c *fiber.Ctx) error {
 		tables := OwnSQL.GetAllTables(obj.Username, obj.Password, obj.Token)
 		var compiledTables []string
 		for _, table := range tables {
-			cache := "['" + table.Name + "','" + strconv.Itoa(table.Entries) + "','" + table.CreatedAt + "']"
+			cache := "['" + table.Name + "','" + strconv.Itoa(table.Entries) + "','" + table.CreatedAt + "','" + strconv.Itoa(table.MinPermLvl) + "']"
 			compiledTables = append(compiledTables, cache)
 		}
 		msg := ""

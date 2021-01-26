@@ -1,6 +1,7 @@
 package OwnSQL
 
 import (
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 )
 
@@ -37,8 +38,9 @@ func GetTableColumns(displayname string, password string, token string, Tablenam
 			minPermLvl = cache.MinPermLvl
 		}
 		if CheckUserHasHigherPermission(conn, displayname, minPermLvl, "") {
-			stmt, _ = conn.Prepare("select COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME=?;")
-			resp, err := stmt.Query("table_" + Tablename)
+			cfg, _ := config.ParseConfig()
+			stmt, _ = conn.Prepare("select COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME=? and TABLE_SCHEMA=?;")
+			resp, err := stmt.Query("table_"+Tablename, cfg.Db.Database)
 			if err != nil {
 				utils.LogError("[GetTableColumns.go, 43, SQL-StatementError] " + err.Error())
 				return []ColumnNameStruct2{}

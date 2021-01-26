@@ -39,6 +39,9 @@ func CreateTable(displayname string, password string, token string, Tablename st
 		}
 		creationString := "CREATE TABLE IF NOT EXISTS `table_" + Tablename + "` (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, " + finStr + ");"
 		conn := GetConn()
+		if !CheckUserHasHigherPermission(conn, displayname, MinPermLvl, "") {
+			return false
+		}
 		stmt, err := conn.Prepare(creationString)
 		if err != nil {
 			utils.LogError("[CreateTable.go, 44, SQL-StatementError] " + err.Error())

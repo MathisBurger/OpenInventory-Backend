@@ -2,6 +2,7 @@ package OwnSQL
 
 import (
 	"fmt"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"strings"
 )
@@ -17,14 +18,12 @@ type Entries struct {
 func AddTableEntry(displayname string, password string, token string, Tablename string, row map[string]interface{}) bool {
 	perms := MySQL_loginWithToken(displayname, password, token)
 	if !perms {
-		fmt.Println("no permission")
 		return false
 	} else {
-		fmt.Println("before conn")
 		conn := GetConn()
-		fmt.Println("after conn")
-		stmt, _ := conn.Prepare("select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME=?;")
-		resp, err := stmt.Query("table_" + Tablename)
+		cfg, _ := config.ParseConfig()
+		stmt, _ := conn.Prepare("select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME=? and TABLE_SCHEMA=?;")
+		resp, err := stmt.Query("table_"+Tablename, cfg.Db.Database)
 		if err != nil {
 			utils.LogError("[AddTableEntry.go, 29, SQL-StatementError] " + err.Error())
 		}
@@ -39,6 +38,7 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 				if row[column.COLUMN_NAME] != nil {
 					columns = append(columns, column.COLUMN_NAME)
 				} else {
+					fmt.Println(column.COLUMN_NAME)
 					defer resp.Close()
 					defer stmt.Close()
 					defer conn.Close()
@@ -85,7 +85,6 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 				}
 			}
 			builder.WriteString(");")
-			fmt.Println(builder.String())
 			stmt, err = conn.Prepare(builder.String())
 			if err != nil {
 				utils.LogError("[AddTableEntry.go, 73, SQL-StatementError] " + err.Error())
@@ -93,7 +92,6 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 				return false
 			}
 			values := ParseToArray(row, columns)
-			fmt.Println(values[len(values)-1])
 			_, err = stmt.Exec(values...)
 			if err != nil {
 				utils.LogError("[AddTableEntry.go, 81, SQL-StatementError] " + err.Error())

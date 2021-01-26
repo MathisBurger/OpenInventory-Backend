@@ -46,8 +46,8 @@ func DeleteTableController(c *fiber.Ctx) error {
 			_, err = stmt.Exec()
 			if err != nil {
 				utils.LogError("[DeleteTableController.go, 48, SQL-StatementExecutionError] " + err.Error())
-				resp, _ := models.GetJsonResponse("This table does not exist", "alert alert-warning", "ok", "None", 200)
-				return c.Send(resp)
+				res, _ := models.GetJsonResponse("This table does not exist", "alert alert-warning", "ok", "None", 200)
+				return c.Send(res)
 			}
 			stmt, _ = conn.Prepare("DELETE FROM `inv_tables` WHERE `name`=?")
 			stmt.Exec(obj.TableName)

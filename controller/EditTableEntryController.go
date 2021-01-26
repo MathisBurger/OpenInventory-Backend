@@ -55,13 +55,15 @@ func EditTableEntryController(c *fiber.Ctx) error {
 			first_completed := false
 			var values []interface{}
 			for k, v := range obj.Row {
-				if !first_completed {
-					sql += "`" + k + "`=?"
-					values = append(values, v)
-					first_completed = true
-				} else {
-					sql += ", `" + k + "`=?"
-					values = append(values, v)
+				if k != "id" {
+					if !first_completed {
+						sql += "`" + k + "`=?"
+						values = append(values, v)
+						first_completed = true
+					} else {
+						sql += ", `" + k + "`=?"
+						values = append(values, v)
+					}
 				}
 			}
 			sql += " WHERE `id`=?"
