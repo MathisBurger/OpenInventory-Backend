@@ -18,6 +18,10 @@ type UserStruct struct {
 	Status       string    `json:"status"`
 }
 
+type DisplayNameStruct struct {
+	Displayname string `json:"displayname"`
+}
+
 func MySQL_login(username string, password string) (bool, string) {
 	fmt.Println("Starts")
 	conn := GetConn()
@@ -59,7 +63,7 @@ func MySQL_login(username string, password string) (bool, string) {
 func MySQL_loginWithToken(username string, password string, token string) bool {
 	conn := GetConn()
 	hash := utils.HashWithSalt(password)
-	stmt, err := conn.Prepare("SELECT * FROM inv_users WHERE displayname=? AND password=? AND token=?")
+	stmt, err := conn.Prepare("SELECT `displayname` FROM inv_users WHERE displayname=? AND password=? AND token=?")
 	if err != nil {
 		utils.LogError("[Login.go, 64, SQL-StatementError] " + err.Error())
 	}
@@ -69,7 +73,7 @@ func MySQL_loginWithToken(username string, password string, token string) bool {
 	}
 	var answers []string
 	for resp.Next() {
-		var user UserStruct
+		var user DisplayNameStruct
 		err = resp.Scan(&user.Displayname)
 		if err != nil {
 			utils.LogError("[Login.go, 75, SQL-ScanningError] " + err.Error())

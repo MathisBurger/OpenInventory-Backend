@@ -56,6 +56,7 @@ func main() {
 		app.Post("/api/permission-management/removeUserFromPermissionGroup", controller.RemoveUserFromPermissionGroupController)
 		app.Post("/api/permission-management/editTableMinPermLvl", controller.EditTableMinPermLvlController)
 		app.Post("/api/permission-management/listAllPermsOfUser", controller.ListAllPermOfUserController)
+		app.Post("/api/permission-management/listAllPermGroupsOfTable", controller.ListAllPermGroupsOfTableController)
 
 		// App Configuration
 		app.Listen(":" + config.ServerCFG.Port)
