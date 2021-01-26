@@ -111,7 +111,8 @@ func GenerateTable(conn *sql.DB, name string) {
 }
 
 func InsertDefaultUser(conn *sql.DB) {
-	hash := utils.HashWithSalt("Admin123")
+	// Admin123 as MD5
+	hash := utils.HashWithSalt("e64b78fc3bc91bcbc7dc232ba8ec59e0")
 	stmt, err := conn.Prepare("INSERT INTO inv_users (id, username, password, token, permissions, root, mail, displayname, register_date, status) VALUES (NULL, 'root',  ?, 'None', 'default.everyone;default.root', '1', 'example@mail.de', 'root', current_timestamp(), 'enabled');")
 	if err != nil {
 		utils.LogError("[InstallationFunctions.go, 117, SQL-StatementError] " + err.Error())

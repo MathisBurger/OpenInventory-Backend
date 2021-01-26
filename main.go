@@ -21,10 +21,7 @@ func main() {
 		app.Use(logger.New())
 		app.Use(cors.New())
 
-		// Static Web Files
-		app.Static("/", "./web")
-		app.Static("/login", "./web/index.html")
-		app.Static("/dashboard", "./web/index.html")
+		initWebpaths(app)
 
 		// Basic GET Requests
 		app.Get("/api", controller.DefaultController)
@@ -64,4 +61,10 @@ func main() {
 	} else {
 		fmt.Println("Please fix errors first to launch webserver")
 	}
+}
+
+func initWebpaths(app *fiber.App) {
+	app.Static("/", "./web/index.html")
+	app.Static("/login", "./web/index.html")
+	app.Static("/dashboard", "./web/index.html")
 }
