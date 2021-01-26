@@ -14,12 +14,12 @@ func ListUserController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[ListUserController.go, 16, InputError] " + err.Error())
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if !checkCheckCredsRequestModel(obj) {
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
 		conn := OwnSQL.GetConn()

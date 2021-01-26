@@ -15,15 +15,15 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[RemoveTableEntryController.go, 17, InputError] " + err.Error())
-		response, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
+		res, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
 			utils.LogError("[RemoveTableEntryController.go, 20, ParsingError] " + err.Error())
 		}
-		return c.Send(response)
+		return c.Send(res)
 	}
 	if !checkRemoveTableEntryRequest(obj) {
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
 		fmt.Println(obj)
@@ -81,8 +81,8 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 			return c.Send(res)
 		}
 	} else {
-		resp, _ := models.GetJsonResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 }
 

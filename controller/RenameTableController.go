@@ -22,16 +22,16 @@ func RenameTableController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[RenameTableController.go, 24, InputError] " + err.Error())
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if !checkRenameTableRequest(obj) {
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if !OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
-		resp, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	} else {
 		conn := OwnSQL.GetConn()
 		stmt, _ := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")

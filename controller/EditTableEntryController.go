@@ -23,12 +23,12 @@ func EditTableEntryController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[EditTableEntryController.go, 25, InputError] " + err.Error())
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if !checkEditTableEntryRequest(obj) {
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	conn := OwnSQL.GetConn()
 	if OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {

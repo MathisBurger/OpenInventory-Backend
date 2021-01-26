@@ -15,25 +15,25 @@ func CreateTableController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[CreateTableController.go, 17, InputError] " + err.Error())
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if !checkCreateTableRequestModel(obj) {
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if !checkTableNameLength(obj.TableName) {
-		resp, _ := models.GetJsonResponse("Table name is too long", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Table name is too long", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	// login creds are checked in function below
 	status := OwnSQL.CreateTable(obj.Username, obj.Password, obj.Token, obj.TableName, parse(obj.RowConfig), obj.MinPermLvl)
 	if status {
-		resp, _ := models.GetJsonResponse("successful", "alert alert-success", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("successful", "alert alert-success", "ok", "None", 200)
+		return c.Send(res)
 	} else {
-		resp, _ := models.GetJsonResponse("creation failed", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("creation failed", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 }
 

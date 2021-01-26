@@ -38,10 +38,10 @@ func GetAllTablesController(c *fiber.Ctx) error {
 		for _, str := range compiledTables {
 			msg += str + ";"
 		}
-		mdl, err := models.GetJsonResponse(msg, "alert alert-success", "ok", "None", 200)
+		res, err := models.GetJsonResponse(msg, "alert alert-success", "ok", "None", 200)
 		if err != nil {
-			utils.LogError("[GetAllTablesController.go, 39, ParsingError] " + err.Error())
+			utils.LogError("[GetAllTablesController.go, 43, ParsingError] " + err.Error())
 		}
-		return c.Send(mdl)
+		return c.Send(res)
 	}
 }

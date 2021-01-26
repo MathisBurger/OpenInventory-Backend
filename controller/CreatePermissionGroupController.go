@@ -75,14 +75,14 @@ func checkCreatePermissionGroupRequest(obj CreatePermissionGroupRequest) bool {
 
 func checkPermissionGroupInput(obj CreatePermissionGroupRequest) []byte {
 	if strings.Contains(obj.PermissionInfo.Name, ";") {
-		resp, _ := models.GetJsonResponse("';' is not allowed in group name", "alert alert-danger", "ok", "None", 200)
-		return resp
+		res, _ := models.GetJsonResponse("';' is not allowed in group name", "alert alert-danger", "ok", "None", 200)
+		return res
 	}
 	conn := OwnSQL.GetConn()
 	if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, obj.PermissionInfo.PermissionLevel, "") {
 		defer conn.Close()
-		resp, _ := models.GetJsonResponse("Your permission is not high enough", "alert alert-danger", "ok", "None", 200)
-		return resp
+		res, _ := models.GetJsonResponse("Your permission is not high enough", "alert alert-danger", "ok", "None", 200)
+		return res
 	}
 	defer conn.Close()
 	return []byte{}

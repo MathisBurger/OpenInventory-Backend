@@ -6,9 +6,9 @@ import (
 )
 
 func InformationController(c *fiber.Ctx) error {
-	response, err := models.GetInformationResponse()
+	res, err := models.GetInformationResponse()
 	if err != nil {
 		panic(err)
 	}
-	return c.Send(response)
+	return c.Send(res)
 }

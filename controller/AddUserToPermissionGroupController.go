@@ -23,12 +23,12 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[AddUserToPermissionGroupController.go, 25, InputError] " + err.Error())
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if !checkAddUsertoPermissionGroupRequest(obj) {
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if !OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJsonResponse("Wrong login credentials", "alert alert-danger", "ok", "None", 200)

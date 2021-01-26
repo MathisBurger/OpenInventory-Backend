@@ -13,15 +13,15 @@ func DeleteUserController(c *fiber.Ctx) error {
 	obj := models.DeleteUserRequestModel{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
-		response, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
+		res, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
 			utils.LogError("[DeleteUserController.go, 18, InputError] " + err.Error())
 		}
-		return c.Send(response)
+		return c.Send(res)
 	}
 	if !checkDeleteUserRequest(obj) {
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	status := OwnSQL.MySQL_loginWithToken_ROOT(obj.Username, obj.Password, obj.Token)
 	if status {
@@ -39,8 +39,8 @@ func DeleteUserController(c *fiber.Ctx) error {
 			return c.Send(resp)
 		}
 	} else {
-		resp, _ := models.GetJsonResponse("You do not have the permission to execute this", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("You do not have the permission to execute this", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 }
 

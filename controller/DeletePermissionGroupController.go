@@ -21,11 +21,11 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 	obj := DeletePermissionGroupRequest{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
-		response, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
+		res, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
 			utils.LogError("[DeletePermissionGroupController.go, 25, InputError] " + err.Error())
 		}
-		return c.Send(response)
+		return c.Send(res)
 	}
 	if !checkDeletePermissionGroupRequest(obj) {
 		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)

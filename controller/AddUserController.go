@@ -14,27 +14,27 @@ func AddUserController(c *fiber.Ctx) error {
 	obj := models.AddUserRequestModel{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
-		response, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
+		res, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
 			utils.LogError("[AddUserController.go, 19, InputError] " + err.Error())
 		}
-		return c.Send(response)
+		return c.Send(res)
 	}
 	if !checkAddUserRequest(obj) {
-		resp, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if !checkUsernameLength(obj.User.Username) {
-		resp, _ := models.GetJsonResponse("This username is too long", "alert alert-warning", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("This username is too long", "alert alert-warning", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if !checkPasswordLength(obj.User.Username) {
-		resp, _ := models.GetJsonResponse("This password is too long", "alert alert-warning", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("This password is too long", "alert alert-warning", "ok", "None", 200)
+		return c.Send(res)
 	}
 	if !checkEmail(obj.User.Mail) {
-		resp, _ := models.GetJsonResponse("Your mail is not a email-address", "alert alert-warning", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Your mail is not a email-address", "alert alert-warning", "ok", "None", 200)
+		return c.Send(res)
 	}
 	status := OwnSQL.MySQL_loginWithToken_ROOT(obj.Username, obj.Password, obj.Token)
 	hash := utils.HashWithSalt(obj.User.Password)
@@ -53,11 +53,11 @@ func AddUserController(c *fiber.Ctx) error {
 		stmt.Exec(obj.User.Username, hash, "None", perms, obj.User.Root, obj.User.Mail, obj.User.Username, obj.User.Status)
 		defer stmt.Close()
 		defer conn.Close()
-		resp, _ := models.GetJsonResponse("Successfully added user", "alert alert-success", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("Successfully added user", "alert alert-success", "ok", "None", 200)
+		return c.Send(res)
 	} else {
-		resp, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
-		return c.Send(resp)
+		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	}
 }
 

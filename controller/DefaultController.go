@@ -6,10 +6,10 @@ import (
 )
 
 func DefaultController(c *fiber.Ctx) error {
-	response, err := models.GetJsonResponse("API online", "alert alert-success", "ok", "None", 200)
+	res, err := models.GetJsonResponse("API online", "alert alert-success", "ok", "None", 200)
 	if err != nil {
 		panic(err)
 	}
-	return c.Send(response)
+	return c.Send(res)
 
 }
