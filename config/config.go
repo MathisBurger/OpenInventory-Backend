@@ -13,8 +13,10 @@ type database struct {
 }
 
 type serverconfig struct {
-	Prefork bool   `json:"prefork"`
-	Port    string `json:"port"`
+	Prefork            bool              `json:"prefork"`
+	Port               string            `json:"port"`
+	WebEndpoints       map[string]string `json:"web-endpoints"`
+	WebIndexEntrypoint string            `json:"web-index-entrypoint"`
 }
 
 type Config struct {

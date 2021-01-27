@@ -10,6 +10,11 @@
 
   "server-config": {
     "prefork": false,
-    "port": "8080"
+    "port": "8080",
+    "web-endpoints": {
+    "/": "./web",
+  "/login": "./web/index.html",
+  "/dashboard": "./web/index.html"
+    }
   }
 }

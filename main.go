@@ -21,7 +21,7 @@ func main() {
 		app.Use(logger.New())
 		app.Use(cors.New())
 
-		initWebpaths(app)
+		initWebpaths(app, config)
 
 		// Basic GET Requests
 		app.Get("/api", controller.DefaultController)
@@ -63,8 +63,9 @@ func main() {
 	}
 }
 
-func initWebpaths(app *fiber.App) {
-	app.Static("/", "./web/index.html")
-	app.Static("/login", "./web/index.html")
-	app.Static("/dashboard", "./web/index.html")
+func initWebpaths(app *fiber.App, cfg *config2.Config) {
+	for k, v := range cfg.ServerCFG.WebEndpoints {
+		app.Static(k, v)
+		fmt.Println("initialized '" + k + "' as web-endpoint at '" + v + "'")
+	}
 }
