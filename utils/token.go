@@ -8,7 +8,7 @@ import (
 
 func GenerateToken() string {
 	rand.Seed(time.Now().Unix())
-	charSet := "abcdedfghijklmnopqrstuvwxyzABCDEFHGIJKLMNOPQRSTUVWXYZ0123456789#"
+	charSet := "abcdedfghijklmnopqrstuvwxyzABCDEFHGIJKLMNOPQRSTUVWXYZ0123456789"
 	var output strings.Builder
 	length := 32
 	for i := 0; i < length; i++ {

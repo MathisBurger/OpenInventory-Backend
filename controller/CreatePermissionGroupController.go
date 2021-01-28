@@ -85,5 +85,5 @@ func checkPermissionGroupInput(obj CreatePermissionGroupRequest) []byte {
 		return res
 	}
 	defer conn.Close()
-	return []byte{}
+	return nil
 }

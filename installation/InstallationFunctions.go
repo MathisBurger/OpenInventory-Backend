@@ -101,7 +101,7 @@ func GenerateTable(conn *sql.DB, name string) {
 		conn.Exec(creationString)
 		break
 	case "inv_permissions":
-		creationString := "CREATE TABLE `inv_permissions` ( `ID` INT NOT NULL AUTO_INCREMENT , `name` TEXT NOT NULL , `color` VARCHAR(9) NOT NULL , `permission-level` INT NOT NULL , PRIMARY KEY (`ID`))"
+		creationString := "CREATE TABLE `inv_permissions` ( `ID` INT NOT NULL AUTO_INCREMENT , `name` TEXT NOT NULL , `color` VARCHAR(11) NOT NULL , `permission-level` INT NOT NULL , PRIMARY KEY (`ID`))"
 		conn.Exec(creationString)
 		InsertDefaultPermissionGroups(conn)
 		break
