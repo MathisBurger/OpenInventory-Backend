@@ -83,9 +83,13 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 			if err != nil {
 				utils.LogError("[DeletePermissionGroupController.go, 84, SQL-StatementError] " + err.Error())
 			}
+			defer resp.Close()
+			defer stmt.Close()
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("Successfully deleted PermissionGroup", "alert alert-success", "ok", "None", 200)
 			return c.Send(res)
 		} else {
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 			return c.Send(res)
 		}

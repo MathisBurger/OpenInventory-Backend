@@ -85,13 +85,22 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 						res, _ := models.GetJsonResponse("Error while changing column name", "alert alert-danger", "ok", "None", 200)
 						return c.Send(res)
 					}
+					defer resp.Close()
+					defer stmt.Close()
+					defer conn.Close()
 					res, _ := models.GetJsonResponse("Successfully changed column name", "alert alert-success", "ok", "None", 200)
 					return c.Send(res)
 				}
 			}
+			defer resp.Close()
+			defer stmt.Close()
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("Column not found", "alert alert-warning", "ok", "None", 200)
 			return c.Send(res)
 		} else {
+			defer resp.Close()
+			defer stmt.Close()
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("You do not have the permission to do this", "alert alert-warning", "ok", "None", 200)
 			return c.Send(res)
 		}

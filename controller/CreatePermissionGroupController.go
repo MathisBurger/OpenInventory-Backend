@@ -64,6 +64,8 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 		if err != nil {
 			utils.LogError("[CreatePermissionGroupController.go, 61, SQL-StatementError] " + err.Error())
 		}
+		defer stmt.Close()
+		defer conn.Close()
 		res, _ := models.GetJsonResponse("Created permissiongroup", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
 	}

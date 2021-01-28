@@ -59,6 +59,9 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 			min_perm_lvl = cache.MinPermlvl
 		}
 		if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, min_perm_lvl, "") {
+			defer resp.Close()
+			defer stmt.Close()
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("Your permission is not high enough to view this table", "alert alert-danger", "ok", "None", 200)
 			return c.Send(res)
 		} else {
@@ -79,6 +82,9 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 				}
 				response = append(response, cache)
 			}
+			defer resp.Close()
+			defer stmt.Close()
+			defer conn.Close()
 			return c.JSON(ListAllPermGroupsOfTableResponse{
 				response,
 				"Successfully fetched all permissiongroups of table",

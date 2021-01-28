@@ -54,19 +54,21 @@ func EditTableMinPermLvlController(c *fiber.Ctx) error {
 			}
 			minPermLvl = cache.MinPermLvl
 		}
+		defer resp.Close()
 		if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
+			defer stmt.Close()
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-warning", "ok", "None", 200)
 			return c.Send(res)
 		}
-		if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, obj.NewLvl, "") {
-			res, _ := models.GetJsonResponse("You can not set teh table level higher then yours", "alert alert-danger", "ok", "None", 200)
-			return c.Send(res)
-		}
+
 		stmt, err = conn.Prepare("UPDATE `inv_tables` SET `min-perm-lvl`=? WHERE `name`=?;")
 		if err != nil {
 			utils.LogError("[EditTableMinPermLvlController.go, 67, SQL-StatementError] " + err.Error())
 		}
 		stmt.Exec(obj.NewLvl, obj.TableName)
+		defer stmt.Close()
+		defer conn.Close()
 		res, _ := models.GetJsonResponse("Successfully updated minimum permission level of table", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
 	}

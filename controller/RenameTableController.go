@@ -65,9 +65,15 @@ func RenameTableController(c *fiber.Ctx) error {
 			}
 			stmt, _ = conn.Prepare("UPDATE `inv_tables` SET `name`=? WHERE `name`=?")
 			stmt.Exec(obj.NewName, obj.TableName)
+			defer resp.Close()
+			defer stmt.Close()
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("Successfully updated tablename", "alert alert-success", "ok", "None", 200)
 			return c.Send(res)
 		} else {
+			defer resp.Close()
+			defer stmt.Close()
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 			return c.Send(res)
 		}

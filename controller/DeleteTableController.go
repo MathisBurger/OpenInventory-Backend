@@ -56,6 +56,8 @@ func DeleteTableController(c *fiber.Ctx) error {
 			defer conn.Close()
 			return c.Send(res)
 		} else {
+			defer stmt.Close()
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 			return c.Send(res)
 		}

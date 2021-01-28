@@ -36,6 +36,7 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 	} else {
 		conn := OwnSQL.GetConn()
 		if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, OwnSQL.GetHighestPermission(conn, obj.User), "") {
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-warning", "Failed", "None", 200)
 			return c.Send(res)
 		} else {
@@ -73,6 +74,9 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 				utils.LogError("[RemoveUserFromPermissionGroupController.go, 57, SQL-StatementError] " + err.Error())
 			}
 			stmt.Exec(newPerms, obj.User)
+			defer resp.Close()
+			defer stmt.Close()
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("Successfully removed permission from user", "alert alert-success", "ok", "None", 200)
 			return c.Send(res)
 		}

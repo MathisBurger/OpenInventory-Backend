@@ -51,6 +51,9 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 			aff, _ := stmt.Exec(obj.RowID)
 			aff_res, _ := aff.RowsAffected()
 			if aff_res == 0 {
+				defer resp.Close()
+				defer stmt.Close()
+				defer conn.Close()
 				res, _ := models.GetJsonResponse("EntryID not found", "alert alert-warning", "ok", "None", 200)
 				return c.Send(res)
 			}
@@ -77,6 +80,8 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 			res, _ := models.GetJsonResponse("Successfully deleted entry", "alert alert-success", "ok", "None", 200)
 			return c.Send(res)
 		} else {
+			defer stmt.Close()
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
 			return c.Send(res)
 		}

@@ -78,9 +78,13 @@ func EditTableEntryController(c *fiber.Ctx) error {
 				resp, _ := models.GetJsonResponse("Illegal row-map", "alert alert-danger", "ok", "None", 200)
 				return c.Send(resp)
 			}
+			defer stmt.Close()
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("Successfully updated entry", "alert alert-success", "ok", "None", 200)
 			return c.Send(res)
 		} else {
+			defer stmt.Close()
+			defer conn.Close()
 			res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 			return c.Send(res)
 		}

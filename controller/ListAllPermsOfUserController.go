@@ -81,6 +81,9 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 				response = append(response, cache)
 			}
 		}
+		defer resp.Close()
+		defer stmt.Close()
+		defer conn.Close()
 		return c.JSON(ListAllPermsOfUserResponse{
 			"Successfully fetched all user permissions",
 			response,

@@ -121,6 +121,9 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 			defer conn.Close()
 			return true
 		} else {
+			defer resp.Close()
+			defer stmt.Close()
+			defer conn.Close()
 			return false
 		}
 	}

@@ -48,6 +48,9 @@ func ListAllPermissionGroupsController(c *fiber.Ctx) error {
 			}
 			perms = append(perms, cache)
 		}
+		defer resp.Close()
+		defer stmt.Close()
+		defer conn.Close()
 		return c.JSON(ListAllPermissionGroupsResponse{
 			"Successfully fetched all permission groups",
 			perms,
