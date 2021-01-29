@@ -13,25 +13,25 @@ func CheckCredsController(c *fiber.Ctx) error {
 	obj := models.LoginWithTokenRequest{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
-		res, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
+		res, err := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
 			utils.LogError("[CheckCredsController.go, 18, InputError] " + err.Error())
 		}
 		return c.Send(res)
 	}
 	if !checkCheckCredsRequestModel(obj) {
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	status := OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token)
+	status := OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token)
 	if status {
-		res, err := models.GetJsonResponse("Login successful", "alert alert-success", "ok", "None", 200)
+		res, err := models.GetJSONResponse("Login successful", "alert alert-success", "ok", "None", 200)
 		if err != nil {
 			utils.LogError("[CheckCredsController.go, 30, ParsingError] " + err.Error())
 		}
 		return c.Send(res)
 	} else {
-		res, err := models.GetJsonResponse("Login failed", "alert alert-warning", "ok", "None", 200)
+		res, err := models.GetJSONResponse("Login failed", "alert alert-warning", "ok", "None", 200)
 		if err != nil {
 			utils.LogError("[CheckCredsController.go, 36, ParsingError] " + err.Error())
 		}

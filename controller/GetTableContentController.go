@@ -15,15 +15,15 @@ func GetTableContentController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[GetTableContentController.go, 17, InputError] " + err.Error())
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkGetTableContentRequest(obj) {
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-warning", "Failed", "None", 200)
+	if !OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-warning", "Failed", "None", 200)
 		return c.Send(res)
 	} else {
 		stmt := "SELECT * FROM `table_" + obj.TableName + "`;"
@@ -31,7 +31,7 @@ func GetTableContentController(c *fiber.Ctx) error {
 		json, err := utils.QueryToJson(conn, stmt)
 		if err != nil {
 			utils.LogError("[GetTableContentController.go, 33, SQL-StatementError] " + err.Error())
-			res, _ := models.GetJsonResponse("Invalid table name", "alert alert-danger", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("Invalid table name", "alert alert-danger", "ok", "None", 200)
 			return c.Send(res)
 		}
 		defer conn.Close()

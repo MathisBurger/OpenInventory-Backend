@@ -14,14 +14,14 @@ func ListUserController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[ListUserController.go, 16, InputError] " + err.Error())
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkCheckCredsRequestModel(obj) {
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
+	if OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		conn := OwnSQL.GetConn()
 		stmt, _ := conn.Prepare("SELECT `username`, `root`, `mail`, `register_date`, `status` FROM `inv_users`;")
 		res, _ := stmt.Query()
@@ -43,7 +43,7 @@ func ListUserController(c *fiber.Ctx) error {
 			User:    answers,
 		})
 	}
-	res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 	return c.Send(res)
 
 }

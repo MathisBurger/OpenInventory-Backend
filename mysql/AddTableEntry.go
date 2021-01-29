@@ -16,7 +16,7 @@ type Entries struct {
 }
 
 func AddTableEntry(displayname string, password string, token string, Tablename string, row map[string]interface{}) bool {
-	perms := MySQL_loginWithToken(displayname, password, token)
+	perms := MysqlLoginWithToken(displayname, password, token)
 	if !perms {
 		return false
 	} else {
@@ -76,7 +76,7 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 
 			}
 			builder.WriteString(") VALUES (NULL, ")
-			for i, _ := range columns {
+			for i := range columns {
 				if i == (len(columns) - 1) {
 					builder.WriteString("?")
 					break

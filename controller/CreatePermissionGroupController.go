@@ -27,15 +27,15 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[CreatePermissionGroupController.go, 28, InputError] " + err.Error())
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkCreatePermissionGroupRequest(obj) {
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	if !OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	} else {
 		permGroupInputStatus := checkPermissionGroupInput(obj)
@@ -54,7 +54,7 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 		}
 		defer resp.Close()
 		if counter > 0 {
-			res, _ := models.GetJsonResponse("This group already exists", "alert alert-warning", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("This group already exists", "alert alert-warning", "ok", "None", 200)
 			return c.Send(res)
 		}
 		stmt, err = conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, ?, ?, ?);")
@@ -67,7 +67,7 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 		}
 		defer stmt.Close()
 		defer conn.Close()
-		res, _ := models.GetJsonResponse("Created permissiongroup", "alert alert-success", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Created permissiongroup", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
 	}
 }
@@ -78,13 +78,13 @@ func checkCreatePermissionGroupRequest(obj CreatePermissionGroupRequest) bool {
 
 func checkPermissionGroupInput(obj CreatePermissionGroupRequest) []byte {
 	if strings.Contains(obj.PermissionInfo.Name, ";") {
-		res, _ := models.GetJsonResponse("';' is not allowed in group name", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("';' is not allowed in group name", "alert alert-danger", "ok", "None", 200)
 		return res
 	}
 	conn := OwnSQL.GetConn()
 	if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, obj.PermissionInfo.PermissionLevel, "") {
 		defer conn.Close()
-		res, _ := models.GetJsonResponse("Your permission is not high enough", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Your permission is not high enough", "alert alert-danger", "ok", "None", 200)
 		return res
 	}
 	defer conn.Close()

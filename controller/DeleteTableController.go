@@ -14,14 +14,14 @@ func DeleteTableController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[DeleteTableController.go, 16, InputError] " + err.Error())
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkDeleteTableRequest(obj) {
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
+	if OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		conn := OwnSQL.GetConn()
 		stmt, _ := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
 		type cacheStruct struct {
@@ -46,25 +46,25 @@ func DeleteTableController(c *fiber.Ctx) error {
 			_, err = stmt.Exec()
 			if err != nil {
 				utils.LogError("[DeleteTableController.go, 48, SQL-StatementExecutionError] " + err.Error())
-				res, _ := models.GetJsonResponse("This table does not exist", "alert alert-warning", "ok", "None", 200)
+				res, _ := models.GetJSONResponse("This table does not exist", "alert alert-warning", "ok", "None", 200)
 				return c.Send(res)
 			}
 			stmt, _ = conn.Prepare("DELETE FROM `inv_tables` WHERE `name`=?")
 			stmt.Exec(obj.TableName)
-			res, _ := models.GetJsonResponse("Successfully deleted table", "alert alert-success", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("Successfully deleted table", "alert alert-success", "ok", "None", 200)
 			defer stmt.Close()
 			defer conn.Close()
 			return c.Send(res)
 		}
 		defer stmt.Close()
 		defer conn.Close()
-		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 
-	} else {
-		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
-		return c.Send(res)
 	}
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	return c.Send(res)
+
 }
 
 func checkDeleteTableRequest(obj models.DeleteTableRequestModel) bool {

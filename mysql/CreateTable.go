@@ -8,52 +8,51 @@ import (
 )
 
 func CreateTable(displayname string, password string, token string, Tablename string, RowConfig []models.RowConfigModel, MinPermLvl int) bool {
-	perms := MySQL_loginWithToken(displayname, password, token)
+	perms := MysqlLoginWithToken(displayname, password, token)
 	if !perms {
 		return false
-	} else {
-		if !CheckColumnNames(RowConfig) {
-			return false
-		}
-		cache := ""
-		for _, row := range RowConfig {
-			typeString := checkType(row)
-			if typeString == "" {
-				fmt.Println(typeString)
-				return false
-			}
-			if strings.Compare(row.Name, "") == 0 {
-				return false
-			}
-			cache += typeString
-		}
-		chars := []rune(cache)
-		index := len(chars) - 1
-		finStr := ""
-		for i, el := range chars {
-			if i == index {
-				break
-			} else {
-				finStr += string(el)
-			}
-		}
-		creationString := "CREATE TABLE IF NOT EXISTS `table_" + Tablename + "` (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, " + finStr + ");"
-		conn := GetConn()
-		if !CheckUserHasHigherPermission(conn, displayname, MinPermLvl, "") {
-			return false
-		}
-		stmt, err := conn.Prepare(creationString)
-		if err != nil {
-			utils.LogError("[CreateTable.go, 44, SQL-StatementError] " + err.Error())
-			return false
-		}
-		stmt.Exec()
-		stmt, _ = conn.Prepare("INSERT INTO `inv_tables` (`id`, `name`, `entries`, `min-perm-lvl`, `created_at`) VALUES (NULL, ?, '0', ?, current_timestamp);")
-		stmt.Exec(Tablename, MinPermLvl)
-		defer stmt.Close()
-		defer conn.Close()
-		return true
 	}
+	if !CheckColumnNames(RowConfig) {
+		return false
+	}
+	cache := ""
+	for _, row := range RowConfig {
+		typeString := checkType(row)
+		if typeString == "" {
+			fmt.Println(typeString)
+			return false
+		}
+		if strings.Compare(row.Name, "") == 0 {
+			return false
+		}
+		cache += typeString
+	}
+	chars := []rune(cache)
+	index := len(chars) - 1
+	finStr := ""
+	for i, el := range chars {
+		if i == index {
+			break
+		} else {
+			finStr += string(el)
+		}
+	}
+	creationString := "CREATE TABLE IF NOT EXISTS `table_" + Tablename + "` (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, " + finStr + ");"
+	conn := GetConn()
+	if !CheckUserHasHigherPermission(conn, displayname, MinPermLvl, "") {
+		return false
+	}
+	stmt, err := conn.Prepare(creationString)
+	if err != nil {
+		utils.LogError("[CreateTable.go, 44, SQL-StatementError] " + err.Error())
+		return false
+	}
+	stmt.Exec()
+	stmt, _ = conn.Prepare("INSERT INTO `inv_tables` (`id`, `name`, `entries`, `min-perm-lvl`, `created_at`) VALUES (NULL, ?, '0', ?, current_timestamp);")
+	stmt.Exec(Tablename, MinPermLvl)
+	defer stmt.Close()
+	defer conn.Close()
+	return true
 }
 
 func checkType(row models.RowConfigModel) string {

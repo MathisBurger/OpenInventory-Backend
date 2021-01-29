@@ -22,15 +22,15 @@ func RenameTableController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[RenameTableController.go, 24, InputError] " + err.Error())
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkRenameTableRequest(obj) {
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	if !OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	} else {
 		conn := OwnSQL.GetConn()
@@ -60,7 +60,7 @@ func RenameTableController(c *fiber.Ctx) error {
 			_, err = stmt.Exec()
 			if err != nil {
 				utils.LogError("[RenameTableController.go, 43, SQL-StatementError] " + err.Error())
-				res, _ := models.GetJsonResponse("This table does not exists", "alert alert-warning", "ok", "None", 200)
+				res, _ := models.GetJSONResponse("This table does not exists", "alert alert-warning", "ok", "None", 200)
 				return c.Send(res)
 			}
 			stmt, _ = conn.Prepare("UPDATE `inv_tables` SET `name`=? WHERE `name`=?")
@@ -68,13 +68,13 @@ func RenameTableController(c *fiber.Ctx) error {
 			defer resp.Close()
 			defer stmt.Close()
 			defer conn.Close()
-			res, _ := models.GetJsonResponse("Successfully updated tablename", "alert alert-success", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("Successfully updated tablename", "alert alert-success", "ok", "None", 200)
 			return c.Send(res)
 		} else {
 			defer resp.Close()
 			defer stmt.Close()
 			defer conn.Close()
-			res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 			return c.Send(res)
 		}
 	}

@@ -7,7 +7,7 @@ import (
 
 type MessageModel map[string]string
 
-func GetJsonResponse(
+func GetJSONResponse(
 	message string,
 	alert string,
 	status string,

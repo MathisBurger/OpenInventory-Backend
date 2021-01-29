@@ -24,21 +24,21 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[RenameTableColumnController.go, 26, InputError] " + err.Error())
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkRenameTableColumnRequest(obj) {
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "Failed", "None", 200)
+	if !OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "Failed", "None", 200)
 		return c.Send(res)
 	} else {
 		conn := OwnSQL.GetConn()
 		columns := OwnSQL.GetTableColumns(obj.Username, obj.Password, obj.Token, obj.TableName)
 		if len(columns) == 0 {
-			resp, _ := models.GetJsonResponse("You do not havew the permission to perform this", "alert alert-danger", "ok", "None", 200)
+			resp, _ := models.GetJSONResponse("You do not havew the permission to perform this", "alert alert-danger", "ok", "None", 200)
 			return c.Send(resp)
 		}
 		stmt, _ := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
@@ -76,32 +76,32 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 						"(" + length + ") NULL DEFAULT NULL;")
 					if err != nil {
 						utils.LogError("[RenameTableColumnController.go, 55, SQL-StatementError] " + err.Error())
-						res, _ := models.GetJsonResponse("Error with column name statement", "alert alert-danger", "ok", "None", 200)
+						res, _ := models.GetJSONResponse("Error with column name statement", "alert alert-danger", "ok", "None", 200)
 						return c.Send(res)
 					}
 					_, err = stmt.Exec()
 					if err != nil {
 						utils.LogError("[RenameTableColumnController.go, 61, SQL-StatementError] " + err.Error())
-						res, _ := models.GetJsonResponse("Error while changing column name", "alert alert-danger", "ok", "None", 200)
+						res, _ := models.GetJSONResponse("Error while changing column name", "alert alert-danger", "ok", "None", 200)
 						return c.Send(res)
 					}
 					defer resp.Close()
 					defer stmt.Close()
 					defer conn.Close()
-					res, _ := models.GetJsonResponse("Successfully changed column name", "alert alert-success", "ok", "None", 200)
+					res, _ := models.GetJSONResponse("Successfully changed column name", "alert alert-success", "ok", "None", 200)
 					return c.Send(res)
 				}
 			}
 			defer resp.Close()
 			defer stmt.Close()
 			defer conn.Close()
-			res, _ := models.GetJsonResponse("Column not found", "alert alert-warning", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("Column not found", "alert alert-warning", "ok", "None", 200)
 			return c.Send(res)
 		} else {
 			defer resp.Close()
 			defer stmt.Close()
 			defer conn.Close()
-			res, _ := models.GetJsonResponse("You do not have the permission to do this", "alert alert-warning", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("You do not have the permission to do this", "alert alert-warning", "ok", "None", 200)
 			return c.Send(res)
 		}
 	}

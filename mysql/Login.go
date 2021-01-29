@@ -21,7 +21,7 @@ type DisplayNameStruct struct {
 	Displayname string `json:"displayname"`
 }
 
-func MySQL_login(username string, password string) (bool, string) {
+func MysqlLogin(username string, password string) (bool, string) {
 	conn := GetConn()
 	hash := utils.HashWithSalt(password)
 	stmt, err := conn.Prepare("SELECT * FROM inv_users WHERE displayname=? AND password=?")
@@ -52,13 +52,12 @@ func MySQL_login(username string, password string) (bool, string) {
 		token := utils.GenerateToken()
 		_, _ = stmt.Exec(token, username)
 		return true, token
-	} else {
-		return false, ""
 	}
+	return false, ""
 
 }
 
-func MySQL_loginWithToken(username string, password string, token string) bool {
+func MysqlLoginWithToken(username string, password string, token string) bool {
 	conn := GetConn()
 	hash := utils.HashWithSalt(password)
 	stmt, err := conn.Prepare("SELECT `displayname` FROM inv_users WHERE displayname=? AND password=? AND token=?")
@@ -89,7 +88,7 @@ func MySQL_loginWithToken(username string, password string, token string) bool {
 
 }
 
-func MySQL_loginWithToken_ROOT(username string, password string, token string) bool {
+func MysqlLoginWithTokenRoot(username string, password string, token string) bool {
 	conn := GetConn()
 	hash := utils.HashWithSalt(password)
 	stmt, err := conn.Prepare("SELECT * FROM inv_users WHERE displayname=? AND password=? AND token=? AND root=1;")

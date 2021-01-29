@@ -23,15 +23,15 @@ func EditTableEntryController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[EditTableEntryController.go, 25, InputError] " + err.Error())
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkEditTableEntryRequest(obj) {
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 	conn := OwnSQL.GetConn()
-	if OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
+	if OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		stmt, _ := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
 		type cacheStruct struct {
 			MinPermLvl int `json:"min-perm-lvl"`
@@ -75,21 +75,21 @@ func EditTableEntryController(c *fiber.Ctx) error {
 			_, err = stmt.Exec(values...)
 			if err != nil {
 				utils.LogError("[EditTableEntryController.go, 55, SQL-StatementError] " + err.Error())
-				resp, _ := models.GetJsonResponse("Illegal row-map", "alert alert-danger", "ok", "None", 200)
+				resp, _ := models.GetJSONResponse("Illegal row-map", "alert alert-danger", "ok", "None", 200)
 				return c.Send(resp)
 			}
 			defer stmt.Close()
 			defer conn.Close()
-			res, _ := models.GetJsonResponse("Successfully updated entry", "alert alert-success", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("Successfully updated entry", "alert alert-success", "ok", "None", 200)
 			return c.Send(res)
 		} else {
 			defer stmt.Close()
 			defer conn.Close()
-			res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 			return c.Send(res)
 		}
 	} else {
-		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 }

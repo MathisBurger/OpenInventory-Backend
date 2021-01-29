@@ -15,17 +15,17 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[RemoveTableEntryController.go, 17, InputError] " + err.Error())
-		res, err := models.GetJsonResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
+		res, err := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
 			utils.LogError("[RemoveTableEntryController.go, 20, ParsingError] " + err.Error())
 		}
 		return c.Send(res)
 	}
 	if !checkRemoveTableEntryRequest(obj) {
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
+	if OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		fmt.Println(obj)
 		conn := OwnSQL.GetConn()
 		stmt, _ := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
@@ -49,12 +49,12 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 		if OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
 			stmt, _ = conn.Prepare("DELETE FROM `table_" + obj.TableName + "` WHERE `id`=?")
 			aff, _ := stmt.Exec(obj.RowID)
-			aff_res, _ := aff.RowsAffected()
-			if aff_res == 0 {
+			rowsAffected, _ := aff.RowsAffected()
+			if rowsAffected == 0 {
 				defer resp.Close()
 				defer stmt.Close()
 				defer conn.Close()
-				res, _ := models.GetJsonResponse("EntryID not found", "alert alert-warning", "ok", "None", 200)
+				res, _ := models.GetJSONResponse("EntryID not found", "alert alert-warning", "ok", "None", 200)
 				return c.Send(res)
 			}
 			stmt, _ = conn.Prepare("SELECT `entries` FROM `inv_tables` WHERE `name`=?")
@@ -71,22 +71,21 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 				}
 				entries = entry.Entries
 			}
-			entries -= 1
+			entries--
 			stmt, _ = conn.Prepare("UPDATE `inv_tables` SET `entries`=? WHERE `name`=?;")
 			stmt.Exec(entries, obj.TableName)
 			defer resp.Close()
 			defer stmt.Close()
 			defer conn.Close()
-			res, _ := models.GetJsonResponse("Successfully deleted entry", "alert alert-success", "ok", "None", 200)
-			return c.Send(res)
-		} else {
-			defer stmt.Close()
-			defer conn.Close()
-			res, _ := models.GetJsonResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("Successfully deleted entry", "alert alert-success", "ok", "None", 200)
 			return c.Send(res)
 		}
+		defer stmt.Close()
+		defer conn.Close()
+		res, _ := models.GetJSONResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
 	} else {
-		res, _ := models.GetJsonResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 }

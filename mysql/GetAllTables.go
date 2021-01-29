@@ -6,7 +6,7 @@ import (
 )
 
 func GetAllTables(username string, password string, token string) []models.TableModel {
-	status := MySQL_loginWithToken(username, password, token)
+	status := MysqlLoginWithToken(username, password, token)
 	if !status {
 		return []models.TableModel{}
 	} else {

@@ -14,20 +14,20 @@ func AddTableEntryController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[AddTableEntryController.go, 16, InputError] " + err.Error())
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkAddTableEntryRequest(obj) {
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 	// Login is checked in function below
 	status := OwnSQL.AddTableEntry(obj.Username, obj.Password, obj.Token, obj.TableName, obj.Row)
 	if status {
-		res, _ := models.GetJsonResponse("successful", "alert alert-success", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("successful", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
 	} else {
-		res, _ := models.GetJsonResponse("creation failed", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("creation failed", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 }

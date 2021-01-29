@@ -22,56 +22,55 @@ func EditTableMinPermLvlController(c *fiber.Ctx) error {
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
 		utils.LogError("[EditTableEntryController.go, 25, InputError] " + err.Error())
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkEditTableMinPermLvlRequest(obj) {
-		res, _ := models.GetJsonResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	if !OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
-	} else {
-		conn := OwnSQL.GetConn()
-		stmt, err := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
+	}
+	conn := OwnSQL.GetConn()
+	stmt, err := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
+	if err != nil {
+		utils.LogError("[EditTableMinPermLvlController.go, 39, SQL-StatementError] " + err.Error())
+	}
+	resp, err := stmt.Query(obj.TableName)
+	if err != nil {
+		utils.LogError("[EditTableMinPermLvlController.go, 43, SQL-StatementError] " + err.Error())
+	}
+	minPermLvl := 0
+	type cacheStruct struct {
+		MinPermLvl int `json:"min-perm-lvl"`
+	}
+	for resp.Next() {
+		var cache cacheStruct
+		err = resp.Scan(&cache.MinPermLvl)
 		if err != nil {
-			utils.LogError("[EditTableMinPermLvlController.go, 39, SQL-StatementError] " + err.Error())
+			utils.LogError("[EditTableMinPermLvlController.go, 53, SQL-StatementError] " + err.Error())
 		}
-		resp, err := stmt.Query(obj.TableName)
-		if err != nil {
-			utils.LogError("[EditTableMinPermLvlController.go, 43, SQL-StatementError] " + err.Error())
-		}
-		minPermLvl := 0
-		type cacheStruct struct {
-			MinPermLvl int `json:"min-perm-lvl"`
-		}
-		for resp.Next() {
-			var cache cacheStruct
-			err = resp.Scan(&cache.MinPermLvl)
-			if err != nil {
-				utils.LogError("[EditTableMinPermLvlController.go, 53, SQL-StatementError] " + err.Error())
-			}
-			minPermLvl = cache.MinPermLvl
-		}
-		defer resp.Close()
-		if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
-			defer stmt.Close()
-			defer conn.Close()
-			res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-warning", "ok", "None", 200)
-			return c.Send(res)
-		}
-
-		stmt, err = conn.Prepare("UPDATE `inv_tables` SET `min-perm-lvl`=? WHERE `name`=?;")
-		if err != nil {
-			utils.LogError("[EditTableMinPermLvlController.go, 67, SQL-StatementError] " + err.Error())
-		}
-		stmt.Exec(obj.NewLvl, obj.TableName)
+		minPermLvl = cache.MinPermLvl
+	}
+	defer resp.Close()
+	if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
 		defer stmt.Close()
 		defer conn.Close()
-		res, _ := models.GetJsonResponse("Successfully updated minimum permission level of table", "alert alert-success", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-warning", "ok", "None", 200)
 		return c.Send(res)
 	}
+
+	stmt, err = conn.Prepare("UPDATE `inv_tables` SET `min-perm-lvl`=? WHERE `name`=?;")
+	if err != nil {
+		utils.LogError("[EditTableMinPermLvlController.go, 67, SQL-StatementError] " + err.Error())
+	}
+	stmt.Exec(obj.NewLvl, obj.TableName)
+	defer stmt.Close()
+	defer conn.Close()
+	res, _ := models.GetJSONResponse("Successfully updated minimum permission level of table", "alert alert-success", "ok", "None", 200)
+	return c.Send(res)
 }
 
 func checkEditTableMinPermLvlRequest(obj EditTableMinPermLvlRequest) bool {
