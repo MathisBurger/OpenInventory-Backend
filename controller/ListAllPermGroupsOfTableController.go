@@ -48,7 +48,7 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 		type cacheStruct struct {
 			MinPermlvl int `json:"min-perm-lvl"`
 		}
-		var min_perm_lvl int
+		var minPermLvl int
 		resp, err := stmt.Query(obj.TableName)
 		if err != nil {
 			utils.LogError("[ListAllPermGroupsOfTableController.go, 38, SQL-StatementError] " + err.Error())
@@ -59,9 +59,9 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 			if err != nil {
 				utils.LogError("[ListAllPermGroupsOfTableController.go, 52, SQL-StatementError] " + err.Error())
 			}
-			min_perm_lvl = cache.MinPermlvl
+			minPermLvl = cache.MinPermlvl
 		}
-		if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, min_perm_lvl, "") {
+		if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
 			defer resp.Close()
 			defer stmt.Close()
 			defer conn.Close()
@@ -72,7 +72,7 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 			if err != nil {
 				utils.LogError("[ListAllPermGroupsOfTableController.go, 62, SQL-StatementError] " + err.Error())
 			}
-			resp, err = stmt.Query(min_perm_lvl)
+			resp, err = stmt.Query(minPermLvl)
 			if err != nil {
 				utils.LogError("[ListAllPermGroupsOfTableController.go, 66, SQL-StatementError] " + err.Error())
 			}

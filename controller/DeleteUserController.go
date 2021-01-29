@@ -34,10 +34,9 @@ func DeleteUserController(c *fiber.Ctx) error {
 		if aff == 0 {
 			resp, _ := models.GetJsonResponse("This user does not exist", "alert alert-warning", "ok", "None", 200)
 			return c.Send(resp)
-		} else {
-			resp, _ := models.GetJsonResponse("Successfully deleted user", "alert alert-success", "ok", "None", 200)
-			return c.Send(resp)
 		}
+		resp, _ := models.GetJsonResponse("Successfully deleted user", "alert alert-success", "ok", "None", 200)
+		return c.Send(resp)
 	} else {
 		res, _ := models.GetJsonResponse("You do not have the permission to execute this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)

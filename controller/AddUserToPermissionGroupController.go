@@ -71,7 +71,7 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 			}
 			counter := 0
 			for resp.Next() {
-				counter += 1
+				counter++
 			}
 			if counter == 0 {
 				res, _ := models.GetJsonResponse("This permissiongroup does not exist", "alert alert-warning", "ok", "None", 200)

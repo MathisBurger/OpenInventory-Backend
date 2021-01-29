@@ -61,13 +61,13 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 			}
 			perms = cache.Permissions
 		}
-		perm_names := strings.Split(perms, ";")
+		permNames := strings.Split(perms, ";")
 		var response []models.PermissionModel
 		stmt, err = conn.Prepare("SELECT * FROM `inv_permissions` WHERE `name`=?")
 		if err != nil {
 			utils.LogError("[ListAllPermsOfUserController.go, 67, SQL-StatementError] " + err.Error())
 		}
-		for _, v := range perm_names {
+		for _, v := range permNames {
 			resp, err = stmt.Query(v)
 			if err != nil {
 				utils.LogError("[ListAllPermsOfUserController.go, 72, SQL-StatementError] " + err.Error())

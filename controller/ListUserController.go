@@ -42,8 +42,8 @@ func ListUserController(c *fiber.Ctx) error {
 			Alert:   "alert alert-success",
 			User:    answers,
 		})
-	} else {
-		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
-		return c.Send(res)
 	}
+	res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	return c.Send(res)
+
 }

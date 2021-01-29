@@ -9,7 +9,6 @@ import (
 	"strings"
 )
 
-// "DeletePermissionGroupRequest"
 type DeletePermissionGroupRequest struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
@@ -17,7 +16,6 @@ type DeletePermissionGroupRequest struct {
 	GroupName string `json:"group_name"`
 }
 
-// "DeletePermissionGroupController"
 func DeletePermissionGroupController(c *fiber.Ctx) error {
 	raw := string(c.Body())
 	obj := DeletePermissionGroupRequest{}
