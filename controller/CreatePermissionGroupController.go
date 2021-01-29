@@ -37,39 +37,38 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 	if !OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
-	} else {
-		permGroupInputStatus := checkPermissionGroupInput(obj)
-		if permGroupInputStatus != nil {
-			return c.Send(permGroupInputStatus)
-		}
-		conn := OwnSQL.GetConn()
-		stmt, err := conn.Prepare("SELECT * FROM `inv_permissions` WHERE `name`=?")
-		if err != nil {
-			utils.LogError("[CreatePermissionGroupController.go, 43, SQL-StatementError] " + err.Error())
-		}
-		resp, err := stmt.Query("permission." + obj.PermissionInfo.Name)
-		counter := 0
-		for resp.Next() {
-			counter += 1
-		}
-		defer resp.Close()
-		if counter > 0 {
-			res, _ := models.GetJSONResponse("This group already exists", "alert alert-warning", "ok", "None", 200)
-			return c.Send(res)
-		}
-		stmt, err = conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, ?, ?, ?);")
-		if err != nil {
-			utils.LogError("[CreatePermissionGroupController.go, 57, SQL-StatementError] " + err.Error())
-		}
-		_, err = stmt.Exec("permission."+obj.PermissionInfo.Name, obj.PermissionInfo.ColorCode, obj.PermissionInfo.PermissionLevel)
-		if err != nil {
-			utils.LogError("[CreatePermissionGroupController.go, 61, SQL-StatementError] " + err.Error())
-		}
-		defer stmt.Close()
-		defer conn.Close()
-		res, _ := models.GetJSONResponse("Created permissiongroup", "alert alert-success", "ok", "None", 200)
+	}
+	permGroupInputStatus := checkPermissionGroupInput(obj)
+	if permGroupInputStatus != nil {
+		return c.Send(permGroupInputStatus)
+	}
+	conn := OwnSQL.GetConn()
+	stmt, err := conn.Prepare("SELECT * FROM `inv_permissions` WHERE `name`=?")
+	if err != nil {
+		utils.LogError("[CreatePermissionGroupController.go, 43, SQL-StatementError] " + err.Error())
+	}
+	resp, err := stmt.Query("permission." + obj.PermissionInfo.Name)
+	counter := 0
+	for resp.Next() {
+		counter += 1
+	}
+	defer resp.Close()
+	if counter > 0 {
+		res, _ := models.GetJSONResponse("This group already exists", "alert alert-warning", "ok", "None", 200)
 		return c.Send(res)
 	}
+	stmt, err = conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, ?, ?, ?);")
+	if err != nil {
+		utils.LogError("[CreatePermissionGroupController.go, 57, SQL-StatementError] " + err.Error())
+	}
+	_, err = stmt.Exec("permission."+obj.PermissionInfo.Name, obj.PermissionInfo.ColorCode, obj.PermissionInfo.PermissionLevel)
+	if err != nil {
+		utils.LogError("[CreatePermissionGroupController.go, 61, SQL-StatementError] " + err.Error())
+	}
+	defer stmt.Close()
+	defer conn.Close()
+	res, _ := models.GetJSONResponse("Created permissiongroup", "alert alert-success", "ok", "None", 200)
+	return c.Send(res)
 }
 
 func checkCreatePermissionGroupRequest(obj CreatePermissionGroupRequest) bool {

@@ -60,37 +60,36 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 		if utils.ContainsStr(strings.Split(permissions, ";"), obj.Permission) {
 			res, _ := models.GetJSONResponse("The user is already member of this group", "alert alert-warning", "ok", "None", 200)
 			return c.Send(res)
-		} else {
-			stmt, err = conn.Prepare("SELECT * FROM `inv_permissions` WHERE `name`=?;")
-			if err != nil {
-				utils.LogError("[AddUserToPermissionGroupController.go, 63, SQL-StatementError] " + err.Error())
-			}
-			resp, err = stmt.Query(obj.Permission)
-			if err != nil {
-				utils.LogError("[AddUserToPermissionGroupController.go, 67, SQL-StatementError] " + err.Error())
-			}
-			counter := 0
-			for resp.Next() {
-				counter++
-			}
-			if counter == 0 {
-				res, _ := models.GetJSONResponse("This permissiongroup does not exist", "alert alert-warning", "ok", "None", 200)
-				return c.Send(res)
-			}
-			finalPermissions := permissions + ";" + obj.Permission
-			stmt, err = conn.Prepare("UPDATE `inv_users` SET `permissions`=? WHERE `username`=?;")
-			if err != nil {
-				utils.LogError("[AddUserToPermissionGroupController.go, 80, SQL-StatementError] " + err.Error())
-			}
-			_, err = stmt.Exec(finalPermissions, obj.User)
-			if err != nil {
-				utils.LogError("[AddUserToPermissionGroupController.go, 84, SQL-StatementError] " + err.Error())
-			}
-			defer stmt.Close()
-			defer conn.Close()
-			res, _ := models.GetJSONResponse("User added to permissiongroup", "alert alert-success", "ok", "None", 200)
+		}
+		stmt, err = conn.Prepare("SELECT * FROM `inv_permissions` WHERE `name`=?;")
+		if err != nil {
+			utils.LogError("[AddUserToPermissionGroupController.go, 63, SQL-StatementError] " + err.Error())
+		}
+		resp, err = stmt.Query(obj.Permission)
+		if err != nil {
+			utils.LogError("[AddUserToPermissionGroupController.go, 67, SQL-StatementError] " + err.Error())
+		}
+		counter := 0
+		for resp.Next() {
+			counter++
+		}
+		if counter == 0 {
+			res, _ := models.GetJSONResponse("This permissiongroup does not exist", "alert alert-warning", "ok", "None", 200)
 			return c.Send(res)
 		}
+		finalPermissions := permissions + ";" + obj.Permission
+		stmt, err = conn.Prepare("UPDATE `inv_users` SET `permissions`=? WHERE `username`=?;")
+		if err != nil {
+			utils.LogError("[AddUserToPermissionGroupController.go, 80, SQL-StatementError] " + err.Error())
+		}
+		_, err = stmt.Exec(finalPermissions, obj.User)
+		if err != nil {
+			utils.LogError("[AddUserToPermissionGroupController.go, 84, SQL-StatementError] " + err.Error())
+		}
+		defer stmt.Close()
+		defer conn.Close()
+		res, _ := models.GetJSONResponse("User added to permissiongroup", "alert alert-success", "ok", "None", 200)
+		return c.Send(res)
 	} else {
 		defer conn.Close()
 		res, _ := models.GetJSONResponse("Your permission-level is too low", "alert alert-warning", "ok", "None", 200)

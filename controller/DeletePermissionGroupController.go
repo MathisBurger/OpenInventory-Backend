@@ -88,12 +88,10 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 		defer conn.Close()
 		res, _ := models.GetJSONResponse("Successfully deleted PermissionGroup", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
-	} else {
-		defer conn.Close()
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
-		return c.Send(res)
 	}
-
+	defer conn.Close()
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	return c.Send(res)
 }
 
 func checkDeletePermissionGroupRequest(obj DeletePermissionGroupRequest) bool {

@@ -44,9 +44,5 @@ func DeleteUserController(c *fiber.Ctx) error {
 }
 
 func checkDeleteUserRequest(obj models.DeleteUserRequestModel) bool {
-	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != "" {
-		return true
-	} else {
-		return false
-	}
+	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != ""
 }

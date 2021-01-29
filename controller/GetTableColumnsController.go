@@ -36,9 +36,5 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 }
 
 func checkGetTableColumnsRequest(obj models.GetTableColumnsRequestModel) bool {
-	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" {
-		return true
-	} else {
-		return false
-	}
+	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != ""
 }

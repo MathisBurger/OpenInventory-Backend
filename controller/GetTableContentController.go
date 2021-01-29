@@ -25,30 +25,26 @@ func GetTableContentController(c *fiber.Ctx) error {
 	if !OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-warning", "Failed", "None", 200)
 		return c.Send(res)
-	} else {
-		stmt := "SELECT * FROM `table_" + obj.TableName + "`;"
-		conn := OwnSQL.GetConn()
-		json, err := utils.QueryToJson(conn, stmt)
-		if err != nil {
-			utils.LogError("[GetTableContentController.go, 33, SQL-StatementError] " + err.Error())
-			res, _ := models.GetJSONResponse("Invalid table name", "alert alert-danger", "ok", "None", 200)
-			return c.Send(res)
-		}
-		defer conn.Close()
-		return c.JSON(models.GetTableContentResponseModel{
-			Message:    "successful",
-			Alert:      "alert alert-success",
-			Status:     "ok",
-			HttpStatus: 200,
-			Elements:   strings.ReplaceAll(strings.ReplaceAll(string(json), "\n", ""), "\t", ""),
-		})
 	}
+	stmt := "SELECT * FROM `table_" + obj.TableName + "`;"
+	conn := OwnSQL.GetConn()
+	json, err := utils.QueryToJson(conn, stmt)
+	if err != nil {
+		utils.LogError("[GetTableContentController.go, 33, SQL-StatementError] " + err.Error())
+		res, _ := models.GetJSONResponse("Invalid table name", "alert alert-danger", "ok", "None", 200)
+		return c.Send(res)
+	}
+	defer conn.Close()
+	return c.JSON(models.GetTableContentResponseModel{
+		Message:    "successful",
+		Alert:      "alert alert-success",
+		Status:     "ok",
+		HttpStatus: 200,
+		Elements:   strings.ReplaceAll(strings.ReplaceAll(string(json), "\n", ""), "\t", ""),
+	})
+
 }
 
 func checkGetTableContentRequest(obj models.GetTableContentRequestModel) bool {
-	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" {
-		return true
-	} else {
-		return false
-	}
+	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != ""
 }
