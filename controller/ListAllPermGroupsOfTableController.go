@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// request model
 type ListAllPermGroupsOfTableRequest struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
@@ -15,11 +16,13 @@ type ListAllPermGroupsOfTableRequest struct {
 	TableName string `json:"table_name"`
 }
 
+// response model
 type ListAllPermGroupsOfTableResponse struct {
 	PermGroups []models.PermissionModel `json:"perm_groups"`
 	Message    string                   `json:"message"`
 }
 
+// listAllPermGroupsOfTable endpoint
 func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 	raw := string(c.Body())
 	obj := ListAllPermGroupsOfTableRequest{}

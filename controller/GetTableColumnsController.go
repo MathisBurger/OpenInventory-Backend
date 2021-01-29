@@ -27,13 +27,12 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 	if fmt.Sprintf("%T", columns) == "bool" {
 		res, _ := models.GetJsonResponse("Error while fetching Array", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
-	} else {
-		return c.JSON(models.GetTableColumnsResponseModel{
-			Message: "successful",
-			Alert:   "alert alert-success",
-			Columns: columns,
-		})
 	}
+	return c.JSON(models.GetTableColumnsResponseModel{
+		Message: "successful",
+		Alert:   "alert alert-success",
+		Columns: columns,
+	})
 }
 
 func checkGetTableColumnsRequest(obj models.GetTableColumnsRequestModel) bool {

@@ -27,21 +27,20 @@ func GetAllTablesController(c *fiber.Ctx) error {
 	if !OwnSQL.MySQL_loginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJsonResponse("You do not have the permission to perform this", "alert alert-warning", "Failed", "None", 200)
 		return c.Send(res)
-	} else {
-		tables := OwnSQL.GetAllTables(obj.Username, obj.Password, obj.Token)
-		var compiledTables []string
-		for _, table := range tables {
-			cache := "['" + table.Name + "','" + strconv.Itoa(table.Entries) + "','" + table.CreatedAt + "','" + strconv.Itoa(table.MinPermLvl) + "']"
-			compiledTables = append(compiledTables, cache)
-		}
-		msg := ""
-		for _, str := range compiledTables {
-			msg += str + ";"
-		}
-		res, err := models.GetJsonResponse(msg, "alert alert-success", "ok", "None", 200)
-		if err != nil {
-			utils.LogError("[GetAllTablesController.go, 43, ParsingError] " + err.Error())
-		}
-		return c.Send(res)
 	}
+	tables := OwnSQL.GetAllTables(obj.Username, obj.Password, obj.Token)
+	var compiledTables []string
+	for _, table := range tables {
+		cache := "['" + table.Name + "','" + strconv.Itoa(table.Entries) + "','" + table.CreatedAt + "','" + strconv.Itoa(table.MinPermLvl) + "']"
+		compiledTables = append(compiledTables, cache)
+	}
+	msg := ""
+	for _, str := range compiledTables {
+		msg += str + ";"
+	}
+	res, err := models.GetJsonResponse(msg, "alert alert-success", "ok", "None", 200)
+	if err != nil {
+		utils.LogError("[GetAllTablesController.go, 43, ParsingError] " + err.Error())
+	}
+	return c.Send(res)
 }

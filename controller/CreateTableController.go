@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// create table endpoint
 func CreateTableController(c *fiber.Ctx) error {
 	raw := string(c.Body())
 	obj := models.CreateTableRequestModel{}
