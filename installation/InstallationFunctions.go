@@ -122,12 +122,12 @@ func InsertDefaultUser(conn *sql.DB) {
 }
 
 func InsertDefaultPermissionGroups(conn *sql.DB) {
-	stmt, err := conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, 'default.everyone', '8C8C8C', '1');")
+	stmt, err := conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, 'default.everyone', '96,97,98', '1');")
 	if err != nil {
 		utils.LogError("[InstallationFunctions.go, 126, SQL-StatementError] " + err.Error())
 	}
 	stmt.Exec()
-	stmt, err = conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, 'default.root', '8C8C8C', '100');")
+	stmt, err = conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, 'default.root', '96,97,98', '100');")
 	if err != nil {
 		utils.LogError("[InstallationFunctions.go, 131, SQL-StatementError] " + err.Error())
 	}

@@ -13,8 +13,14 @@
     "port": "8080",
     "web-endpoints": {
     "/": "./web",
-  "/login": "./web/index.html",
-  "/dashboard": "./web/index.html"
+    "/login": "./web/index.html",
+    "/dashboard": "./web/index.html",
+      "/tables": "./web/index.html",
+      "/new-table": "./web/index.html",
+      "/view-table": "./web/index.html",
+      "/permissions": "./web/index.html",
+      "/user": "./web/index.html",
+      "/system-information": "./web/index.html"
     }
   }
 }
