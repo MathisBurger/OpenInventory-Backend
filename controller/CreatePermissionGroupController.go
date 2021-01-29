@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// request of the endpoint
 type CreatePermissionGroupRequest struct {
 	Username       string `json:"username"`
 	Password       string `json:"password"`
