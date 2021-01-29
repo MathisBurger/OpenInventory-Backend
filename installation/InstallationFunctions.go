@@ -36,11 +36,10 @@ func TestMySQLConnection(cfg *config.Config) bool {
 		fmt.Println("Connection to database failed")
 		defer conn.Close()
 		return false
-	} else {
-		fmt.Println("Successfully connected to database")
-		defer conn.Close()
-		return true
 	}
+	fmt.Println("Successfully connected to database")
+	defer conn.Close()
+	return true
 }
 
 func CheckForTables(cfg *config.Config) bool {
