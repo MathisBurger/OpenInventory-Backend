@@ -90,11 +90,10 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 		defer conn.Close()
 		res, _ := models.GetJSONResponse("User added to permissiongroup", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
-	} else {
-		defer conn.Close()
-		res, _ := models.GetJSONResponse("Your permission-level is too low", "alert alert-warning", "ok", "None", 200)
-		return c.Send(res)
 	}
+	defer conn.Close()
+	res, _ := models.GetJSONResponse("Your permission-level is too low", "alert alert-warning", "ok", "None", 200)
+	return c.Send(res)
 }
 
 func checkAddUsertoPermissionGroupRequest(obj AddUserToPermissionGroupRequest) bool {

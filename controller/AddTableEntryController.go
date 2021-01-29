@@ -26,10 +26,9 @@ func AddTableEntryController(c *fiber.Ctx) error {
 	if status {
 		res, _ := models.GetJSONResponse("successful", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
-	} else {
-		res, _ := models.GetJSONResponse("creation failed", "alert alert-danger", "ok", "None", 200)
-		return c.Send(res)
 	}
+	res, _ := models.GetJSONResponse("creation failed", "alert alert-danger", "ok", "None", 200)
+	return c.Send(res)
 }
 
 func checkAddTableEntryRequest(obj models.AddTableEntryRequestModel) bool {

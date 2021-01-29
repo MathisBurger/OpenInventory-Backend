@@ -87,10 +87,9 @@ func EditTableEntryController(c *fiber.Ctx) error {
 		defer conn.Close()
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
-	} else {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
-		return c.Send(res)
 	}
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	return c.Send(res)
 }
 
 func checkEditTableEntryRequest(obj editTableEntryRequestModel) bool {

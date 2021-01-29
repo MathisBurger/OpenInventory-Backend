@@ -84,10 +84,9 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 		defer conn.Close()
 		res, _ := models.GetJSONResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
-	} else {
-		res, _ := models.GetJSONResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
-		return c.Send(res)
 	}
+	res, _ := models.GetJSONResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
+	return c.Send(res)
 }
 
 func checkRemoveTableEntryRequest(obj models.RemoveTableEntryRequestModel) bool {

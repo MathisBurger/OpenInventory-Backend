@@ -17,11 +17,7 @@ type Table struct {
 
 func config_exists() bool {
 	_, err := ioutil.ReadFile(cfg)
-	if err != nil {
-		return false
-	} else {
-		return true
-	}
+	return err == nil
 }
 
 func GetConfigContent() string {

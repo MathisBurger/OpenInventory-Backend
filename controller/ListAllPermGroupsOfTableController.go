@@ -67,32 +67,31 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 		defer conn.Close()
 		res, _ := models.GetJSONResponse("Your permission is not high enough to view this table", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
-	} else {
-		stmt, err = conn.Prepare("SELECT * FROM `inv_permissions` WHERE `permission-level`>=?")
-		if err != nil {
-			utils.LogError("[ListAllPermGroupsOfTableController.go, 62, SQL-StatementError] " + err.Error())
-		}
-		resp, err = stmt.Query(minPermLvl)
-		if err != nil {
-			utils.LogError("[ListAllPermGroupsOfTableController.go, 66, SQL-StatementError] " + err.Error())
-		}
-		var response []models.PermissionModel
-		for resp.Next() {
-			var cache models.PermissionModel
-			err = resp.Scan(&cache.ID, &cache.Name, &cache.Color, &cache.PermissionLevel)
-			if err != nil {
-				utils.LogError("[ListAllPermsOfUserController.go, 78, SQL-StatementError] " + err.Error())
-			}
-			response = append(response, cache)
-		}
-		defer resp.Close()
-		defer stmt.Close()
-		defer conn.Close()
-		return c.JSON(ListAllPermGroupsOfTableResponse{
-			response,
-			"Successfully fetched all permissiongroups of table",
-		})
 	}
+	stmt, err = conn.Prepare("SELECT * FROM `inv_permissions` WHERE `permission-level`>=?")
+	if err != nil {
+		utils.LogError("[ListAllPermGroupsOfTableController.go, 62, SQL-StatementError] " + err.Error())
+	}
+	resp, err = stmt.Query(minPermLvl)
+	if err != nil {
+		utils.LogError("[ListAllPermGroupsOfTableController.go, 66, SQL-StatementError] " + err.Error())
+	}
+	var response []models.PermissionModel
+	for resp.Next() {
+		var cache models.PermissionModel
+		err = resp.Scan(&cache.ID, &cache.Name, &cache.Color, &cache.PermissionLevel)
+		if err != nil {
+			utils.LogError("[ListAllPermsOfUserController.go, 78, SQL-StatementError] " + err.Error())
+		}
+		response = append(response, cache)
+	}
+	defer resp.Close()
+	defer stmt.Close()
+	defer conn.Close()
+	return c.JSON(ListAllPermGroupsOfTableResponse{
+		response,
+		"Successfully fetched all permissiongroups of table",
+	})
 }
 
 func checkListAllPermGroupsOfTableRequest(obj ListAllPermGroupsOfTableRequest) bool {

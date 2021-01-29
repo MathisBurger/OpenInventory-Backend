@@ -9,7 +9,6 @@ import (
 	"strings"
 )
 
-// create table endpoint
 func CreateTableController(c *fiber.Ctx) error {
 	raw := string(c.Body())
 	obj := models.CreateTableRequestModel{}
@@ -27,15 +26,13 @@ func CreateTableController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Table name is too long", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	// login creds are checked in function below
 	status := OwnSQL.CreateTable(obj.Username, obj.Password, obj.Token, obj.TableName, parse(obj.RowConfig), obj.MinPermLvl)
 	if status {
 		res, _ := models.GetJSONResponse("successful", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
-	} else {
-		res, _ := models.GetJSONResponse("creation failed", "alert alert-danger", "ok", "None", 200)
-		return c.Send(res)
 	}
+	res, _ := models.GetJSONResponse("creation failed", "alert alert-danger", "ok", "None", 200)
+	return c.Send(res)
 }
 
 func parse(val string) (ans []models.RowConfigModel) {

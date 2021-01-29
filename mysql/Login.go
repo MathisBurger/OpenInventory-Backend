@@ -80,12 +80,7 @@ func MysqlLoginWithToken(username string, password string, token string) bool {
 	defer resp.Close()
 	defer stmt.Close()
 	defer conn.Close()
-	if len(answers) == 1 {
-		return true
-	} else {
-		return false
-	}
-
+	return len(answers) == 1
 }
 
 func MysqlLoginWithTokenRoot(username string, password string, token string) bool {

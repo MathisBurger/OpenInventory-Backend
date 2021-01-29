@@ -17,7 +17,6 @@ func GetConn() (conn *sql.DB) {
 	if err != nil {
 		utils.LogError("[utils.go, 18, SQL-StatementError] " + err.Error())
 		return
-	} else {
-		return
 	}
+	return
 }

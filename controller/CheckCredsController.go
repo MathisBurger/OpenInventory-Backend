@@ -30,13 +30,12 @@ func CheckCredsController(c *fiber.Ctx) error {
 			utils.LogError("[CheckCredsController.go, 30, ParsingError] " + err.Error())
 		}
 		return c.Send(res)
-	} else {
-		res, err := models.GetJSONResponse("Login failed", "alert alert-warning", "ok", "None", 200)
-		if err != nil {
-			utils.LogError("[CheckCredsController.go, 36, ParsingError] " + err.Error())
-		}
-		return c.Send(res)
 	}
+	res, err := models.GetJSONResponse("Login failed", "alert alert-warning", "ok", "None", 200)
+	if err != nil {
+		utils.LogError("[CheckCredsController.go, 36, ParsingError] " + err.Error())
+	}
+	return c.Send(res)
 }
 
 func checkCheckCredsRequestModel(obj models.LoginWithTokenRequest) bool {

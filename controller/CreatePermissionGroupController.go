@@ -50,7 +50,7 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 	resp, err := stmt.Query("permission." + obj.PermissionInfo.Name)
 	counter := 0
 	for resp.Next() {
-		counter += 1
+		counter++
 	}
 	defer resp.Close()
 	if counter > 0 {

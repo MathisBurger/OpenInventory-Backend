@@ -13,24 +13,23 @@ func Install() bool {
 	if content == "" {
 		fmt.Println("Please fill your config")
 		return false
+	}
+	fmt.Println("Config is not empty")
+	cfg, err := config.ParseConfig()
+	if err != nil {
+		fmt.Println("Config syntax is wrong")
+		return false
 	} else {
-		fmt.Println("Config is not empty")
-		cfg, err := config.ParseConfig()
-		if err != nil {
-			fmt.Println("Config syntax is wrong")
-			return false
-		} else {
-			fmt.Println("Configuration parsed successfully")
-			if TestMySQLConnection(cfg) {
-				fmt.Println("Checking for tables...")
-				if CheckForTables(cfg) {
-					return true
-				} else {
-					return false
-				}
+		fmt.Println("Configuration parsed successfully")
+		if TestMySQLConnection(cfg) {
+			fmt.Println("Checking for tables...")
+			if CheckForTables(cfg) {
+				return true
 			} else {
 				return false
 			}
+		} else {
+			return false
 		}
 	}
 }

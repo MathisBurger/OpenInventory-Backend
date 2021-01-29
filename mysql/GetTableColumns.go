@@ -58,7 +58,6 @@ func GetTableColumns(displayname string, password string, token string, Tablenam
 		defer stmt.Close()
 		defer conn.Close()
 		return answers
-	} else {
-		return []ColumnNameStruct2{}
 	}
+	return []ColumnNameStruct2{}
 }

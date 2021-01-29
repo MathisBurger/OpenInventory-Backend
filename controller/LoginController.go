@@ -41,9 +41,5 @@ func LoginController(c *fiber.Ctx) error {
 }
 
 func checkLoginRequest(obj models.LoginRequest) bool {
-	if obj.Username != "" && obj.Password != "" {
-		return true
-	} else {
-		return false
-	}
+	return obj.Username != "" && obj.Password != ""
 }
