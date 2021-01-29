@@ -93,9 +93,5 @@ func EditTableEntryController(c *fiber.Ctx) error {
 }
 
 func checkEditTableEntryRequest(obj editTableEntryRequestModel) bool {
-	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && len(obj.Row) > 0 && obj.ObjectID > 0 {
-		return true
-	} else {
-		return false
-	}
+	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && len(obj.Row) > 0 && obj.ObjectID > 0
 }

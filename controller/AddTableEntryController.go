@@ -32,9 +32,5 @@ func AddTableEntryController(c *fiber.Ctx) error {
 }
 
 func checkAddTableEntryRequest(obj models.AddTableEntryRequestModel) bool {
-	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && len(obj.Row) > 0 {
-		return true
-	} else {
-		return false
-	}
+	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && len(obj.Row) > 0
 }

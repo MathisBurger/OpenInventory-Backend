@@ -24,9 +24,9 @@ func GetConfigContent() string {
 	f, err := ioutil.ReadFile(cfg)
 	if err != nil {
 		return ""
-	} else {
-		return string(f)
 	}
+	return string(f)
+
 }
 
 func TestMySQLConnection(cfg *config.Config) bool {

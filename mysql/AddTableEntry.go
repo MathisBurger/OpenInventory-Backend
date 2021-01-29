@@ -120,12 +120,11 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 		defer stmt.Close()
 		defer conn.Close()
 		return true
-	} else {
-		defer resp.Close()
-		defer stmt.Close()
-		defer conn.Close()
-		return false
 	}
+	defer resp.Close()
+	defer stmt.Close()
+	defer conn.Close()
+	return false
 }
 func ParseToArray(input map[string]interface{}, columns []string) []interface{} {
 	v := make([]interface{}, len(input), len(input))

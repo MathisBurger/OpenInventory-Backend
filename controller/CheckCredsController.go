@@ -39,9 +39,5 @@ func CheckCredsController(c *fiber.Ctx) error {
 }
 
 func checkCheckCredsRequestModel(obj models.LoginWithTokenRequest) bool {
-	if obj.Username != "" && obj.Password != "" && obj.Token != "" {
-		return true
-	} else {
-		return false
-	}
+	return obj.Username != "" && obj.Password != "" && obj.Token != ""
 }

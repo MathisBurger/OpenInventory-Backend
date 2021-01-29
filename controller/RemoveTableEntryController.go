@@ -90,9 +90,5 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 }
 
 func checkRemoveTableEntryRequest(obj models.RemoveTableEntryRequestModel) bool {
-	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.RowID > 0 {
-		return true
-	} else {
-		return false
-	}
+	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.RowID > 0
 }

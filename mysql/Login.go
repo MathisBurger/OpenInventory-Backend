@@ -106,10 +106,6 @@ func MysqlLoginWithTokenRoot(username string, password string, token string) boo
 	defer resp.Close()
 	defer stmt.Close()
 	defer conn.Close()
-	if len(answers) == 1 {
-		return true
-	} else {
-		return false
-	}
+	return len(answers) == 1
 
 }

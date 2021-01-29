@@ -70,13 +70,12 @@ func RenameTableController(c *fiber.Ctx) error {
 		defer conn.Close()
 		res, _ := models.GetJSONResponse("Successfully updated tablename", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
-	} else {
-		defer resp.Close()
-		defer stmt.Close()
-		defer conn.Close()
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
-		return c.Send(res)
 	}
+	defer resp.Close()
+	defer stmt.Close()
+	defer conn.Close()
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	return c.Send(res)
 }
 
 func checkRenameTableRequest(obj RenameTableRequest) bool {

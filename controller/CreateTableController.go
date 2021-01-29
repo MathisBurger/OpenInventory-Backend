@@ -40,26 +40,22 @@ func parse(val string) (ans []models.RowConfigModel) {
 	for _, el := range arr {
 		raws := strings.ReplaceAll(el, "(", "")
 		raws = strings.ReplaceAll(raws, ")", "")
-		raws = strings.ReplaceAll(raws, " ", "")
+		raws = strings.ReplaceAll(raws, " ", "_")
 		raws = strings.ReplaceAll(raws, "[", "")
 		raws = strings.ReplaceAll(raws, "]", "")
 		raws = strings.ReplaceAll(raws, "-", "_")
 		spl := strings.Split(raws, ";")
-		ans = append(ans, models.RowConfigModel{spl[0], CheckTableName(spl[1])})
+		ans = append(ans, models.RowConfigModel{spl[0], checkTableName(spl[1])})
 	}
 	return
 }
 
-func CheckTableName(name string) string {
+func checkTableName(name string) string {
 	return strings.ReplaceAll(name, "-", "_")
 }
 
 func checkCreateTableRequestModel(obj models.CreateTableRequestModel) bool {
-	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.RowConfig != "" {
-		return true
-	} else {
-		return true
-	}
+	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.RowConfig != ""
 }
 
 func checkTableNameLength(name string) bool {

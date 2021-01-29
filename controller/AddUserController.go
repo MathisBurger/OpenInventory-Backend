@@ -63,11 +63,7 @@ func AddUserController(c *fiber.Ctx) error {
 func checkAddUserRequest(obj models.AddUserRequestModel) bool {
 	struct1 := models.AddUserStruct{"", "", false, "", ""}
 	struct2 := models.AddUserStruct{"", "", true, "", ""}
-	if obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != struct1 && obj.User != struct2 {
-		return true
-	} else {
-		return false
-	}
+	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != struct1 && obj.User != struct2
 }
 
 func checkUsernameLength(username string) bool {
@@ -81,9 +77,5 @@ func checkPasswordLength(hash string) bool {
 }
 
 func checkEmail(mail string) bool {
-	if strings.Contains(mail, "@") && len(strings.Split(mail, ".")) > 0 {
-		return true
-	} else {
-		return false
-	}
+	return strings.Contains(mail, "@") && len(strings.Split(mail, ".")) > 0
 }
