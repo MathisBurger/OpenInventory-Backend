@@ -34,6 +34,10 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "Failed", "None", 200)
 		return c.Send(res)
 	}
+	if obj.PermissionName == "default.everyone" {
+		res, _ := models.GetJSONResponse("You can not remove the default permission", "alert alert-warning", "Failed", "None", 200)
+		return c.Send(res)
+	}
 	conn := OwnSQL.GetConn()
 	if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, OwnSQL.GetHighestPermission(conn, obj.User), "") {
 		defer conn.Close()
