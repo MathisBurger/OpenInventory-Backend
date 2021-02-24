@@ -13,7 +13,7 @@ func LoginController(c *fiber.Ctx) error {
 	obj := models.LoginRequest{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
-		utils.LogError("[LoginController.go, 15, InputError] " + err.Error())
+		utils.LogError("[LoginController.go, 16, InputError] " + err.Error())
 		res, err := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
 			utils.LogError("[LoginController.go, 19, ParsingError] " + err.Error())

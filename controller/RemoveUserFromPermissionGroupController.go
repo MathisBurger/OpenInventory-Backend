@@ -22,7 +22,7 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 	obj := RemoveUserFromPermissionGroupRequest{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
-		utils.LogError("[GetTableContentController.go, 17, InputError] " + err.Error())
+		utils.LogError("[GetTableContentController.go, 25, InputError] " + err.Error())
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -46,11 +46,11 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 	}
 	stmt, err := conn.Prepare("SELECT `permissions` FROM `inv_users` WHERE `username`=?;")
 	if err != nil {
-		utils.LogError("[RemoveUserFromPermissionGroupController.go, 43, SQL-StatementError] " + err.Error())
+		utils.LogError("[RemoveUserFromPermissionGroupController.go, 49, SQL-StatementError] " + err.Error())
 	}
 	resp, err := stmt.Query(obj.User)
 	if err != nil {
-		utils.LogError("[RemoveUserFromPermissionGroupController.go, 47, SQL-StatementError] " + err.Error())
+		utils.LogError("[RemoveUserFromPermissionGroupController.go, 53, SQL-StatementError] " + err.Error())
 	}
 	type permStruct struct {
 		Permissions string `json:"permissions"`
@@ -60,7 +60,7 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 		var cache permStruct
 		err = resp.Scan(&cache.Permissions)
 		if err != nil {
-			utils.LogError("[RemoveUserFromPermissionGroupController.go, 57, SQL-StatementError] " + err.Error())
+			utils.LogError("[RemoveUserFromPermissionGroupController.go, 63, SQL-StatementError] " + err.Error())
 		}
 		permissions = cache.Permissions
 	}
@@ -75,7 +75,7 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 	}
 	stmt, err = conn.Prepare("UPDATE `inv_users` SET `permissions`=? WHERE `username`=?")
 	if err != nil {
-		utils.LogError("[RemoveUserFromPermissionGroupController.go, 57, SQL-StatementError] " + err.Error())
+		utils.LogError("[RemoveUserFromPermissionGroupController.go, 78, SQL-StatementError] " + err.Error())
 	}
 	stmt.Exec(newPerms, obj.User)
 	defer resp.Close()

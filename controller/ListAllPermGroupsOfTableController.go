@@ -28,7 +28,7 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 	obj := ListAllPermGroupsOfTableRequest{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
-		utils.LogError("[ListAllPermGroupsOfTableController.go, 23, InputError] " + err.Error())
+		utils.LogError("[ListAllPermGroupsOfTableController.go, 31, InputError] " + err.Error())
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -43,7 +43,7 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 	conn := OwnSQL.GetConn()
 	stmt, err := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?")
 	if err != nil {
-		utils.LogError("[ListAllPermGroupsOfTableController.go, 38, SQL-StatementError] " + err.Error())
+		utils.LogError("[ListAllPermGroupsOfTableController.go, 46, SQL-StatementError] " + err.Error())
 	}
 	type cacheStruct struct {
 		MinPermlvl int `json:"min-perm-lvl"`
@@ -51,13 +51,13 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 	var minPermLvl int
 	resp, err := stmt.Query(obj.TableName)
 	if err != nil {
-		utils.LogError("[ListAllPermGroupsOfTableController.go, 38, SQL-StatementError] " + err.Error())
+		utils.LogError("[ListAllPermGroupsOfTableController.go, 54, SQL-StatementError] " + err.Error())
 	}
 	for resp.Next() {
 		var cache cacheStruct
 		err = resp.Scan(&cache.MinPermlvl)
 		if err != nil {
-			utils.LogError("[ListAllPermGroupsOfTableController.go, 52, SQL-StatementError] " + err.Error())
+			utils.LogError("[ListAllPermGroupsOfTableController.go, 60, SQL-StatementError] " + err.Error())
 		}
 		minPermLvl = cache.MinPermlvl
 	}
@@ -70,18 +70,18 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 	}
 	stmt, err = conn.Prepare("SELECT * FROM `inv_permissions` WHERE `permission-level`>=?")
 	if err != nil {
-		utils.LogError("[ListAllPermGroupsOfTableController.go, 62, SQL-StatementError] " + err.Error())
+		utils.LogError("[ListAllPermGroupsOfTableController.go, 73, SQL-StatementError] " + err.Error())
 	}
 	resp, err = stmt.Query(minPermLvl)
 	if err != nil {
-		utils.LogError("[ListAllPermGroupsOfTableController.go, 66, SQL-StatementError] " + err.Error())
+		utils.LogError("[ListAllPermGroupsOfTableController.go, 77, SQL-StatementError] " + err.Error())
 	}
 	var response []models.PermissionModel
 	for resp.Next() {
 		var cache models.PermissionModel
 		err = resp.Scan(&cache.ID, &cache.Name, &cache.Color, &cache.PermissionLevel)
 		if err != nil {
-			utils.LogError("[ListAllPermsOfUserController.go, 78, SQL-StatementError] " + err.Error())
+			utils.LogError("[ListAllPermsOfUserController.go, 84, SQL-StatementError] " + err.Error())
 		}
 		response = append(response, cache)
 	}

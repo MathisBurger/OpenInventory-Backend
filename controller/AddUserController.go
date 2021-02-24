@@ -42,7 +42,7 @@ func AddUserController(c *fiber.Ctx) error {
 		conn := OwnSQL.GetConn()
 		stmt, err := conn.Prepare("INSERT INTO `inv_users` (`id`, `username`, `password`, `token`, `permissions`, `root`, `mail`, `displayname`, `register_date`, `status`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), ?);")
 		if err != nil {
-			utils.LogError("[AddUserController.gp, 45, SQL-StatementError] " + err.Error())
+			utils.LogError("[AddUserController.go, 45, SQL-StatementError] " + err.Error())
 		}
 		var perms string
 		if obj.User.Root {

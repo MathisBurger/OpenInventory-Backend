@@ -21,7 +21,7 @@ func EditTableMinPermLvlController(c *fiber.Ctx) error {
 	obj := EditTableMinPermLvlRequest{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
-		utils.LogError("[EditTableEntryController.go, 25, InputError] " + err.Error())
+		utils.LogError("[EditTableMinPermLvlController.go, 24, InputError] " + err.Error())
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}

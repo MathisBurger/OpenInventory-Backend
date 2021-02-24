@@ -28,7 +28,7 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 	obj := ListAllPermsOfUserRequest{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
-		utils.LogError("[ListAllPermsOfUserController.go, 23, InputError] " + err.Error())
+		utils.LogError("[ListAllPermsOfUserController.go, 31, InputError] " + err.Error())
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -43,11 +43,11 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 	conn := OwnSQL.GetConn()
 	stmt, err := conn.Prepare("SELECT `permissions` FROM `inv_users` WHERE `username`=?")
 	if err != nil {
-		utils.LogError("[ListAllPermsOfUserController.go, 38, SQL-StatementError] " + err.Error())
+		utils.LogError("[ListAllPermsOfUserController.go, 46, SQL-StatementError] " + err.Error())
 	}
 	resp, err := stmt.Query(obj.User)
 	if err != nil {
-		utils.LogError("[ListAllPermsOfUserController.go, 42, SQL-StatementError] " + err.Error())
+		utils.LogError("[ListAllPermsOfUserController.go, 50, SQL-StatementError] " + err.Error())
 	}
 	var perms string
 	type cacheStruct struct {
@@ -57,7 +57,7 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 		var cache cacheStruct
 		err = resp.Scan(&cache.Permissions)
 		if err != nil {
-			utils.LogError("[ListAllPermsOfUserController.go, 52, SQL-StatementError] " + err.Error())
+			utils.LogError("[ListAllPermsOfUserController.go, 60, SQL-StatementError] " + err.Error())
 		}
 		perms = cache.Permissions
 	}
@@ -65,18 +65,18 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 	var response []models.PermissionModel
 	stmt, err = conn.Prepare("SELECT * FROM `inv_permissions` WHERE `name`=?")
 	if err != nil {
-		utils.LogError("[ListAllPermsOfUserController.go, 67, SQL-StatementError] " + err.Error())
+		utils.LogError("[ListAllPermsOfUserController.go, 68, SQL-StatementError] " + err.Error())
 	}
 	for _, v := range permNames {
 		resp, err = stmt.Query(v)
 		if err != nil {
-			utils.LogError("[ListAllPermsOfUserController.go, 72, SQL-StatementError] " + err.Error())
+			utils.LogError("[ListAllPermsOfUserController.go, 73, SQL-StatementError] " + err.Error())
 		}
 		for resp.Next() {
 			var cache models.PermissionModel
 			err = resp.Scan(&cache.ID, &cache.Name, &cache.Color, &cache.PermissionLevel)
 			if err != nil {
-				utils.LogError("[ListAllPermsOfUserController.go, 78, SQL-StatementError] " + err.Error())
+				utils.LogError("[ListAllPermsOfUserController.go, 79, SQL-StatementError] " + err.Error())
 			}
 			response = append(response, cache)
 		}

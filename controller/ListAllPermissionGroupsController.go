@@ -18,7 +18,7 @@ func ListAllPermissionGroupsController(c *fiber.Ctx) error {
 	obj := models.LoginWithTokenRequest{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
-		utils.LogError("[ListAllPermissionGroupsController.go, 16, InputError] " + err.Error())
+		utils.LogError("[ListAllPermissionGroupsController.go, 21, InputError] " + err.Error())
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -33,18 +33,18 @@ func ListAllPermissionGroupsController(c *fiber.Ctx) error {
 	conn := OwnSQL.GetConn()
 	stmt, err := conn.Prepare("SELECT * FROM `inv_permissions`")
 	if err != nil {
-		utils.LogError("[ListAllPermissionGroupsController.go, 31, SQL-StatementError] " + err.Error())
+		utils.LogError("[ListAllPermissionGroupsController.go, 36, SQL-StatementError] " + err.Error())
 	}
 	resp, err := stmt.Query()
 	if err != nil {
-		utils.LogError("[ListAllPermissionGroupsController.go, 35, SQL-StatementError] " + err.Error())
+		utils.LogError("[ListAllPermissionGroupsController.go, 40, SQL-StatementError] " + err.Error())
 	}
 	var perms []models.PermissionModel
 	for resp.Next() {
 		var cache models.PermissionModel
 		err = resp.Scan(&cache.ID, &cache.Name, &cache.Color, &cache.PermissionLevel)
 		if err != nil {
-			utils.LogError("[ListAllPermissionGroupsController.go, 42, SQL-StatementError] " + err.Error())
+			utils.LogError("[ListAllPermissionGroupsController.go, 47, SQL-StatementError] " + err.Error())
 		}
 		perms = append(perms, cache)
 	}

@@ -38,21 +38,21 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 	if OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, 0, obj.Permission) {
 		stmt, err := conn.Prepare("SELECT `permissions` FROM `inv_users` WHERE `username`=?")
 		if err != nil {
-			utils.LogError("[AddUserToPermissionGroupController.go, 37, SQL-StatementError] " + err.Error())
+			utils.LogError("[AddUserToPermissionGroupController.go, 41, SQL-StatementError] " + err.Error())
 		}
 		type cacheStruct struct {
 			Permissions string `json:"permissions"`
 		}
 		resp, err := stmt.Query(obj.User)
 		if err != nil {
-			utils.LogError("[AddUserToPermissionGroupController.go, 44, SQL-StatementError] " + err.Error())
+			utils.LogError("[AddUserToPermissionGroupController.go, 48, SQL-StatementError] " + err.Error())
 		}
 		var permissions string
 		for resp.Next() {
 			var cache cacheStruct
 			err = resp.Scan(&cache.Permissions)
 			if err != nil {
-				utils.LogError("[AddUserToPermissionGroupController.go, 51, SQL-StatementError] " + err.Error())
+				utils.LogError("[AddUserToPermissionGroupController.go, 55, SQL-StatementError] " + err.Error())
 			}
 			permissions = cache.Permissions
 		}
@@ -63,11 +63,11 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 		}
 		stmt, err = conn.Prepare("SELECT * FROM `inv_permissions` WHERE `name`=?;")
 		if err != nil {
-			utils.LogError("[AddUserToPermissionGroupController.go, 63, SQL-StatementError] " + err.Error())
+			utils.LogError("[AddUserToPermissionGroupController.go, 66, SQL-StatementError] " + err.Error())
 		}
 		resp, err = stmt.Query(obj.Permission)
 		if err != nil {
-			utils.LogError("[AddUserToPermissionGroupController.go, 67, SQL-StatementError] " + err.Error())
+			utils.LogError("[AddUserToPermissionGroupController.go, 70, SQL-StatementError] " + err.Error())
 		}
 		counter := 0
 		for resp.Next() {
@@ -80,11 +80,11 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 		finalPermissions := permissions + ";" + obj.Permission
 		stmt, err = conn.Prepare("UPDATE `inv_users` SET `permissions`=? WHERE `username`=?;")
 		if err != nil {
-			utils.LogError("[AddUserToPermissionGroupController.go, 80, SQL-StatementError] " + err.Error())
+			utils.LogError("[AddUserToPermissionGroupController.go, 83, SQL-StatementError] " + err.Error())
 		}
 		_, err = stmt.Exec(finalPermissions, obj.User)
 		if err != nil {
-			utils.LogError("[AddUserToPermissionGroupController.go, 84, SQL-StatementError] " + err.Error())
+			utils.LogError("[AddUserToPermissionGroupController.go, 87, SQL-StatementError] " + err.Error())
 		}
 		defer stmt.Close()
 		defer conn.Close()

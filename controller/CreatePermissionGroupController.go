@@ -26,7 +26,7 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 	obj := CreatePermissionGroupRequest{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
-		utils.LogError("[CreatePermissionGroupController.go, 28, InputError] " + err.Error())
+		utils.LogError("[CreatePermissionGroupController.go, 29, InputError] " + err.Error())
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -45,7 +45,7 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 	conn := OwnSQL.GetConn()
 	stmt, err := conn.Prepare("SELECT * FROM `inv_permissions` WHERE `name`=?")
 	if err != nil {
-		utils.LogError("[CreatePermissionGroupController.go, 43, SQL-StatementError] " + err.Error())
+		utils.LogError("[CreatePermissionGroupController.go, 48, SQL-StatementError] " + err.Error())
 	}
 	resp, err := stmt.Query("permission." + obj.PermissionInfo.Name)
 	counter := 0
@@ -59,11 +59,11 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 	}
 	stmt, err = conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, ?, ?, ?);")
 	if err != nil {
-		utils.LogError("[CreatePermissionGroupController.go, 57, SQL-StatementError] " + err.Error())
+		utils.LogError("[CreatePermissionGroupController.go, 62, SQL-StatementError] " + err.Error())
 	}
 	_, err = stmt.Exec("permission."+obj.PermissionInfo.Name, obj.PermissionInfo.ColorCode, obj.PermissionInfo.PermissionLevel)
 	if err != nil {
-		utils.LogError("[CreatePermissionGroupController.go, 61, SQL-StatementError] " + err.Error())
+		utils.LogError("[CreatePermissionGroupController.go, 66, SQL-StatementError] " + err.Error())
 	}
 	defer stmt.Close()
 	defer conn.Close()

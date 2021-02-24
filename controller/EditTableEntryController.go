@@ -38,14 +38,14 @@ func EditTableEntryController(c *fiber.Ctx) error {
 		}
 		resp, err := stmt.Query(obj.TableName)
 		if err != nil {
-			utils.LogError("[DeleteTableController.go, 40, SQL-ScanningError] " + err.Error())
+			utils.LogError("[EditTableEntryController.go, 41, SQL-ScanningError] " + err.Error())
 		}
 		minPermLvl := 0
 		for resp.Next() {
 			var cache cacheStruct
 			err = resp.Scan(&cache.MinPermLvl)
 			if err != nil {
-				utils.LogError("[DeleteTableController.go, 47, SQL-ScanningError] " + err.Error())
+				utils.LogError("[EditTableEntryController.go, 48, SQL-ScanningError] " + err.Error())
 			}
 			minPermLvl = cache.MinPermLvl
 		}
@@ -69,12 +69,12 @@ func EditTableEntryController(c *fiber.Ctx) error {
 			sql += " WHERE `id`=?"
 			stmt, err = conn.Prepare(sql)
 			if err != nil {
-				utils.LogError("[EditTableEntryController.go, 50, SQL-StatementError] " + err.Error())
+				utils.LogError("[EditTableEntryController.go, 72, SQL-StatementError] " + err.Error())
 			}
 			values = append(values, obj.ObjectID)
 			_, err = stmt.Exec(values...)
 			if err != nil {
-				utils.LogError("[EditTableEntryController.go, 55, SQL-StatementError] " + err.Error())
+				utils.LogError("[EditTableEntryController.go, 77, SQL-StatementError] " + err.Error())
 				resp, _ := models.GetJSONResponse("Illegal row-map", "alert alert-danger", "ok", "None", 200)
 				return c.Send(resp)
 			}

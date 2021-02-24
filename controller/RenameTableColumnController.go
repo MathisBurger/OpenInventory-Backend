@@ -38,7 +38,7 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 	conn := OwnSQL.GetConn()
 	columns := OwnSQL.GetTableColumns(obj.Username, obj.Password, obj.Token, obj.TableName)
 	if len(columns) == 0 {
-		resp, _ := models.GetJSONResponse("You do not havew the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		resp, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
 	stmt, _ := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
@@ -47,14 +47,14 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 	}
 	resp, err := stmt.Query(obj.TableName)
 	if err != nil {
-		utils.LogError("[DeleteTableController.go, 32, SQL-ScanningError] " + err.Error())
+		utils.LogError("[DeleteTableController.go, 50, SQL-ScanningError] " + err.Error())
 	}
 	minPermLvl := 0
 	for resp.Next() {
 		var cache cacheStruct
 		err = resp.Scan(&cache.MinPermLvl)
 		if err != nil {
-			utils.LogError("[DeleteTableController.go, 39, SQL-ScanningError] " + err.Error())
+			utils.LogError("[DeleteTableController.go, 57, SQL-ScanningError] " + err.Error())
 		}
 		minPermLvl = cache.MinPermLvl
 	}
@@ -75,13 +75,13 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 				stmt, err = conn.Prepare("ALTER TABLE `table_" + obj.TableName + "` CHANGE `" + obj.OldName + "`  `" + obj.NewName + "` " + val.DATA_TYPE +
 					"(" + length + ") NULL DEFAULT NULL;")
 				if err != nil {
-					utils.LogError("[RenameTableColumnController.go, 55, SQL-StatementError] " + err.Error())
+					utils.LogError("[RenameTableColumnController.go, 78, SQL-StatementError] " + err.Error())
 					res, _ := models.GetJSONResponse("Error with column name statement", "alert alert-danger", "ok", "None", 200)
 					return c.Send(res)
 				}
 				_, err = stmt.Exec()
 				if err != nil {
-					utils.LogError("[RenameTableColumnController.go, 61, SQL-StatementError] " + err.Error())
+					utils.LogError("[RenameTableColumnController.go, 84, SQL-StatementError] " + err.Error())
 					res, _ := models.GetJSONResponse("Error while changing column name", "alert alert-danger", "ok", "None", 200)
 					return c.Send(res)
 				}

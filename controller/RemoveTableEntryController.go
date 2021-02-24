@@ -34,14 +34,14 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 		}
 		resp, err := stmt.Query(obj.TableName)
 		if err != nil {
-			utils.LogError("[DeleteTableController.go, 32, SQL-ScanningError] " + err.Error())
+			utils.LogError("[DeleteTableController.go, 37, SQL-ScanningError] " + err.Error())
 		}
 		minPermLvl := 0
 		for resp.Next() {
 			var cache cacheStruct
 			err = resp.Scan(&cache.MinPermLvl)
 			if err != nil {
-				utils.LogError("[DeleteTableController.go, 39, SQL-ScanningError] " + err.Error())
+				utils.LogError("[DeleteTableController.go, 44, SQL-ScanningError] " + err.Error())
 			}
 			minPermLvl = cache.MinPermLvl
 		}
@@ -60,14 +60,14 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 			stmt, _ = conn.Prepare("SELECT `entries` FROM `inv_tables` WHERE `name`=?")
 			resp, err := stmt.Query(obj.TableName)
 			if err != nil {
-				utils.LogError("[RemoveTableEntryController.go, 41, SQL-StatementError] " + err.Error())
+				utils.LogError("[RemoveTableEntryController.go, 63, SQL-StatementError] " + err.Error())
 			}
 			entries := 0
 			for resp.Next() {
 				var entry OwnSQL.Entries
 				err = resp.Scan(&entry.Entries)
 				if err != nil {
-					utils.LogError("[RemoveTableEntryController.go, 41, SQL-ScanningError] " + err.Error())
+					utils.LogError("[RemoveTableEntryController.go, 70, SQL-ScanningError] " + err.Error())
 				}
 				entries = entry.Entries
 			}

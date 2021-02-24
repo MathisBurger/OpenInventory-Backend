@@ -40,14 +40,14 @@ func RenameTableController(c *fiber.Ctx) error {
 	}
 	resp, err := stmt.Query(obj.TableName)
 	if err != nil {
-		utils.LogError("[DeleteTableController.go, 32, SQL-ScanningError] " + err.Error())
+		utils.LogError("[DeleteTableController.go, 43, SQL-ScanningError] " + err.Error())
 	}
 	minPermLvl := 0
 	for resp.Next() {
 		var cache cacheStruct
 		err = resp.Scan(&cache.MinPermLvl)
 		if err != nil {
-			utils.LogError("[DeleteTableController.go, 39, SQL-ScanningError] " + err.Error())
+			utils.LogError("[DeleteTableController.go, 50, SQL-ScanningError] " + err.Error())
 		}
 		minPermLvl = cache.MinPermLvl
 	}
@@ -55,11 +55,11 @@ func RenameTableController(c *fiber.Ctx) error {
 	if OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
 		stmt, err = conn.Prepare("ALTER TABLE `table_" + obj.TableName + "` RENAME `table_" + obj.NewName + "`;")
 		if err != nil {
-			utils.LogError("[RenameTableController.go, 39, SQL-StatementError] " + err.Error())
+			utils.LogError("[RenameTableController.go, 58, SQL-StatementError] " + err.Error())
 		}
 		_, err = stmt.Exec()
 		if err != nil {
-			utils.LogError("[RenameTableController.go, 43, SQL-StatementError] " + err.Error())
+			utils.LogError("[RenameTableController.go, 62, SQL-StatementError] " + err.Error())
 			res, _ := models.GetJSONResponse("This table does not exists", "alert alert-warning", "ok", "None", 200)
 			return c.Send(res)
 		}

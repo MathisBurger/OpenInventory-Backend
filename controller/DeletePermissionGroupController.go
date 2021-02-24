@@ -23,7 +23,7 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 	if err != nil {
 		res, err := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
-			utils.LogError("[DeletePermissionGroupController.go, 25, InputError] " + err.Error())
+			utils.LogError("[DeletePermissionGroupController.go, 26, InputError] " + err.Error())
 		}
 		return c.Send(res)
 	}
@@ -39,7 +39,7 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 	if OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, 0, "permission."+obj.GroupName) {
 		stmt, err := conn.Prepare("SELECT `id`, `permissions` FROM `inv_users` WHERE `permissions` LIKE ?")
 		if err != nil {
-			utils.LogError("[DeletePermissionGroupController.go, 37, SQL-StatementError] " + err.Error())
+			utils.LogError("[DeletePermissionGroupController.go, 42, SQL-StatementError] " + err.Error())
 		}
 		type cacheStruct struct {
 			ID          int    `json:"id"`
@@ -48,14 +48,14 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 		req := "%permission." + obj.GroupName + "%"
 		resp, err := stmt.Query(req)
 		if err != nil {
-			utils.LogError("[DeletePermissionGroupController.go, 45, SQL-StatementError] " + err.Error())
+			utils.LogError("[DeletePermissionGroupController.go, 51, SQL-StatementError] " + err.Error())
 		}
 		var user []cacheStruct
 		for resp.Next() {
 			var cache cacheStruct
 			err = resp.Scan(&cache.ID, &cache.Permissions)
 			if err != nil {
-				utils.LogError("[DeletePermissionGroupController.go, 52, SQL-StatementError] " + err.Error())
+				utils.LogError("[DeletePermissionGroupController.go, 58, SQL-StatementError] " + err.Error())
 			}
 			user = append(user, cache)
 		}
@@ -71,13 +71,13 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 			}
 			stmt, err = conn.Prepare("UPDATE `inv_users` SET `permissions`=? WHERE `id`=?")
 			if err != nil {
-				utils.LogError("[DeletePermissionGroupController.go, 68, SQL-StatementError] " + err.Error())
+				utils.LogError("[DeletePermissionGroupController.go, 74, SQL-StatementError] " + err.Error())
 			}
 			stmt.Exec(editedPerms, val.ID)
 		}
 		stmt, err = conn.Prepare("DELETE FROM `inv_permissions` WHERE `name`=?")
 		if err != nil {
-			utils.LogError("[DeletePermissionGroupController.go, 74, SQL-StatementError] " + err.Error())
+			utils.LogError("[DeletePermissionGroupController.go, 80, SQL-StatementError] " + err.Error())
 		}
 		_, err = stmt.Exec("permission." + obj.GroupName)
 		if err != nil {
