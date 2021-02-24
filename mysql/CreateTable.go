@@ -58,21 +58,13 @@ func CreateTable(displayname string, password string, token string, Tablename st
 func checkType(row models.RowConfigModel) string {
 	switch row.Type {
 	case "INT":
-		return "`" + row.Name + "` INT(11),"
+		return "`" + row.Name + "` INT(11) NOT NULL,"
 	case "FLOAT":
-		return "`" + row.Name + "` float,"
+		return "`" + row.Name + "` float NOT NULL,"
 	case "BOOLEAN":
-		return "`" + row.Name + "` tinyint(1),"
-	case "STRING8Chars":
-		return "`" + row.Name + "` VARCHAR(8),"
-	case "STRING16Chars":
-		return "`" + row.Name + "` VARCHAR(16),"
-	case "STRING64Chars":
-		return "`" + row.Name + "` VARCHAR(64),"
-	case "STRING128Chars":
-		return "`" + row.Name + "` VARCHAR(128),"
-	case "STRING1024Chars":
-		return "`" + row.Name + "` VARCHAR(1024),"
+		return "`" + row.Name + "` tinyint(1) NOT NULL,"
+	case "TEXT":
+		return "`" + row.Name + "` TEXT NOT NULL,"
 	default:
 		fmt.Println("incorrect type:", row.Type)
 		return ""
