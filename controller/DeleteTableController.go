@@ -1,19 +1,27 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
+type deleteTableRequest struct {
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	Token     string `json:"token"`
+	TableName string `json:"table_name"`
+}
+
 func DeleteTableController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := models.DeleteTableRequestModel{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(deleteTableRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError("[DeleteTableController.go, 16, InputError] " + err.Error())
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "DeleteTableController.go", 23)
+		}
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -23,41 +31,23 @@ func DeleteTableController(c *fiber.Ctx) error {
 	}
 	if actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		conn := actions.GetConn()
-		stmt, _ := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
-		type cacheStruct struct {
-			MinPermLvl int `json:"min-perm-lvl"`
-		}
-		resp, err := stmt.Query(obj.TableName)
-		if err != nil {
-			utils.LogError("[DeleteTableController.go, 32, SQL-ScanningError] " + err.Error())
-		}
-		minPermLvl := 0
-		for resp.Next() {
-			var cache cacheStruct
-			err = resp.Scan(&cache.MinPermLvl)
-			if err != nil {
-				utils.LogError("[DeleteTableController.go, 39, SQL-ScanningError] " + err.Error())
-			}
-			minPermLvl = cache.MinPermLvl
-		}
-		defer resp.Close()
-		if actions.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
-			stmt, _ = conn.Prepare("DROP TABLE `table_" + obj.TableName + "`;")
+		defer conn.Close()
+		table := actions.GetTableByName(obj.TableName)
+		if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
+			stmt, _ := conn.Prepare("DROP TABLE `table_" + obj.TableName + "`;")
+			defer stmt.Close()
 			_, err = stmt.Exec()
 			if err != nil {
-				utils.LogError("[DeleteTableController.go, 48, SQL-StatementExecutionError] " + err.Error())
+				utils.LogError(err.Error(), "DeleteTableController.go", 39)
 				res, _ := models.GetJSONResponse("This table does not exist", "alert alert-warning", "ok", "None", 200)
 				return c.Send(res)
 			}
 			stmt, _ = conn.Prepare("DELETE FROM `inv_tables` WHERE `name`=?")
+			defer stmt.Close()
 			stmt.Exec(obj.TableName)
 			res, _ := models.GetJSONResponse("Successfully deleted table", "alert alert-success", "ok", "None", 200)
-			defer stmt.Close()
-			defer conn.Close()
 			return c.Send(res)
 		}
-		defer stmt.Close()
-		defer conn.Close()
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 
@@ -67,6 +57,6 @@ func DeleteTableController(c *fiber.Ctx) error {
 
 }
 
-func checkDeleteTableRequest(obj models.DeleteTableRequestModel) bool {
+func checkDeleteTableRequest(obj *deleteTableRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != ""
 }
