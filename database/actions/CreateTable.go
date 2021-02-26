@@ -44,7 +44,7 @@ func CreateTable(displayname string, password string, token string, Tablename st
 	}
 	stmt, err := conn.Prepare(creationString)
 	if err != nil {
-		utils.LogError("[CreateTable.go, 47, SQL-StatementError] " + err.Error())
+		utils.LogError(err.Error(), "CreateTable.go", 47)
 		return false
 	}
 	stmt.Exec()

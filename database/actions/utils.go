@@ -10,12 +10,12 @@ import (
 func GetConn() (conn *sql.DB) {
 	cfg, err := config.ParseConfig()
 	if err != nil {
-		utils.LogError("[utils.go, 13, ParsingError] " + err.Error())
+		utils.LogError(err.Error(), "utils.go", 13)
 	}
 	connstr := cfg.Db.Username + ":" + cfg.Db.Password + "@tcp(" + cfg.Db.Host + ")/" + cfg.Db.Database
 	conn, err = sql.Open("mysql", connstr)
 	if err != nil {
-		utils.LogError("[utils.go, 18, SQL-StatementError] " + err.Error())
+		utils.LogError(err.Error(), "utils.go", 18)
 		return
 	}
 	return
