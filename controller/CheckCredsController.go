@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -13,10 +14,11 @@ func CheckCredsController(c *fiber.Ctx) error {
 	obj := models.LoginWithTokenRequest{}
 	err := json.Unmarshal([]byte(raw), &obj)
 	if err != nil {
-		res, err := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
-		if err != nil {
-			utils.LogError("[CheckCredsController.go, 18, InputError] " + err.Error())
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "CheckCredsController.go", 17)
 		}
+		res, _ := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
+
 		return c.Send(res)
 	}
 	if !checkCheckCredsRequestModel(obj) {
@@ -25,16 +27,11 @@ func CheckCredsController(c *fiber.Ctx) error {
 	}
 	status := actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token)
 	if status {
-		res, err := models.GetJSONResponse("Login successful", "alert alert-success", "ok", "None", 200)
-		if err != nil {
-			utils.LogError("[CheckCredsController.go, 30, ParsingError] " + err.Error())
-		}
+		res, _ := models.GetJSONResponse("Login successful", "alert alert-success", "ok", "None", 200)
+
 		return c.Send(res)
 	}
-	res, err := models.GetJSONResponse("Login failed", "alert alert-warning", "ok", "None", 200)
-	if err != nil {
-		utils.LogError("[CheckCredsController.go, 36, ParsingError] " + err.Error())
-	}
+	res, _ := models.GetJSONResponse("Login failed", "alert alert-warning", "ok", "None", 200)
 	return c.Send(res)
 }
 
