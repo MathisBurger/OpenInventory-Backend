@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -9,12 +9,22 @@ import (
 	"strings"
 )
 
+type createTableRequestModel struct {
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	Token      string `json:"token"`
+	TableName  string `json:"table_name"`
+	MinPermLvl int    `json:"min_perm_lvl"`
+	RowConfig  string `json:"row_config"`
+}
+
 func CreateTableController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := models.CreateTableRequestModel{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(createTableRequestModel)
+	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError("[CreateTableController.go, 17, InputError] " + err.Error())
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "CreateTableController.go", 26)
+		}
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -54,7 +64,7 @@ func checkTableName(name string) string {
 	return strings.ReplaceAll(name, "-", "_")
 }
 
-func checkCreateTableRequestModel(obj models.CreateTableRequestModel) bool {
+func checkCreateTableRequestModel(obj *createTableRequestModel) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.RowConfig != ""
 }
 
