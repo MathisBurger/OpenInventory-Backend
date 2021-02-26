@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-type DeletePermissionGroupRequest struct {
+type deletePermissionGroupRequest struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
 	Token     string `json:"token"`
@@ -17,14 +17,13 @@ type DeletePermissionGroupRequest struct {
 }
 
 func DeletePermissionGroupController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := DeletePermissionGroupRequest{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(deletePermissionGroupRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		res, err := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
-		if err != nil {
-			utils.LogError("[DeletePermissionGroupController.go, 26, InputError] " + err.Error())
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "DeletePermissionGroupController.go", 24)
 		}
+		res, _ := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		return c.Send(res)
 	}
 	if !checkDeletePermissionGroupRequest(obj) {
@@ -36,29 +35,9 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 	conn := actions.GetConn()
+	defer conn.Close()
 	if actions.CheckUserHasHigherPermission(conn, obj.Username, 0, "permission."+obj.GroupName) {
-		stmt, err := conn.Prepare("SELECT `id`, `permissions` FROM `inv_users` WHERE `permissions` LIKE ?")
-		if err != nil {
-			utils.LogError("[DeletePermissionGroupController.go, 42, SQL-StatementError] " + err.Error())
-		}
-		type cacheStruct struct {
-			ID          int    `json:"id"`
-			Permissions string `json:"permissions"`
-		}
-		req := "%permission." + obj.GroupName + "%"
-		resp, err := stmt.Query(req)
-		if err != nil {
-			utils.LogError("[DeletePermissionGroupController.go, 51, SQL-StatementError] " + err.Error())
-		}
-		var user []cacheStruct
-		for resp.Next() {
-			var cache cacheStruct
-			err = resp.Scan(&cache.ID, &cache.Permissions)
-			if err != nil {
-				utils.LogError("[DeletePermissionGroupController.go, 58, SQL-StatementError] " + err.Error())
-			}
-			user = append(user, cache)
-		}
+		user := actions.GetUsersByPermission("%permission." + obj.GroupName + "%")
 		for _, val := range user {
 			split := strings.Split(val.Permissions, ";")
 			reduced := utils.RemoveValueFromArray(split, "permission."+obj.GroupName)
@@ -69,31 +48,21 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 				}
 				editedPerms += ";" + val2
 			}
-			stmt, err = conn.Prepare("UPDATE `inv_users` SET `permissions`=? WHERE `id`=?")
-			if err != nil {
-				utils.LogError("[DeletePermissionGroupController.go, 74, SQL-StatementError] " + err.Error())
-			}
-			stmt.Exec(editedPerms, val.ID)
+			actions.UpdateUserPermission(val.Username, editedPerms)
 		}
-		stmt, err = conn.Prepare("DELETE FROM `inv_permissions` WHERE `name`=?")
-		if err != nil {
-			utils.LogError("[DeletePermissionGroupController.go, 80, SQL-StatementError] " + err.Error())
-		}
+		stmt, _ := conn.Prepare("DELETE FROM `inv_permissions` WHERE `name`=?")
+		defer stmt.Close()
 		_, err = stmt.Exec("permission." + obj.GroupName)
 		if err != nil {
-			utils.LogError("[DeletePermissionGroupController.go, 84, SQL-StatementError] " + err.Error())
+			utils.LogError(err.Error(), "DeletePermissionGroupController.go", 55)
 		}
-		defer resp.Close()
-		defer stmt.Close()
-		defer conn.Close()
 		res, _ := models.GetJSONResponse("Successfully deleted PermissionGroup", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
 	}
-	defer conn.Close()
 	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 	return c.Send(res)
 }
 
-func checkDeletePermissionGroupRequest(obj DeletePermissionGroupRequest) bool {
+func checkDeletePermissionGroupRequest(obj *deletePermissionGroupRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.GroupName != ""
 }
