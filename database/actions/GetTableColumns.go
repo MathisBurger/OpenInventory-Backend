@@ -2,7 +2,7 @@ package actions
 
 import (
 	"github.com/MathisBurger/OpenInventory-Backend/config"
-	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 )
 
 type ColumnNameStruct2 struct {

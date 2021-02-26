@@ -3,8 +3,8 @@ package controller
 import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
-	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 

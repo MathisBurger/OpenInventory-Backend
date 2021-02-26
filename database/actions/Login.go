@@ -1,7 +1,7 @@
 package actions
 
 import (
-	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"time"
 )
 

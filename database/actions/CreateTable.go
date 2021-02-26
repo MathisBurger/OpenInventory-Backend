@@ -2,8 +2,8 @@ package actions
 
 import (
 	"fmt"
-	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"strings"
 )
 

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
-	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	_ "github.com/go-sql-driver/mysql"
 	"io/ioutil"
 )

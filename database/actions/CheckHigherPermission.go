@@ -2,7 +2,7 @@ package actions
 
 import (
 	"database/sql"
-	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"strings"
 )
 

@@ -3,8 +3,8 @@ package controller
 import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
-	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"strings"
 )
@@ -16,7 +16,7 @@ func AddUserController(c *fiber.Ctx) error {
 	if err != nil {
 		res, err := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		if err != nil {
-			utils.LogError("[AddUserController.go, 19, InputError] " + err.Error())
+			utils.LogError(err.Error(), "AddUserController.go", 19)
 		}
 		return c.Send(res)
 	}
@@ -37,22 +37,9 @@ func AddUserController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 	status := actions.MysqlLoginWithTokenRoot(obj.Username, obj.Password, obj.Token)
-	hash := utils.HashWithSalt(obj.User.Password)
 	if status {
-		conn := actions.GetConn()
-		stmt, err := conn.Prepare("INSERT INTO `inv_users` (`id`, `username`, `password`, `token`, `permissions`, `root`, `mail`, `displayname`, `register_date`, `status`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), ?);")
-		if err != nil {
-			utils.LogError("[AddUserController.go, 45, SQL-StatementError] " + err.Error())
-		}
-		var perms string
-		if obj.User.Root {
-			perms = "default.everyone;default.root"
-		} else {
-			perms = "default.everyone"
-		}
-		stmt.Exec(obj.User.Username, hash, "None", perms, obj.User.Root, obj.User.Mail, obj.User.Username, obj.User.Status)
-		defer stmt.Close()
-		defer conn.Close()
+		hash := utils.HashWithSalt(obj.User.Password)
+		actions.AddUser(obj.User.Username, hash, obj.User.Root, obj.User.Mail, obj.User.Status)
 		res, _ := models.GetJSONResponse("Successfully added user", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
 	}
