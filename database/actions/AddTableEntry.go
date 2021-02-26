@@ -1,9 +1,9 @@
-package OwnSQL
+package actions
 
 import (
 	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"strings"
 )
 

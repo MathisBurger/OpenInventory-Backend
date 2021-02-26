@@ -2,9 +2,9 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"strings"
 )
@@ -31,12 +31,12 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	conn := OwnSQL.GetConn()
-	if OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, 0, "permission."+obj.GroupName) {
+	conn := actions.GetConn()
+	if actions.CheckUserHasHigherPermission(conn, obj.Username, 0, "permission."+obj.GroupName) {
 		stmt, err := conn.Prepare("SELECT `id`, `permissions` FROM `inv_users` WHERE `permissions` LIKE ?")
 		if err != nil {
 			utils.LogError("[DeletePermissionGroupController.go, 42, SQL-StatementError] " + err.Error())

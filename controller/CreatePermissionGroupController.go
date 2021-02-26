@@ -2,9 +2,9 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"strings"
 )
@@ -34,7 +34,7 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -42,7 +42,7 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 	if permGroupInputStatus != nil {
 		return c.Send(permGroupInputStatus)
 	}
-	conn := OwnSQL.GetConn()
+	conn := actions.GetConn()
 	stmt, err := conn.Prepare("SELECT * FROM `inv_permissions` WHERE `name`=?")
 	if err != nil {
 		utils.LogError("[CreatePermissionGroupController.go, 48, SQL-StatementError] " + err.Error())
@@ -80,8 +80,8 @@ func checkPermissionGroupInput(obj CreatePermissionGroupRequest) []byte {
 		res, _ := models.GetJSONResponse("';' is not allowed in group name", "alert alert-danger", "ok", "None", 200)
 		return res
 	}
-	conn := OwnSQL.GetConn()
-	if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, obj.PermissionInfo.PermissionLevel, "") {
+	conn := actions.GetConn()
+	if !actions.CheckUserHasHigherPermission(conn, obj.Username, obj.PermissionInfo.PermissionLevel, "") {
 		defer conn.Close()
 		res, _ := models.GetJSONResponse("Your permission is not high enough", "alert alert-danger", "ok", "None", 200)
 		return res

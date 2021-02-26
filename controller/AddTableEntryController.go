@@ -1,19 +1,25 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
+type addTableEntryRequest struct {
+	Username  string                 `json:"username"`
+	Password  string                 `json:"password"`
+	Token     string                 `json:"token"`
+	TableName string                 `json:"table_name"`
+	Row       map[string]interface{} `json:"row"`
+}
+
 func AddTableEntryController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := models.AddTableEntryRequestModel{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(addTableEntryRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError("[AddTableEntryController.go, 16, InputError] " + err.Error())
+		utils.LogError(err.Error(), "AddTableEntryController.go", 22)
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -21,8 +27,7 @@ func AddTableEntryController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	// Login is checked in function below
-	status := OwnSQL.AddTableEntry(obj.Username, obj.Password, obj.Token, obj.TableName, obj.Row)
+	status := actions.AddTableEntry(obj.Username, obj.Password, obj.Token, obj.TableName, obj.Row)
 	if status {
 		res, _ := models.GetJSONResponse("successful", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
@@ -31,6 +36,6 @@ func AddTableEntryController(c *fiber.Ctx) error {
 	return c.Send(res)
 }
 
-func checkAddTableEntryRequest(obj models.AddTableEntryRequestModel) bool {
+func checkAddTableEntryRequest(obj *addTableEntryRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && len(obj.Row) > 0
 }

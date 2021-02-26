@@ -2,9 +2,9 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"strings"
 )
@@ -36,10 +36,10 @@ func AddUserController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Your mail is not a email-address", "alert alert-warning", "ok", "None", 200)
 		return c.Send(res)
 	}
-	status := OwnSQL.MysqlLoginWithTokenRoot(obj.Username, obj.Password, obj.Token)
+	status := actions.MysqlLoginWithTokenRoot(obj.Username, obj.Password, obj.Token)
 	hash := utils.HashWithSalt(obj.User.Password)
 	if status {
-		conn := OwnSQL.GetConn()
+		conn := actions.GetConn()
 		stmt, err := conn.Prepare("INSERT INTO `inv_users` (`id`, `username`, `password`, `token`, `permissions`, `root`, `mail`, `displayname`, `register_date`, `status`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), ?);")
 		if err != nil {
 			utils.LogError("[AddUserController.go, 45, SQL-StatementError] " + err.Error())

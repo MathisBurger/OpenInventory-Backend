@@ -2,9 +2,9 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"strings"
 )
@@ -26,7 +26,7 @@ func CreateTableController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Table name is too long", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	status := OwnSQL.CreateTable(obj.Username, obj.Password, obj.Token, obj.TableName, parse(obj.RowConfig), obj.MinPermLvl)
+	status := actions.CreateTable(obj.Username, obj.Password, obj.Token, obj.TableName, parse(obj.RowConfig), obj.MinPermLvl)
 	if status {
 		res, _ := models.GetJSONResponse("successful", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)

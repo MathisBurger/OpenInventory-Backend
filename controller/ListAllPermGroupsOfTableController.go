@@ -2,9 +2,9 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -36,11 +36,11 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	conn := OwnSQL.GetConn()
+	conn := actions.GetConn()
 	stmt, err := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?")
 	if err != nil {
 		utils.LogError("[ListAllPermGroupsOfTableController.go, 46, SQL-StatementError] " + err.Error())
@@ -61,7 +61,7 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 		}
 		minPermLvl = cache.MinPermlvl
 	}
-	if !OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
+	if !actions.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
 		defer resp.Close()
 		defer stmt.Close()
 		defer conn.Close()

@@ -2,9 +2,9 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 )
@@ -31,12 +31,12 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "Failed", "None", 200)
 		return c.Send(res)
 	}
-	conn := OwnSQL.GetConn()
-	columns := OwnSQL.GetTableColumns(obj.Username, obj.Password, obj.Token, obj.TableName)
+	conn := actions.GetConn()
+	columns := actions.GetTableColumns(obj.Username, obj.Password, obj.Token, obj.TableName)
 	if len(columns) == 0 {
 		resp, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
@@ -59,7 +59,7 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 		minPermLvl = cache.MinPermLvl
 	}
 	defer resp.Close()
-	if OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
+	if actions.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
 		for _, val := range columns {
 			if val.COLUMN_NAME == obj.OldName {
 				var length string

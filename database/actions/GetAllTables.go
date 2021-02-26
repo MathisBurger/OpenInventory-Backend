@@ -1,8 +1,8 @@
-package OwnSQL
+package actions
 
 import (
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 )
 
 func GetAllTables(username string, password string, token string) []models.TableModel {
@@ -13,11 +13,11 @@ func GetAllTables(username string, password string, token string) []models.Table
 	conn := GetConn()
 	stmt, err := conn.Prepare("SELECT * FROM inv_tables")
 	if err != nil {
-		utils.LogError("[GetAllTables.go, 16, SQL-StatementError] " + err.Error())
+		utils.LogError(err.Error(), "GetAllTables.go", 16)
 	}
 	resp, err := stmt.Query()
 	if err != nil {
-		utils.LogError("[GetAllTables.go, 20, SQL-StatementError] " + err.Error())
+		utils.LogError(err.Error(), "GetAllTables.go", 20)
 	}
 	var tables []models.TableModel
 	for resp.Next() {

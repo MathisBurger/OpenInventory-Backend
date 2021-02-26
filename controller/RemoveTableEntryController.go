@@ -3,9 +3,9 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -25,9 +25,9 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+	if actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		fmt.Println(obj)
-		conn := OwnSQL.GetConn()
+		conn := actions.GetConn()
 		stmt, _ := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
 		type cacheStruct struct {
 			MinPermLvl int `json:"min-perm-lvl"`
@@ -46,7 +46,7 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 			minPermLvl = cache.MinPermLvl
 		}
 		defer resp.Close()
-		if OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
+		if actions.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
 			stmt, _ = conn.Prepare("DELETE FROM `table_" + obj.TableName + "` WHERE `id`=?")
 			aff, _ := stmt.Exec(obj.RowID)
 			rowsAffected, _ := aff.RowsAffected()
@@ -64,7 +64,7 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 			}
 			entries := 0
 			for resp.Next() {
-				var entry OwnSQL.Entries
+				var entry actions.Entries
 				err = resp.Scan(&entry.Entries)
 				if err != nil {
 					utils.LogError("[RemoveTableEntryController.go, 70, SQL-ScanningError] " + err.Error())

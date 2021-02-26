@@ -2,9 +2,9 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,7 +24,7 @@ func LoginController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	status, token := OwnSQL.MysqlLogin(obj.Username, obj.Password)
+	status, token := actions.MysqlLogin(obj.Username, obj.Password)
 	if status {
 		res, err := models.GetJSONResponse("Login successful", "alert alert-success", "ok", token, 200)
 		if err != nil {

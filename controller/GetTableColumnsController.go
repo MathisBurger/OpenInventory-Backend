@@ -3,9 +3,9 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -23,7 +23,7 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 	// login is checked in function below
-	columns := OwnSQL.GetTableColumns(obj.Username, obj.Password, obj.Token, obj.TableName)
+	columns := actions.GetTableColumns(obj.Username, obj.Password, obj.Token, obj.TableName)
 	if fmt.Sprintf("%T", columns) == "bool" {
 		res, _ := models.GetJSONResponse("Error while fetching Array", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)

@@ -1,8 +1,8 @@
-package OwnSQL
+package actions
 
 import (
 	"github.com/MathisBurger/OpenInventory-Backend/config"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 )
 
 type ColumnNameStruct2 struct {

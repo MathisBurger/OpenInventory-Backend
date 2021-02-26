@@ -1,9 +1,9 @@
-package OwnSQL
+package actions
 
 import (
 	"database/sql"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	_ "github.com/go-sql-driver/mysql"
 )
 

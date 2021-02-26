@@ -2,9 +2,9 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/database/actions/utils"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	OwnSQL "github.com/MathisBurger/OpenInventory-Backend/mysql"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -21,8 +21,8 @@ func DeleteTableController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if OwnSQL.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		conn := OwnSQL.GetConn()
+	if actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+		conn := actions.GetConn()
 		stmt, _ := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
 		type cacheStruct struct {
 			MinPermLvl int `json:"min-perm-lvl"`
@@ -41,7 +41,7 @@ func DeleteTableController(c *fiber.Ctx) error {
 			minPermLvl = cache.MinPermLvl
 		}
 		defer resp.Close()
-		if OwnSQL.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
+		if actions.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
 			stmt, _ = conn.Prepare("DROP TABLE `table_" + obj.TableName + "`;")
 			_, err = stmt.Exec()
 			if err != nil {
