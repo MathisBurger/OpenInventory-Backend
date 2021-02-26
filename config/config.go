@@ -15,6 +15,7 @@ type database struct {
 type serverconfig struct {
 	Prefork            bool              `json:"prefork"`
 	Port               string            `json:"port"`
+	LogRequestErrors   bool              `json:"logRequestErrors"`
 	WebEndpoints       map[string]string `json:"web-endpoints"`
 	WebIndexEntrypoint string            `json:"web-index-entrypoint"`
 }

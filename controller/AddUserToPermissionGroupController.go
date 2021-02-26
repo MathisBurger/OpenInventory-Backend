@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-type AddUserToPermissionGroupRequest struct {
+type addUserToPermissionGroupRequest struct {
 	Username   string `json:"username"`
 	Password   string `json:"password"`
 	Token      string `json:"token"`
@@ -18,11 +18,12 @@ type AddUserToPermissionGroupRequest struct {
 }
 
 func AddUserToPermissionGroupController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := AddUserToPermissionGroupRequest{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(addUserToPermissionGroupRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError("[AddUserToPermissionGroupController.go, 25, InputError] " + err.Error())
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "AddUserToPermissionGroupController.go", 26)
+		}
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -35,67 +36,31 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 	conn := actions.GetConn()
+	defer conn.Close()
 	if actions.CheckUserHasHigherPermission(conn, obj.Username, 0, obj.Permission) {
-		stmt, err := conn.Prepare("SELECT `permissions` FROM `inv_users` WHERE `username`=?")
-		if err != nil {
-			utils.LogError("[AddUserToPermissionGroupController.go, 41, SQL-StatementError] " + err.Error())
+		userexists, user := actions.GetUserByUsername(obj.User)
+		if !userexists {
+			res, _ := models.GetJSONResponse("User does not exist", "alert alert-danger", "ok", "None", 200)
+			return c.Send(res)
 		}
-		type cacheStruct struct {
-			Permissions string `json:"permissions"`
-		}
-		resp, err := stmt.Query(obj.User)
-		if err != nil {
-			utils.LogError("[AddUserToPermissionGroupController.go, 48, SQL-StatementError] " + err.Error())
-		}
-		var permissions string
-		for resp.Next() {
-			var cache cacheStruct
-			err = resp.Scan(&cache.Permissions)
-			if err != nil {
-				utils.LogError("[AddUserToPermissionGroupController.go, 55, SQL-StatementError] " + err.Error())
-			}
-			permissions = cache.Permissions
-		}
-		defer resp.Close()
-		if utils.ContainsStr(strings.Split(permissions, ";"), obj.Permission) {
+		if utils.ContainsStr(strings.Split(user.Permissions, ";"), obj.Permission) {
 			res, _ := models.GetJSONResponse("The user is already member of this group", "alert alert-warning", "ok", "None", 200)
 			return c.Send(res)
 		}
-		stmt, err = conn.Prepare("SELECT * FROM `inv_permissions` WHERE `name`=?;")
-		if err != nil {
-			utils.LogError("[AddUserToPermissionGroupController.go, 66, SQL-StatementError] " + err.Error())
-		}
-		resp, err = stmt.Query(obj.Permission)
-		if err != nil {
-			utils.LogError("[AddUserToPermissionGroupController.go, 70, SQL-StatementError] " + err.Error())
-		}
-		counter := 0
-		for resp.Next() {
-			counter++
-		}
-		if counter == 0 {
+		permExists, _ := actions.GetPermissionByName(obj.Permission)
+		if !permExists {
 			res, _ := models.GetJSONResponse("This permissiongroup does not exist", "alert alert-warning", "ok", "None", 200)
 			return c.Send(res)
 		}
-		finalPermissions := permissions + ";" + obj.Permission
-		stmt, err = conn.Prepare("UPDATE `inv_users` SET `permissions`=? WHERE `username`=?;")
-		if err != nil {
-			utils.LogError("[AddUserToPermissionGroupController.go, 83, SQL-StatementError] " + err.Error())
-		}
-		_, err = stmt.Exec(finalPermissions, obj.User)
-		if err != nil {
-			utils.LogError("[AddUserToPermissionGroupController.go, 87, SQL-StatementError] " + err.Error())
-		}
-		defer stmt.Close()
-		defer conn.Close()
+		finalPermissions := user.Permissions + ";" + obj.Permission
+		actions.UpdateUserPermission(obj.User, finalPermissions)
 		res, _ := models.GetJSONResponse("User added to permissiongroup", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
 	}
-	defer conn.Close()
 	res, _ := models.GetJSONResponse("Your permission-level is too low", "alert alert-warning", "ok", "None", 200)
 	return c.Send(res)
 }
 
-func checkAddUsertoPermissionGroupRequest(obj AddUserToPermissionGroupRequest) bool {
+func checkAddUsertoPermissionGroupRequest(obj *addUserToPermissionGroupRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.Permission != "" && obj.User != ""
 }

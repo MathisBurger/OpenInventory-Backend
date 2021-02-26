@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -9,15 +9,27 @@ import (
 	"strings"
 )
 
+type addUserRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Token    string `json:"token"`
+	User     struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+		Root     bool   `json:"root"`
+		Mail     string `json:"mail"`
+		Status   string `json:"status"`
+	} `json:"user"`
+}
+
 func AddUserController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := models.AddUserRequestModel{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(addUserRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		res, err := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
-		if err != nil {
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "AddUserController.go", 19)
 		}
+		res, _ := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		return c.Send(res)
 	}
 	if !checkAddUserRequest(obj) {
@@ -47,10 +59,8 @@ func AddUserController(c *fiber.Ctx) error {
 	return c.Send(res)
 }
 
-func checkAddUserRequest(obj models.AddUserRequestModel) bool {
-	struct1 := models.AddUserStruct{"", "", false, "", ""}
-	struct2 := models.AddUserStruct{"", "", true, "", ""}
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != struct1 && obj.User != struct2
+func checkAddUserRequest(obj *addUserRequest) bool {
+	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != addUserRequest{}.User
 }
 
 func checkUsernameLength(username string) bool {

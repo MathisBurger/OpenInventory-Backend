@@ -11,6 +11,7 @@
   "server-config": {
     "prefork": false,
     "port": "8080",
+    "logRequestErrors": true,
     "web-endpoints": {
     "/": "./web",
     "/login": "./web/index.html",
