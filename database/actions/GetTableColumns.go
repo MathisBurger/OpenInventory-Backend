@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 )
 
@@ -11,10 +10,10 @@ type ColumnNameStruct2 struct {
 	MAX_LENGTH  interface{} `json:"CHARACTER_MAXIMUM_LENGTH"`
 }
 
-func GetTableColumns(displayname string, password string, token string, Tablename string) []ColumnNameStruct2 {
+func GetTableColumns(displayname string, password string, token string, Tablename string) []Column {
 	perms := MysqlLoginWithToken(displayname, password, token)
 	if !perms {
-		return []ColumnNameStruct2{}
+		return []Column{}
 	}
 	conn := GetConn()
 	stmt, err := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
@@ -38,26 +37,11 @@ func GetTableColumns(displayname string, password string, token string, Tablenam
 		minPermLvl = cache.MinPermLvl
 	}
 	if CheckUserHasHigherPermission(conn, displayname, minPermLvl, "") {
-		cfg, _ := config.ParseConfig()
-		stmt, _ = conn.Prepare("select COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME=? and TABLE_SCHEMA=?;")
-		resp, err := stmt.Query("table_"+Tablename, cfg.Db.Database)
-		if err != nil {
-			utils.LogError(err.Error(), "GetTableColumns.go", 45)
-			return []ColumnNameStruct2{}
+		exists, ans := SelectColumnScheme(Tablename)
+		if !exists {
+			return []Column{}
 		}
-		var answers []ColumnNameStruct2
-		for resp.Next() {
-			var cache ColumnNameStruct2
-			err = resp.Scan(&cache.COLUMN_NAME, &cache.DATA_TYPE, &cache.MAX_LENGTH)
-			if err != nil {
-				utils.LogError(err.Error(), "GetTableColumns.go", 53)
-			}
-			answers = append(answers, cache)
-		}
-		defer resp.Close()
-		defer stmt.Close()
-		defer conn.Close()
-		return answers
+		return ans
 	}
-	return []ColumnNameStruct2{}
+	return []Column{}
 }
