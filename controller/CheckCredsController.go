@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -10,9 +9,8 @@ import (
 )
 
 func CheckCredsController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := models.LoginWithTokenRequest{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(models.LoginWithTokenRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "CheckCredsController.go", 17)
@@ -35,6 +33,6 @@ func CheckCredsController(c *fiber.Ctx) error {
 	return c.Send(res)
 }
 
-func checkCheckCredsRequestModel(obj models.LoginWithTokenRequest) bool {
+func checkCheckCredsRequestModel(obj *models.LoginWithTokenRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != ""
 }
