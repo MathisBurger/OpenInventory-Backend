@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-type RemoveUserFromPermissionGroupRequest struct {
+type removeUserFromPermissionGroupRequest struct {
 	Username       string `json:"username"`
 	Password       string `json:"password"`
 	Token          string `json:"token"`
@@ -18,11 +18,12 @@ type RemoveUserFromPermissionGroupRequest struct {
 }
 
 func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := RemoveUserFromPermissionGroupRequest{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(removeUserFromPermissionGroupRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError("[GetTableContentController.go, 25, InputError] " + err.Error())
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "RemoveUserFromPermissionGroupController.go", 25)
+		}
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -39,32 +40,13 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 	conn := actions.GetConn()
+	defer conn.Close()
 	if !actions.CheckUserHasHigherPermission(conn, obj.Username, actions.GetHighestPermission(conn, obj.User), "") {
-		defer conn.Close()
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-warning", "Failed", "None", 200)
 		return c.Send(res)
 	}
-	stmt, err := conn.Prepare("SELECT `permissions` FROM `inv_users` WHERE `username`=?;")
-	if err != nil {
-		utils.LogError("[RemoveUserFromPermissionGroupController.go, 49, SQL-StatementError] " + err.Error())
-	}
-	resp, err := stmt.Query(obj.User)
-	if err != nil {
-		utils.LogError("[RemoveUserFromPermissionGroupController.go, 53, SQL-StatementError] " + err.Error())
-	}
-	type permStruct struct {
-		Permissions string `json:"permissions"`
-	}
-	var permissions string
-	for resp.Next() {
-		var cache permStruct
-		err = resp.Scan(&cache.Permissions)
-		if err != nil {
-			utils.LogError("[RemoveUserFromPermissionGroupController.go, 63, SQL-StatementError] " + err.Error())
-		}
-		permissions = cache.Permissions
-	}
-	split := strings.Split(permissions, ";")
+	_, user := actions.GetUserByUsername(obj.User)
+	split := strings.Split(user.Permissions, ";")
 	reduced := utils.RemoveValueFromArray(split, obj.PermissionName)
 	newPerms := reduced[0]
 	for i, k := range reduced {
@@ -73,18 +55,11 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 		}
 		newPerms += ";" + k
 	}
-	stmt, err = conn.Prepare("UPDATE `inv_users` SET `permissions`=? WHERE `username`=?")
-	if err != nil {
-		utils.LogError("[RemoveUserFromPermissionGroupController.go, 78, SQL-StatementError] " + err.Error())
-	}
-	stmt.Exec(newPerms, obj.User)
-	defer resp.Close()
-	defer stmt.Close()
-	defer conn.Close()
+	actions.UpdateUserPermission(obj.User, newPerms)
 	res, _ := models.GetJSONResponse("Successfully removed permission from user", "alert alert-success", "ok", "None", 200)
 	return c.Send(res)
 }
 
-func checkRemoveUserFromPermissionGroupRequest(obj RemoveUserFromPermissionGroupRequest) bool {
+func checkRemoveUserFromPermissionGroupRequest(obj *removeUserFromPermissionGroupRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.PermissionName != "" && obj.User != ""
 }
