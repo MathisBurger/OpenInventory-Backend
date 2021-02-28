@@ -64,9 +64,7 @@ func AddTableEntry(displayname string, password string, token string, Tablename 
 			utils.LogError(err.Error(), "AddTableEntry.go", 97)
 			return false
 		}
-		stmt, _ = conn.Prepare("UPDATE `inv_tables` SET `entries`=? WHERE `name`=?;")
-		stmt.Exec(table.Entrys+1, Tablename)
-		defer stmt.Close()
+		ChangeNumOfEntrysBy(Tablename, 1)
 		return true
 	}
 	return false
