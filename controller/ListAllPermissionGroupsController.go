@@ -1,24 +1,26 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	dbModels "github.com/MathisBurger/OpenInventory-Backend/database/models"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
-type ListAllPermissionGroupsResponse struct {
-	Message          string                   `json:"message"`
-	PermissionGroups []models.PermissionModel `json:"permission_groups"`
+type listAllPermissionGroupsResponse struct {
+	Message          string                     `json:"message"`
+	PermissionGroups []dbModels.PermissionModel `json:"permission_groups"`
 }
 
 func ListAllPermissionGroupsController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := models.LoginWithTokenRequest{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(models.LoginWithTokenRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError("[ListAllPermissionGroupsController.go, 21, InputError] " + err.Error())
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "ListAllPermissionGroupsController.go", 21)
+		}
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -30,29 +32,8 @@ func ListAllPermissionGroupsController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	conn := actions.GetConn()
-	stmt, err := conn.Prepare("SELECT * FROM `inv_permissions`")
-	if err != nil {
-		utils.LogError("[ListAllPermissionGroupsController.go, 36, SQL-StatementError] " + err.Error())
-	}
-	resp, err := stmt.Query()
-	if err != nil {
-		utils.LogError("[ListAllPermissionGroupsController.go, 40, SQL-StatementError] " + err.Error())
-	}
-	var perms []models.PermissionModel
-	for resp.Next() {
-		var cache models.PermissionModel
-		err = resp.Scan(&cache.ID, &cache.Name, &cache.Color, &cache.PermissionLevel)
-		if err != nil {
-			utils.LogError("[ListAllPermissionGroupsController.go, 47, SQL-StatementError] " + err.Error())
-		}
-		perms = append(perms, cache)
-	}
-	defer resp.Close()
-	defer stmt.Close()
-	defer conn.Close()
-	return c.JSON(ListAllPermissionGroupsResponse{
+	return c.JSON(listAllPermissionGroupsResponse{
 		"Successfully fetched all permission groups",
-		perms,
+		actions.GetAllPermissions(),
 	})
 }
