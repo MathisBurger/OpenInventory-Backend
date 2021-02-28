@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -9,12 +9,20 @@ import (
 	"strings"
 )
 
+type getTableContentRequest struct {
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	Token     string `json:"token"`
+	TableName string `json:"table_name"`
+}
+
 func GetTableContentController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := models.GetTableContentRequestModel{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(getTableContentRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError("[GetTableContentController.go, 17, InputError] " + err.Error())
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "GetTableContentController.go", 24)
+		}
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -28,13 +36,12 @@ func GetTableContentController(c *fiber.Ctx) error {
 	}
 	stmt := "SELECT * FROM `table_" + obj.TableName + "`;"
 	conn := actions.GetConn()
+	defer conn.Close()
 	json, err := utils.QueryToJson(conn, stmt)
 	if err != nil {
-		utils.LogError("[GetTableContentController.go, 33, SQL-StatementError] " + err.Error())
 		res, _ := models.GetJSONResponse("Invalid table name", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	defer conn.Close()
 	return c.JSON(models.GetTableContentResponseModel{
 		Message:    "successful",
 		Alert:      "alert alert-success",
@@ -45,6 +52,6 @@ func GetTableContentController(c *fiber.Ctx) error {
 
 }
 
-func checkGetTableContentRequest(obj models.GetTableContentRequestModel) bool {
+func checkGetTableContentRequest(obj *getTableContentRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != ""
 }
