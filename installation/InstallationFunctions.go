@@ -110,7 +110,7 @@ func InsertDefaultUser(conn *sql.DB) {
 	hash := utils.HashWithSalt("e64b78fc3bc91bcbc7dc232ba8ec59e0")
 	stmt, err := conn.Prepare("INSERT INTO inv_users (id, username, password, token, permissions, root, mail, displayname, register_date, status) VALUES (NULL, 'root',  ?, 'None', 'default.everyone;default.root', '1', 'example@mail.de', 'root', current_timestamp(), 'enabled');")
 	if err != nil {
-		utils.LogError("[InstallationFunctions.go, 113, SQL-StatementError] " + err.Error())
+		utils.LogError(err.Error(), "InstallationFunctions.go", 113)
 	}
 	stmt.Exec(hash)
 	defer stmt.Close()
@@ -119,12 +119,12 @@ func InsertDefaultUser(conn *sql.DB) {
 func InsertDefaultPermissionGroups(conn *sql.DB) {
 	stmt, err := conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, 'default.everyone', '96,97,98', '1');")
 	if err != nil {
-		utils.LogError("[InstallationFunctions.go, 122, SQL-StatementError] " + err.Error())
+		utils.LogError(err.Error(), "InstallationFunctions.go", 122)
 	}
 	stmt.Exec()
 	stmt, err = conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, 'default.root', '96,97,98', '100');")
 	if err != nil {
-		utils.LogError("[InstallationFunctions.go, 127, SQL-StatementError] " + err.Error())
+		utils.LogError(err.Error(), "InstallationFunctions.go", 127)
 	}
 	stmt.Exec()
 	defer stmt.Close()

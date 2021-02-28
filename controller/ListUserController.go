@@ -8,6 +8,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type listUserResponse struct {
+	Message string                    `json:"message"`
+	Alert   string                    `json:"alert"`
+	User    []models.OutputUserStruct `json:"user"`
+}
+
 func ListUserController(c *fiber.Ctx) error {
 	obj := new(models.LoginWithTokenRequest)
 	err := c.BodyParser(obj)
@@ -34,7 +40,7 @@ func ListUserController(c *fiber.Ctx) error {
 				el.Status,
 			})
 		}
-		return c.JSON(models.ListUserResponseModel{
+		return c.JSON(listUserResponse{
 			Message: "successfully fetched user",
 			Alert:   "alert alert-success",
 			User:    outputUser,

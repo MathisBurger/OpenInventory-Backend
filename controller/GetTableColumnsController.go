@@ -16,6 +16,12 @@ type getTableColumnsRequest struct {
 	TableName string `json:"table_name"`
 }
 
+type getTableColumnsResponse struct {
+	Message string      `json:"message"`
+	Alert   string      `json:"alert"`
+	Columns interface{} `json:"columns"`
+}
+
 func GetTableColumnsController(c *fiber.Ctx) error {
 	obj := new(getTableColumnsRequest)
 	err := c.BodyParser(obj)
@@ -35,7 +41,7 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Error while fetching Array", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	return c.JSON(models.GetTableColumnsResponseModel{
+	return c.JSON(getTableColumnsResponse{
 		Message: "successful",
 		Alert:   "alert alert-success",
 		Columns: columns,
