@@ -1,14 +1,14 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
-type RenameTableRequest struct {
+type renameTableRequest struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
 	Token     string `json:"token"`
@@ -17,11 +17,12 @@ type RenameTableRequest struct {
 }
 
 func RenameTableController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := RenameTableRequest{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(renameTableRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError("[RenameTableController.go, 24, InputError] " + err.Error())
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "RenameTableController.go", 24)
+		}
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -34,50 +35,22 @@ func RenameTableController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 	conn := actions.GetConn()
-	stmt, _ := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
-	type cacheStruct struct {
-		MinPermLvl int `json:"min-perm-lvl"`
-	}
-	resp, err := stmt.Query(obj.TableName)
-	if err != nil {
-		utils.LogError("[DeleteTableController.go, 43, SQL-ScanningError] " + err.Error())
-	}
-	minPermLvl := 0
-	for resp.Next() {
-		var cache cacheStruct
-		err = resp.Scan(&cache.MinPermLvl)
-		if err != nil {
-			utils.LogError("[DeleteTableController.go, 50, SQL-ScanningError] " + err.Error())
-		}
-		minPermLvl = cache.MinPermLvl
-	}
-	defer resp.Close()
-	if actions.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
-		stmt, err = conn.Prepare("ALTER TABLE `table_" + obj.TableName + "` RENAME `table_" + obj.NewName + "`;")
-		if err != nil {
-			utils.LogError("[RenameTableController.go, 58, SQL-StatementError] " + err.Error())
-		}
-		_, err = stmt.Exec()
-		if err != nil {
-			utils.LogError("[RenameTableController.go, 62, SQL-StatementError] " + err.Error())
-			res, _ := models.GetJSONResponse("This table does not exists", "alert alert-warning", "ok", "None", 200)
+	defer conn.Close()
+	table := actions.GetTableByName(obj.TableName)
+	if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
+		if !actions.RenameTable(obj.TableName, obj.NewName) {
+			res, _ := models.GetJSONResponse("Error while renaming table", "alert alert-danger", "ok", "None", 200)
 			return c.Send(res)
 		}
-		stmt, _ = conn.Prepare("UPDATE `inv_tables` SET `name`=? WHERE `name`=?")
-		stmt.Exec(obj.NewName, obj.TableName)
-		defer resp.Close()
-		defer stmt.Close()
-		defer conn.Close()
+		actions.UpdateTablename(obj.TableName, obj.NewName)
 		res, _ := models.GetJSONResponse("Successfully updated tablename", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
 	}
-	defer resp.Close()
-	defer stmt.Close()
-	defer conn.Close()
+
 	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 	return c.Send(res)
 }
 
-func checkRenameTableRequest(obj RenameTableRequest) bool {
+func checkRenameTableRequest(obj *renameTableRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.NewName != ""
 }

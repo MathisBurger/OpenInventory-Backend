@@ -9,5 +9,5 @@ func RenameTableColumn(tablename string, newname string, datatype string, length
 		return false
 	}
 	_, err = stmt.Exec()
-	return err != nil
+	return err == nil
 }
