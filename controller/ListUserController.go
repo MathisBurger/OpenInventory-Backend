@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -9,11 +9,12 @@ import (
 )
 
 func ListUserController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := models.LoginWithTokenRequest{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(models.LoginWithTokenRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError("[ListUserController.go, 16, InputError] " + err.Error())
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "ListUserController.go", 16)
+		}
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -22,25 +23,21 @@ func ListUserController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 	if actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		conn := actions.GetConn()
-		stmt, _ := conn.Prepare("SELECT `username`, `root`, `mail`, `register_date`, `status` FROM `inv_users`;")
-		res, _ := stmt.Query()
-		var answers []models.OutputUserStruct
-		for res.Next() {
-			var cache models.OutputUserStruct
-			err = res.Scan(&cache.Username, &cache.Root, &cache.Mail, &cache.RegisterDate, &cache.Status)
-			if err != nil {
-				panic(err)
-			}
-			answers = append(answers, cache)
+		user := actions.GetAllUser()
+		var outputUser []models.OutputUserStruct
+		for _, el := range user {
+			outputUser = append(outputUser, models.OutputUserStruct{
+				el.Username,
+				el.Root,
+				el.Mail,
+				el.RegisterDate,
+				el.Status,
+			})
 		}
-		defer res.Close()
-		defer stmt.Close()
-		defer conn.Close()
 		return c.JSON(models.ListUserResponseModel{
 			Message: "successfully fetched user",
 			Alert:   "alert alert-success",
-			User:    answers,
+			User:    outputUser,
 		})
 	}
 	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
