@@ -1,14 +1,14 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
-type EditTableMinPermLvlRequest struct {
+type editTableMinPermLvlRequest struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
 	Token     string `json:"token"`
@@ -17,11 +17,12 @@ type EditTableMinPermLvlRequest struct {
 }
 
 func EditTableMinPermLvlController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := EditTableMinPermLvlRequest{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(editTableMinPermLvlRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError("[EditTableMinPermLvlController.go, 24, InputError] " + err.Error())
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "EditTableMinPermLvlController.go", 24)
+		}
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -33,46 +34,18 @@ func EditTableMinPermLvlController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
+	table := actions.GetTableByName(obj.TableName)
 	conn := actions.GetConn()
-	stmt, err := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
-	if err != nil {
-		utils.LogError("[EditTableMinPermLvlController.go, 39, SQL-StatementError] " + err.Error())
-	}
-	resp, err := stmt.Query(obj.TableName)
-	if err != nil {
-		utils.LogError("[EditTableMinPermLvlController.go, 43, SQL-StatementError] " + err.Error())
-	}
-	minPermLvl := 0
-	type cacheStruct struct {
-		MinPermLvl int `json:"min-perm-lvl"`
-	}
-	for resp.Next() {
-		var cache cacheStruct
-		err = resp.Scan(&cache.MinPermLvl)
-		if err != nil {
-			utils.LogError("[EditTableMinPermLvlController.go, 53, SQL-StatementError] " + err.Error())
-		}
-		minPermLvl = cache.MinPermLvl
-	}
-	defer resp.Close()
-	if !actions.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
-		defer stmt.Close()
-		defer conn.Close()
+	defer conn.Close()
+	if !actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-warning", "ok", "None", 200)
 		return c.Send(res)
 	}
-
-	stmt, err = conn.Prepare("UPDATE `inv_tables` SET `min-perm-lvl`=? WHERE `name`=?;")
-	if err != nil {
-		utils.LogError("[EditTableMinPermLvlController.go, 67, SQL-StatementError] " + err.Error())
-	}
-	stmt.Exec(obj.NewLvl, obj.TableName)
-	defer stmt.Close()
-	defer conn.Close()
+	actions.UpdateTableMinPermLvl(obj.TableName, obj.NewLvl)
 	res, _ := models.GetJSONResponse("Successfully updated minimum permission level of table", "alert alert-success", "ok", "None", 200)
 	return c.Send(res)
 }
 
-func checkEditTableMinPermLvlRequest(obj EditTableMinPermLvlRequest) bool {
+func checkEditTableMinPermLvlRequest(obj *editTableMinPermLvlRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.NewLvl > 0
 }

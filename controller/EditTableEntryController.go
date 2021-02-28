@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -20,7 +21,9 @@ func EditTableEntryController(c *fiber.Ctx) error {
 	obj := new(editTableEntryRequest)
 	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError(err.Error(), "EditTableEntryController.go", 23)
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "EditTableEntryController.go", 23)
+		}
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
