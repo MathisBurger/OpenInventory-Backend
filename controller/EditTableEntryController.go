@@ -1,14 +1,13 @@
 package controller
 
 import (
-	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
-type editTableEntryRequestModel struct {
+type editTableEntryRequest struct {
 	Username  string                 `json:"username"`
 	Password  string                 `json:"password"`
 	Token     string                 `json:"token"`
@@ -18,11 +17,10 @@ type editTableEntryRequestModel struct {
 }
 
 func EditTableEntryController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := editTableEntryRequestModel{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(editTableEntryRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError("[EditTableEntryController.go, 25, InputError] " + err.Error())
+		utils.LogError(err.Error(), "EditTableEntryController.go", 23)
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -30,27 +28,11 @@ func EditTableEntryController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	conn := actions.GetConn()
 	if actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		stmt, _ := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
-		type cacheStruct struct {
-			MinPermLvl int `json:"min-perm-lvl"`
-		}
-		resp, err := stmt.Query(obj.TableName)
-		if err != nil {
-			utils.LogError("[EditTableEntryController.go, 41, SQL-ScanningError] " + err.Error())
-		}
-		minPermLvl := 0
-		for resp.Next() {
-			var cache cacheStruct
-			err = resp.Scan(&cache.MinPermLvl)
-			if err != nil {
-				utils.LogError("[EditTableEntryController.go, 48, SQL-ScanningError] " + err.Error())
-			}
-			minPermLvl = cache.MinPermLvl
-		}
-		defer resp.Close()
-		if actions.CheckUserHasHigherPermission(conn, obj.Username, minPermLvl, "") {
+		table := actions.GetTableByName(obj.TableName)
+		conn := actions.GetConn()
+		defer conn.Close()
+		if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
 			sql := "UPDATE `table_" + obj.TableName + "` SET "
 			first_completed := false
 			var values []interface{}
@@ -67,24 +49,20 @@ func EditTableEntryController(c *fiber.Ctx) error {
 				}
 			}
 			sql += " WHERE `id`=?"
-			stmt, err = conn.Prepare(sql)
+			stmt, err := conn.Prepare(sql)
+			defer stmt.Close()
 			if err != nil {
-				utils.LogError("[EditTableEntryController.go, 72, SQL-StatementError] " + err.Error())
+				utils.LogError(err.Error(), "EditTableEntryController.go", 56)
 			}
 			values = append(values, obj.ObjectID)
 			_, err = stmt.Exec(values...)
 			if err != nil {
-				utils.LogError("[EditTableEntryController.go, 77, SQL-StatementError] " + err.Error())
 				resp, _ := models.GetJSONResponse("Illegal row-map", "alert alert-danger", "ok", "None", 200)
 				return c.Send(resp)
 			}
-			defer stmt.Close()
-			defer conn.Close()
 			res, _ := models.GetJSONResponse("Successfully updated entry", "alert alert-success", "ok", "None", 200)
 			return c.Send(res)
 		}
-		defer stmt.Close()
-		defer conn.Close()
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -92,6 +70,6 @@ func EditTableEntryController(c *fiber.Ctx) error {
 	return c.Send(res)
 }
 
-func checkEditTableEntryRequest(obj editTableEntryRequestModel) bool {
+func checkEditTableEntryRequest(obj *editTableEntryRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && len(obj.Row) > 0 && obj.ObjectID > 0
 }

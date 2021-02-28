@@ -34,17 +34,7 @@ func DeleteTableController(c *fiber.Ctx) error {
 		defer conn.Close()
 		table := actions.GetTableByName(obj.TableName)
 		if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
-			stmt, _ := conn.Prepare("DROP TABLE `table_" + obj.TableName + "`;")
-			defer stmt.Close()
-			_, err = stmt.Exec()
-			if err != nil {
-				utils.LogError(err.Error(), "DeleteTableController.go", 39)
-				res, _ := models.GetJSONResponse("This table does not exist", "alert alert-warning", "ok", "None", 200)
-				return c.Send(res)
-			}
-			stmt, _ = conn.Prepare("DELETE FROM `inv_tables` WHERE `name`=?")
-			defer stmt.Close()
-			stmt.Exec(obj.TableName)
+			actions.DropTable(obj.TableName)
 			res, _ := models.GetJSONResponse("Successfully deleted table", "alert alert-success", "ok", "None", 200)
 			return c.Send(res)
 		}
