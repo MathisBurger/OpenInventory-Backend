@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -9,15 +9,13 @@ import (
 )
 
 func LoginController(c *fiber.Ctx) error {
-	raw := string(c.Body())
-	obj := models.LoginRequest{}
-	err := json.Unmarshal([]byte(raw), &obj)
+	obj := new(models.LoginRequest)
+	err := c.BodyParser(obj)
 	if err != nil {
-		utils.LogError("[LoginController.go, 16, InputError] " + err.Error())
-		res, err := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
-		if err != nil {
-			utils.LogError("[LoginController.go, 19, ParsingError] " + err.Error())
+		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
+			utils.LogError(err.Error(), "LoginController.go", 16)
 		}
+		res, _ := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		return c.Send(res)
 	}
 	if !checkLoginRequest(obj) {
@@ -26,20 +24,14 @@ func LoginController(c *fiber.Ctx) error {
 	}
 	status, token := actions.MysqlLogin(obj.Username, obj.Password)
 	if status {
-		res, err := models.GetJSONResponse("Login successful", "alert alert-success", "ok", token, 200)
-		if err != nil {
-			utils.LogError("[LoginController.go, 31, ParsingError] " + err.Error())
-		}
+		res, _ := models.GetJSONResponse("Login successful", "alert alert-success", "ok", token, 200)
 		return c.Send(res)
 	}
-	res, err := models.GetJSONResponse("Login failed", "alert alert-warning", "ok", "None", 200)
-	if err != nil {
-		utils.LogError("[LoginController.go, 37, ParsingError] " + err.Error())
-	}
+	res, _ := models.GetJSONResponse("Login failed", "alert alert-warning", "ok", "None", 200)
 	return c.Send(res)
 
 }
 
-func checkLoginRequest(obj models.LoginRequest) bool {
+func checkLoginRequest(obj *models.LoginRequest) bool {
 	return obj.Username != "" && obj.Password != ""
 }
