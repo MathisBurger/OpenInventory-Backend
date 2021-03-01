@@ -2,68 +2,64 @@ package actions
 
 import (
 	"database/sql"
+	"github.com/MathisBurger/OpenInventory-Backend/database/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"strings"
 )
 
-type cachePermissionLevelStruct struct {
-	PermissionLevel int `json:"permission-level"`
-}
-
+///////////////////////////////////////////////
+// Checks if user has higher permission      //
+// than other user                           //
+///////////////////////////////////////////////
 func CheckUserHasHigherPermission(conn *sql.DB, username string, permLevel int, permName string) bool {
+
+	// gets value from function below
 	highestPermission := GetHighestPermission(conn, username)
+
 	if permLevel > 0 {
 		return highestPermission >= permLevel
 	} else if permName != "" {
+
 		stmt, err := conn.Prepare("SELECT `permission-level` FROM `inv_permissions` WHERE `name`=?")
 		defer stmt.Close()
 		if err != nil {
 			utils.LogError(err.Error(), "CheckHigherPermission.go", 21)
 		}
+
 		resp, err := stmt.Query(permName)
 		defer resp.Close()
 		if err != nil {
 			utils.LogError(err.Error(), "CheckHigherPermission.go", 26)
 		}
-		wantedPermissionLevel := 0
-		for resp.Next() {
-			var cache cachePermissionLevelStruct
-			err = resp.Scan(&cache.PermissionLevel)
-			if err != nil {
-				utils.LogError(err.Error(), "CheckHigherPermission.go", 33)
-			}
-			wantedPermissionLevel = cache.PermissionLevel
-		}
+
+		wantedPermissionLevel := models.PermissionModel{}.ParseAll(resp)[0].PermissionLevel
 		return highestPermission >= wantedPermissionLevel
 	} else {
 		return false
 	}
 }
 
+///////////////////////////////////////////
+// returns highest permission of         //
+// given user                            //
+///////////////////////////////////////////
 func GetHighestPermission(conn *sql.DB, username string) int {
+
 	_, user := GetUserByUsername(username)
+
+	// all permission groups of user
 	permissions := strings.Split(user.Permissions, ";")
-	stmt, err := conn.Prepare("SELECT `permission-level` FROM `inv_permissions` WHERE `name`=?")
-	if err != nil {
-		utils.LogError(err.Error(), "CheckHigherPermission.go", 48)
-	}
+
+	// get highest permission of user
 	highestPermission := 0
 	for _, val := range permissions {
-		resp, err := stmt.Query(val)
-		if err != nil {
-			utils.LogError(err.Error(), "CheckHigherPermission.go", 54)
+
+		_, perm := GetPermissionByName(val)
+
+		if perm.PermissionLevel > highestPermission {
+			highestPermission = perm.PermissionLevel
 		}
-		for resp.Next() {
-			var cache cachePermissionLevelStruct
-			err = resp.Scan(&cache.PermissionLevel)
-			if err != nil {
-				utils.LogError(err.Error(), "CheckHigherPermission.go", 60)
-			}
-			if cache.PermissionLevel > highestPermission {
-				highestPermission = cache.PermissionLevel
-			}
-		}
-		defer resp.Close()
 	}
+
 	return highestPermission
 }
