@@ -108,13 +108,8 @@ func checkCreatePermissionGroupRequest(obj *createPermissionGroupRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.PermissionInfo.Name != "" && obj.PermissionInfo.ColorCode != "" && obj.PermissionInfo.PermissionLevel > 0
 }
 
-//////////////////////////////////////////////////////////
-//                                                      //
-//              checkPermissionGroupInput               //
-//             consumes the request object              //
-//            checks if the permission input            //
-//                                                      //
-//////////////////////////////////////////////////////////
+// checks for disallowed syntax in createPermissionGroupRequest object
+// returns a []byte response which can be send as response
 func checkPermissionGroupInput(obj *createPermissionGroupRequest) []byte {
 
 	// check if permission-name contains ';'

@@ -115,25 +115,13 @@ func checkAddUserRequest(obj *addUserRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != addUserRequest{}.User
 }
 
-//////////////////////////////////////////////////////////
-//                                                      //
-//                  checkUsernameLength                 //
-//                 consumes the username                //
-//             checks if username is too long           //
-//                                                      //
-//////////////////////////////////////////////////////////
+// check if username is too long
 func checkUsernameLength(username string) bool {
 	split := strings.Split(username, "")
 	return len(split) < 32
 }
 
-//////////////////////////////////////////////////////////
-//                                                      //
-//                       checkEmail                     //
-//                    consumes the mail                 //
-//                 checks if mail is valid              //
-//                                                      //
-//////////////////////////////////////////////////////////
+// check if email is valid
 func checkEmail(mail string) bool {
 	return strings.Contains(mail, "@") && len(strings.Split(mail, ".")) > 0
 }
