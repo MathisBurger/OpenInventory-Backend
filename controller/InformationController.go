@@ -5,6 +5,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+////////////////////////////////////////////////////////////////////
+//                                                                //
+//                EditTableMinPermLvlController                   //
+//           This controller returns basic information            //
+//                                                                //
+////////////////////////////////////////////////////////////////////
 func InformationController(c *fiber.Ctx) error {
 	res, err := models.GetInformationResponse()
 	if err != nil {

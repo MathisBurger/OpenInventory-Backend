@@ -68,13 +68,8 @@ func EditTableMinPermLvlController(c *fiber.Ctx) error {
 	return c.Send(res)
 }
 
-/////////////////////////////////////////////////////////////
-//                                                         //
-//             checkEditTableMinPermLvlRequest             //
-//      This function is checking the request object       //
-//    It requires the editTableMinPermLvlRequest object    //
-//                                                         //
-/////////////////////////////////////////////////////////////
+// checks the request
+// struct fields should not be default
 func checkEditTableMinPermLvlRequest(obj *editTableMinPermLvlRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.NewLvl > 0
 }

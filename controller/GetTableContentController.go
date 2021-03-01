@@ -73,6 +73,8 @@ func GetTableContentController(c *fiber.Ctx) error {
 
 }
 
+// checks the request
+// struct fields should not be default
 func checkGetTableContentRequest(obj *getTableContentRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != ""
 }
