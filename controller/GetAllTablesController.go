@@ -24,7 +24,7 @@ func GetAllTablesController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
 		return c.Send(res)
 	}
-	if !checkCheckCredsRequestModel(obj) {
+	if !checkCheckCredsRequest(obj) {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
