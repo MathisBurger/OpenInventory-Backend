@@ -9,9 +9,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// ---------------------------------------------
-//    listAllPermissionGroupsResponse request
-// ---------------------------------------------
 type listAllPermissionGroupsResponse struct {
 	Message          string                     `json:"message"`
 	PermissionGroups []dbModels.PermissionModel `json:"permission_groups"`
@@ -20,7 +17,7 @@ type listAllPermissionGroupsResponse struct {
 ////////////////////////////////////////////////////////////////////
 //                                                                //
 //                ListAllPermissionGroupsController               //
-//    This controller changes the minPermLvl of the given table   //
+//           This controller fetches all permission groups        //
 //        It requires models.LoginWithTokenRequest instance       //
 //                                                                //
 ////////////////////////////////////////////////////////////////////

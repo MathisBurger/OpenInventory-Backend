@@ -8,9 +8,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// ---------------------------------------------
-//      editTableMinPermLvlRequest request
-// ---------------------------------------------
 type editTableMinPermLvlRequest struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`

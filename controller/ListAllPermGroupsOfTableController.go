@@ -30,7 +30,7 @@ type listAllPermGroupsOfTableResponse struct {
 ////////////////////////////////////////////////////////////////////
 //                                                                //
 //               ListAllPermGroupsOfTableController               //
-//    This controller changes the minPermLvl of the given table   //
+//      This controller fetches all permission groups of table    //
 //       It requires listAllPermGroupsOfTableRequest instance     //
 //                                                                //
 ////////////////////////////////////////////////////////////////////

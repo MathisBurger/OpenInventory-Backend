@@ -23,9 +23,20 @@ type listAllPermsOfUserResponse struct {
 	HttpStatus  int                        `json:"http_status"`
 }
 
+////////////////////////////////////////////////////////////////////
+//                                                                //
+//                  ListAllPermOfUserController                   //
+//    This controller fetches all permissions of user             //
+//         It requires listAllPermsOfUserRequest instance         //
+//                                                                //
+////////////////////////////////////////////////////////////////////
 func ListAllPermOfUserController(c *fiber.Ctx) error {
+
+	// init and parse the request object
 	obj := new(listAllPermsOfUserRequest)
 	err := c.BodyParser(obj)
+
+	// check request
 	if err != nil {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "ListAllPermsOfUserController.go", 31)
@@ -37,10 +48,13 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
+
+	// check login
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
+
 	return c.JSON(listAllPermsOfUserResponse{
 		"Successfully fetched all user permissions",
 		actions.GetPermissionsOfUser(obj.User),
@@ -49,6 +63,8 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 	})
 }
 
+// checks the request
+// struct fields should not be default
 func checkListAllPermsOfUserRequest(obj *listAllPermsOfUserRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != ""
 }
