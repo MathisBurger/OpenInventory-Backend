@@ -5,11 +5,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+/////////////////////////////////////////////////////////////
+//                                                         //
+//                   DefaultController                     //
+//          This controller returns a static response      //
+//                                                         //
+/////////////////////////////////////////////////////////////
 func DefaultController(c *fiber.Ctx) error {
-	res, err := models.GetJSONResponse("API online", "alert alert-success", "ok", "None", 200)
-	if err != nil {
-		panic(err)
-	}
+
+	// return static response
+	res, _ := models.GetJSONResponse("API online", "alert alert-success", "ok", "None", 200)
 	return c.Send(res)
 
 }
