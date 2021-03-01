@@ -16,9 +16,20 @@ type renameTableRequest struct {
 	NewName   string `json:"new_name"`
 }
 
+////////////////////////////////////////////////////////////////////
+//                                                                //
+//                     RenameTableController                      //
+//               This controller renames the table                //
+//            It requires renameTableRequest instance             //
+//                                                                //
+////////////////////////////////////////////////////////////////////
 func RenameTableController(c *fiber.Ctx) error {
+
+	// init and parse the request object
 	obj := new(renameTableRequest)
 	err := c.BodyParser(obj)
+
+	// check request
 	if err != nil {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "RenameTableController.go", 24)
@@ -30,19 +41,28 @@ func RenameTableController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
+
+	// check login
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
+
 	conn := actions.GetConn()
 	defer conn.Close()
+
 	table := actions.GetTableByName(obj.TableName)
+
+	// check permission
 	if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
+
 		if !actions.RenameTable(obj.TableName, obj.NewName) {
 			res, _ := models.GetJSONResponse("Error while renaming table", "alert alert-danger", "ok", "None", 200)
 			return c.Send(res)
 		}
+
 		actions.UpdateTablename(obj.TableName, obj.NewName)
+
 		res, _ := models.GetJSONResponse("Successfully updated tablename", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -51,6 +71,8 @@ func RenameTableController(c *fiber.Ctx) error {
 	return c.Send(res)
 }
 
+// checks the request
+// struct fields should not be default
 func checkRenameTableRequest(obj *renameTableRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.NewName != ""
 }
