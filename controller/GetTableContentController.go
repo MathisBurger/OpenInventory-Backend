@@ -9,6 +9,9 @@ import (
 	"strings"
 )
 
+// ---------------------------------------------
+//       getTableContentRequest request
+// ---------------------------------------------
 type getTableContentRequest struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
@@ -16,6 +19,9 @@ type getTableContentRequest struct {
 	TableName string `json:"table_name"`
 }
 
+// ---------------------------------------------
+//       getTableContentResponse response
+// ---------------------------------------------
 type getTableContentResponse struct {
 	Message    string `json:"message"`
 	Alert      string `json:"alert"`
@@ -24,6 +30,13 @@ type getTableContentResponse struct {
 	Elements   string `json:"elements"`
 }
 
+////////////////////////////////////////////////////////////////////
+//                                                                //
+//                   GetTableContentController                    //
+//         This controller fetches content of given table         //
+//          It requires getTableContentRequest instance           //
+//                                                                //
+////////////////////////////////////////////////////////////////////
 func GetTableContentController(c *fiber.Ctx) error {
 	obj := new(getTableContentRequest)
 	err := c.BodyParser(obj)

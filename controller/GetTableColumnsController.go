@@ -31,7 +31,7 @@ type getTableColumnsResponse struct {
 ////////////////////////////////////////////////////////////////////
 //                                                                //
 //                   GetTableColumnsController                    //
-//    This controller changes the minPermLvl of the given table   //
+//          This controller fetches all columns of table          //
 //          It requires getTableColumnsRequest instance           //
 //                                                                //
 ////////////////////////////////////////////////////////////////////

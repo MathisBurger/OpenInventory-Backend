@@ -9,7 +9,7 @@ import (
 )
 
 // ---------------------------------------------
-//         editTableMinPermLvlRequest
+//      editTableMinPermLvlRequest request
 // ---------------------------------------------
 type editTableMinPermLvlRequest struct {
 	Username  string `json:"username"`

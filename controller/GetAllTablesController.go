@@ -20,7 +20,7 @@ type getAllTablesResponse struct {
 ////////////////////////////////////////////////////////////////////
 //                                                                //
 //                     GetAllTablesController                     //
-//    This controller changes the minPermLvl of the given table   //
+//               This controller fetches all tables               //
 //        It requires models.LoginWithTokenRequest instance       //
 //                                                                //
 ////////////////////////////////////////////////////////////////////
