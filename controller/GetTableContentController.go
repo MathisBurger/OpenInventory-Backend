@@ -16,6 +16,14 @@ type getTableContentRequest struct {
 	TableName string `json:"table_name"`
 }
 
+type getTableContentResponse struct {
+	Message    string `json:"message"`
+	Alert      string `json:"alert"`
+	Status     string `json:"status"`
+	HttpStatus int    `json:"httpStatus"`
+	Elements   string `json:"elements"`
+}
+
 func GetTableContentController(c *fiber.Ctx) error {
 	obj := new(getTableContentRequest)
 	err := c.BodyParser(obj)
@@ -42,7 +50,7 @@ func GetTableContentController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Invalid table name", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-	return c.JSON(models.GetTableContentResponseModel{
+	return c.JSON(getTableContentResponse{
 		Message:    "successful",
 		Alert:      "alert alert-success",
 		Status:     "ok",

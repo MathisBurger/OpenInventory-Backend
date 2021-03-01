@@ -32,11 +32,11 @@ type Config struct {
 	ServerCFG serverconfig `json:"server-config"`
 }
 
-// ---------------------------------------------
-//                  ParseConfig
-//   Function to parse the configuration file
-//   returns an Pointer of the Config struct
-// ---------------------------------------------
+//////////////////////////////////////////////////
+//                  ParseConfig                 //
+//   Function to parse the configuration file   //
+//   returns an Pointer of the Config struct    //
+//////////////////////////////////////////////////
 func ParseConfig() (c *Config, err error) {
 	f, err := os.Open("./config/config.json")
 	if err != nil {
