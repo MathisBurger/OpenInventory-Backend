@@ -14,9 +14,20 @@ type listUserResponse struct {
 	User    []models.OutputUserStruct `json:"user"`
 }
 
+////////////////////////////////////////////////////////////////////
+//                                                                //
+//                        ListUserController                      //
+//                 This controller fetches all user               //
+//         It requires models.LoginWithTokenRequest instance      //
+//                                                                //
+////////////////////////////////////////////////////////////////////
 func ListUserController(c *fiber.Ctx) error {
+
+	// init and parse the request object
 	obj := new(models.LoginWithTokenRequest)
 	err := c.BodyParser(obj)
+
+	// check request
 	if err != nil {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "ListUserController.go", 16)
@@ -28,9 +39,14 @@ func ListUserController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
+
+	// check login
 	if actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+
 		user := actions.GetAllUser()
 		var outputUser []models.OutputUserStruct
+
+		// parse all user to output user
 		for _, el := range user {
 			outputUser = append(outputUser, models.OutputUserStruct{
 				el.Username,
@@ -40,12 +56,15 @@ func ListUserController(c *fiber.Ctx) error {
 				el.Status,
 			})
 		}
+
 		return c.JSON(listUserResponse{
 			Message: "successfully fetched user",
 			Alert:   "alert alert-success",
 			User:    outputUser,
 		})
 	}
+
+	// no permission
 	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 	return c.Send(res)
 
