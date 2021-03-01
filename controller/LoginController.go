@@ -11,7 +11,7 @@ import (
 ////////////////////////////////////////////////////////////////////
 //                                                                //
 //                        LoginController                         //
-//                 This controller fetches all user               //
+//               This controller executes user login              //
 //             It requires models.LoginRequest instance           //
 //                                                                //
 ////////////////////////////////////////////////////////////////////

@@ -19,7 +19,7 @@ type removeTableEntryRequest struct {
 ////////////////////////////////////////////////////////////////////
 //                                                                //
 //                  RemoveTableEntryController                    //
-//       This controller fetches all permissions of user          //
+//          This controller removes entry from table              //
 //        It requires removeTableEntryRequest instance            //
 //                                                                //
 ////////////////////////////////////////////////////////////////////

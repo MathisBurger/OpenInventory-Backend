@@ -17,9 +17,20 @@ type removeUserFromPermissionGroupRequest struct {
 	User           string `json:"user"`
 }
 
+////////////////////////////////////////////////////////////////////
+//                                                                //
+//              RemoveUserFromPermissionGroupController           //
+//        This controller removes user from permission group      //
+//    It requires removeUserFromPermissionGroupRequest instance   //
+//                                                                //
+////////////////////////////////////////////////////////////////////
 func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
+
+	// init and parse the request object
 	obj := new(removeUserFromPermissionGroupRequest)
 	err := c.BodyParser(obj)
+
+	// check request
 	if err != nil {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "RemoveUserFromPermissionGroupController.go", 25)
@@ -31,23 +42,33 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
+
+	// check login
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "Failed", "None", 200)
 		return c.Send(res)
 	}
+
+	// user should not be allowed to remove default permission
 	if obj.PermissionName == "default.everyone" {
 		res, _ := models.GetJSONResponse("You can not remove the default permission", "alert alert-warning", "Failed", "None", 200)
 		return c.Send(res)
 	}
+
 	conn := actions.GetConn()
 	defer conn.Close()
+
+	// check permission
 	if !actions.CheckUserHasHigherPermission(conn, obj.Username, actions.GetHighestPermission(conn, obj.User), "") {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-warning", "Failed", "None", 200)
 		return c.Send(res)
 	}
+
 	_, user := actions.GetUserByUsername(obj.User)
 	split := strings.Split(user.Permissions, ";")
 	reduced := utils.RemoveValueFromArray(split, obj.PermissionName)
+
+	// calculate new permissions
 	newPerms := reduced[0]
 	for i, k := range reduced {
 		if i == 0 {
@@ -56,10 +77,13 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 		newPerms += ";" + k
 	}
 	actions.UpdateUserPermission(obj.User, newPerms)
+
 	res, _ := models.GetJSONResponse("Successfully removed permission from user", "alert alert-success", "ok", "None", 200)
 	return c.Send(res)
 }
 
+// checks the request
+// struct fields should not be default
 func checkRemoveUserFromPermissionGroupRequest(obj *removeUserFromPermissionGroupRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.PermissionName != "" && obj.User != ""
 }
