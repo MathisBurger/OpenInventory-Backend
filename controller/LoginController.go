@@ -8,9 +8,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+////////////////////////////////////////////////////////////////////
+//                                                                //
+//                        LoginController                         //
+//                 This controller fetches all user               //
+//             It requires models.LoginRequest instance           //
+//                                                                //
+////////////////////////////////////////////////////////////////////
 func LoginController(c *fiber.Ctx) error {
+
+	// init and parse the request object
 	obj := new(models.LoginRequest)
 	err := c.BodyParser(obj)
+
+	// check request
 	if err != nil {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "LoginController.go", 16)
@@ -22,6 +33,8 @@ func LoginController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
+
+	// check login
 	status, token := actions.MysqlLogin(obj.Username, obj.Password)
 	if status {
 		res, _ := models.GetJSONResponse("Login successful", "alert alert-success", "ok", token, 200)
