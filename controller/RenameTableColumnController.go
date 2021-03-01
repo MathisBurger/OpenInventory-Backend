@@ -18,9 +18,20 @@ type renameTableColumnRequest struct {
 	NewName   string `json:"new_name"`
 }
 
+////////////////////////////////////////////////////////////////////
+//                                                                //
+//                  RenameTableColumnController                   //
+//             This controller renames a table column             //
+//         It requires renameTableColumnRequest instance          //
+//                                                                //
+////////////////////////////////////////////////////////////////////
 func RenameTableColumnController(c *fiber.Ctx) error {
+
+	// init and parse the request object
 	obj := new(renameTableColumnRequest)
 	err := c.BodyParser(obj)
+
+	// check request
 	if err != nil {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "RenameTableColumnController.go", 26)
@@ -32,21 +43,36 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
+
+	// check login
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "Failed", "None", 200)
 		return c.Send(res)
 	}
+
 	conn := actions.GetConn()
 	defer conn.Close()
+
 	columns := actions.GetTableColumns(obj.Username, obj.Password, obj.Token, obj.TableName)
+
+	// check if user has permission for table
 	if len(columns) == 0 {
 		resp, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
 		return c.Send(resp)
 	}
+
 	table := actions.GetTableByName(obj.TableName)
+
+	// check permission
 	if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
+
+		// iterate trough all columns
 		for _, val := range columns {
+
+			// check if val == column to rename
 			if val.COLUMN_NAME == obj.OldName {
+
+				// get params from column
 				var length string
 				if val.MAX_LENGTH == nil {
 					length = ""
@@ -57,11 +83,13 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 				if val.DATA_TYPE == "int" {
 					length = "11"
 				}
-				status := actions.RenameTableColumn(obj.TableName, obj.NewName, val.DATA_TYPE, length)
-				if !status {
+
+				// rename column
+				if !actions.RenameTableColumn(obj.TableName, obj.NewName, val.DATA_TYPE, length) {
 					res, _ := models.GetJSONResponse("Error while changing column name", "alert alert-danger", "ok", "None", 200)
 					return c.Send(res)
 				}
+
 				res, _ := models.GetJSONResponse("Successfully changed column name", "alert alert-success", "ok", "None", 200)
 				return c.Send(res)
 			}
@@ -73,6 +101,8 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 	return c.Send(res)
 }
 
+// checks the request
+// struct fields should not be default
 func checkRenameTableColumnRequest(obj *renameTableColumnRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.NewName != "" && obj.OldName != ""
 }
