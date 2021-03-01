@@ -9,11 +9,6 @@ import (
 	"strings"
 )
 
-// ---------------------------------------------
-//            createTableRequest
-//    This struct contains login credentials,
-//         table-name, minPermLvl and row
-// ---------------------------------------------
 type createTableRequest struct {
 	Username   string `json:"username"`
 	Password   string `json:"password"`
@@ -32,52 +27,35 @@ type createTableRequest struct {
 /////////////////////////////////////////////////////////////
 func CreateTableController(c *fiber.Ctx) error {
 
-	// initializing the request object
+	// init and parse the request object
 	obj := new(createTableRequest)
-
-	// parsing the body into the request object
 	err := c.BodyParser(obj)
 
-	// returns "Wrong JSON syntax" response if error is unequal nil
+	// check request
 	if err != nil {
-
-		// checks if request errors should be logged
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
-
-			// log error
 			utils.LogError(err.Error(), "CreateTableController.go", 26)
 		}
 
-		// returns response
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
-
-	// check if request has been parsed correctly
 	if !checkCreateTableRequest(obj) {
-
-		// returns "Wrong JSON syntax" response
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check table name length
 	if !checkTableNameLength(obj.TableName) {
-
-		// returns "Table name is too long" response
 		res, _ := models.GetJSONResponse("Table name is too long", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
 
-	// create table || check status of table creation
 	if actions.CreateTable(obj.Username, obj.Password, obj.Token, obj.TableName, parse(obj.RowConfig), obj.MinPermLvl) {
-
-		// returns "successful" response if status true
 		res, _ := models.GetJSONResponse("successful", "alert alert-success", "ok", "None", 200)
 		return c.Send(res)
 	}
 
-	// returns "creation failed" response if status failed
 	res, _ := models.GetJSONResponse("creation failed", "alert alert-danger", "ok", "None", 200)
 	return c.Send(res)
 }
@@ -110,13 +88,8 @@ func parse(val string) (ans []models.RowConfigModel) {
 	return
 }
 
-/////////////////////////////////////////////////////////////
-//                                                         //
-//                  checkCreateTableRequest                //
-//      This function is checking the request object       //
-//       It requires the createTableRequest object         //
-//                                                         //
-/////////////////////////////////////////////////////////////
+// checks the request
+// struct fields should not be default
 func checkCreateTableRequest(obj *createTableRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.RowConfig != ""
 }

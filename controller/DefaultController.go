@@ -13,7 +13,6 @@ import (
 /////////////////////////////////////////////////////////////
 func DefaultController(c *fiber.Ctx) error {
 
-	// return static response
 	res, _ := models.GetJSONResponse("API online", "alert alert-success", "ok", "None", 200)
 	return c.Send(res)
 

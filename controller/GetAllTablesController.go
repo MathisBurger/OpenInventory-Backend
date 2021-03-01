@@ -8,9 +8,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// ---------------------------------------------
-//          getAllTablesResponse
-// ---------------------------------------------
 type getAllTablesResponse struct {
 	Message string              `json:"message"`
 	Alert   string              `json:"alert"`

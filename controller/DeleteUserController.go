@@ -8,11 +8,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// ---------------------------------------------
-//               deleteUserRequest
-//    This struct contains login credentials
-//                 and username
-// ---------------------------------------------
 type deleteUserRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -33,23 +28,16 @@ func DeleteUserController(c *fiber.Ctx) error {
 	obj := new(deleteUserRequest)
 	err := c.BodyParser(obj)
 
-	// check parsing error
+	// check request
 	if err != nil {
-
-		// log error if enabled
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "DeleteUserController.go", 40)
 		}
 
-		// return "Invalid JSON body" response
 		res, _ := models.GetJSONResponse("Invalid JSON body", "alert alert-danger", "error", "None", 200)
 		return c.Send(res)
 	}
-
-	// check if request has been parsed correctly
 	if !checkDeleteUserRequest(obj) {
-
-		// send "Wrong JSON syntax" response
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -57,27 +45,19 @@ func DeleteUserController(c *fiber.Ctx) error {
 	// check login status
 	if actions.MysqlLoginWithTokenRoot(obj.Username, obj.Password, obj.Token) {
 
-		// delete user
 		actions.DeleteUser(obj.User)
 
-		// return "Successfully deleted user" response
 		resp, _ := models.GetJSONResponse("Successfully deleted user", "alert alert-success", "ok", "None", 200)
 		return c.Send(resp)
 	}
 
-	// return "You do not have the permission to execute this" response
 	res, _ := models.GetJSONResponse("You do not have the permission to execute this", "alert alert-danger", "ok", "None", 200)
 	return c.Send(res)
 
 }
 
-/////////////////////////////////////////////////////////////
-//                                                         //
-//                 checkDeleteUserRequest                  //
-//      This function is checking the request object       //
-//        It requires the deleteUserRequest object         //
-//                                                         //
-/////////////////////////////////////////////////////////////
+// checks the request
+// struct fields should not be default
 func checkDeleteUserRequest(obj *deleteUserRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != ""
 }

@@ -9,9 +9,6 @@ import (
 	"strings"
 )
 
-// ---------------------------------------------
-//       getTableContentRequest request
-// ---------------------------------------------
 type getTableContentRequest struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
@@ -19,9 +16,6 @@ type getTableContentRequest struct {
 	TableName string `json:"table_name"`
 }
 
-// ---------------------------------------------
-//       getTableContentResponse response
-// ---------------------------------------------
 type getTableContentResponse struct {
 	Message    string `json:"message"`
 	Alert      string `json:"alert"`
@@ -38,12 +32,17 @@ type getTableContentResponse struct {
 //                                                                //
 ////////////////////////////////////////////////////////////////////
 func GetTableContentController(c *fiber.Ctx) error {
+
+	// init and parse the request object
 	obj := new(getTableContentRequest)
 	err := c.BodyParser(obj)
+
+	// check request
 	if err != nil {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "GetTableContentController.go", 24)
 		}
+
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -51,18 +50,24 @@ func GetTableContentController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
+
+	// check login
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-warning", "Failed", "None", 200)
 		return c.Send(res)
 	}
+
+	// query table as json
 	stmt := "SELECT * FROM `table_" + obj.TableName + "`;"
 	conn := actions.GetConn()
 	defer conn.Close()
 	json, err := utils.QueryToJson(conn, stmt)
+
 	if err != nil {
 		res, _ := models.GetJSONResponse("Invalid table name", "alert alert-danger", "ok", "None", 200)
 		return c.Send(res)
 	}
+
 	return c.JSON(getTableContentResponse{
 		Message:    "successful",
 		Alert:      "alert alert-success",

@@ -9,9 +9,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// ---------------------------------------------
-//        getTableColumnsRequest request
-// ---------------------------------------------
 type getTableColumnsRequest struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
@@ -19,9 +16,6 @@ type getTableColumnsRequest struct {
 	TableName string `json:"table_name"`
 }
 
-// ---------------------------------------------
-//        getTableColumnsResponse response
-// ---------------------------------------------
 type getTableColumnsResponse struct {
 	Message string      `json:"message"`
 	Alert   string      `json:"alert"`

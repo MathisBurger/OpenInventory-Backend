@@ -9,9 +9,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// ---------------------------------------------
-//   listAllPermGroupsOfTableRequest request
-// ---------------------------------------------
 type listAllPermGroupsOfTableRequest struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
@@ -19,9 +16,6 @@ type listAllPermGroupsOfTableRequest struct {
 	TableName string `json:"table_name"`
 }
 
-// ---------------------------------------------
-//  listAllPermGroupsOfTableResponse response
-// ---------------------------------------------
 type listAllPermGroupsOfTableResponse struct {
 	PermGroups []dbModels.PermissionModel `json:"perm_groups"`
 	Message    string                     `json:"message"`
