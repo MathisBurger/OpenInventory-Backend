@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -39,6 +40,7 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 		res, _ := models.GetJSONResponse("Invaild JSON body", "#d41717", "error", "None", 200)
 		return c.Send(res)
 	}
+	fmt.Println("cals", obj.GroupName)
 	if !checkDeletePermissionGroupRequest(obj) {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
