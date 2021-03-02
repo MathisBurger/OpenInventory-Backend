@@ -9,17 +9,21 @@ import (
 	"io/ioutil"
 )
 
+// defined config path
 var cfg = "./config/config.json"
 
+// cache struct
 type Table struct {
 	name string `json:"name"`
 }
 
+// checks if config exists
 func config_exists() bool {
 	_, err := ioutil.ReadFile(cfg)
 	return err == nil
 }
 
+// retuns config as string
 func GetConfigContent() string {
 	f, err := ioutil.ReadFile(cfg)
 	if err != nil {
@@ -29,29 +33,39 @@ func GetConfigContent() string {
 
 }
 
+// tests mysql connection
 func TestMySQLConnection(cfg *config.Config) bool {
+
 	connstr := cfg.Db.Username + ":" + cfg.Db.Password + "@tcp(" + cfg.Db.Host + ")/" + cfg.Db.Database
+
 	conn, err := sql.Open("mysql", connstr)
 	if err != nil {
 		fmt.Println("Connection to database failed")
-		defer conn.Close()
 		return false
 	}
+
 	fmt.Println("Successfully connected to database")
 	defer conn.Close()
 	return true
 }
 
+// checks for all tables
 func CheckForTables(cfg *config.Config) bool {
+
+	// connect to database
 	connstr := cfg.Db.Username + ":" + cfg.Db.Password + "@tcp(" + cfg.Db.Host + ")/" + cfg.Db.Database
 	conn, err := sql.Open("mysql", connstr)
 	if err != nil {
 		return false
 	}
+
+	// statement preparing
 	tables, err := conn.Query("SHOW TABLES LIKE 'inv_%';")
 	if err != nil {
 		return false
 	}
+
+	// fetching all tables
 	var activeTables []string
 	for tables.Next() {
 		var table Table
@@ -61,12 +75,16 @@ func CheckForTables(cfg *config.Config) bool {
 		}
 		activeTables = append(activeTables, table.name)
 	}
-	if len(activeTables) == 2 {
+	if len(activeTables) == 3 {
 		fmt.Println("All required tables are existing")
 		return true
 	}
+
+	// defined required tables
 	requiredTables := [3]string{"inv_users", "inv_tables", "inv_permissions"}
 	var outstandingTables []string
+
+	// checking if table exists
 	for _, el := range requiredTables {
 		if !utils.ContainsStr(activeTables, el) {
 			outstandingTables = append(outstandingTables, el)
@@ -75,15 +93,20 @@ func CheckForTables(cfg *config.Config) bool {
 			fmt.Println("Table", el, "exists")
 		}
 	}
+
+	// generate missing tables
 	for _, tab := range outstandingTables {
 		GenerateTable(conn, tab)
 	}
-	tables.Close()
+
+	defer tables.Close()
 	defer conn.Close()
 	return true
 }
 
+// generates table
 func GenerateTable(conn *sql.DB, name string) {
+	// check table name
 	switch name {
 	case "inv_users":
 		creationString := "CREATE TABLE inv_users(id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32), password VARCHAR(1024), token VARCHAR(32), permissions TEXT, root TINYINT(1), mail VARCHAR(128), displayname VARCHAR(32), register_date DATETIME, status VARCHAR(16));"
@@ -105,27 +128,25 @@ func GenerateTable(conn *sql.DB, name string) {
 	fmt.Println("created table", name)
 }
 
+// insert default user
 func InsertDefaultUser(conn *sql.DB) {
-	// Admin123 as MD5
+
+	// "Admin123" as MD5
 	hash := utils.HashWithSalt("e64b78fc3bc91bcbc7dc232ba8ec59e0")
-	stmt, err := conn.Prepare("INSERT INTO inv_users (id, username, password, token, permissions, root, mail, displayname, register_date, status) VALUES (NULL, 'root',  ?, 'None', 'default.everyone;default.root', '1', 'example@mail.de', 'root', current_timestamp(), 'enabled');")
-	if err != nil {
-		utils.LogError(err.Error(), "InstallationFunctions.go", 113)
-	}
+	stmt, _ := conn.Prepare("INSERT INTO inv_users (id, username, password, token, permissions, root, mail, displayname, register_date, status) VALUES (NULL, 'root',  ?, 'None', 'default.everyone;default.root', '1', 'example@mail.de', 'root', current_timestamp(), 'enabled');")
+
 	stmt.Exec(hash)
 	defer stmt.Close()
 }
 
+// insert default permission groups
 func InsertDefaultPermissionGroups(conn *sql.DB) {
-	stmt, err := conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, 'default.everyone', '96,97,98', '1');")
-	if err != nil {
-		utils.LogError(err.Error(), "InstallationFunctions.go", 122)
-	}
-	stmt.Exec()
-	stmt, err = conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, 'default.root', '96,97,98', '100');")
-	if err != nil {
-		utils.LogError(err.Error(), "InstallationFunctions.go", 127)
-	}
-	stmt.Exec()
+
+	stmt, _ := conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, 'default.everyone', '96,97,98', '1');")
 	defer stmt.Close()
+	stmt.Exec()
+
+	stmt, _ = conn.Prepare("INSERT INTO `inv_permissions` (`ID`, `name`, `color`, `permission-level`) VALUES (NULL, 'default.root', '96,97,98', '100');")
+	defer stmt.Close()
+	stmt.Exec()
 }
