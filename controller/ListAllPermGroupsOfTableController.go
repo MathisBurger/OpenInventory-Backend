@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	dbModels "github.com/MathisBurger/OpenInventory-Backend/database/models"
@@ -31,8 +32,8 @@ type listAllPermGroupsOfTableResponse struct {
 func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(listAllPermGroupsOfTableRequest)
-	err := c.BodyParser(obj)
+	obj := listAllPermGroupsOfTableRequest{}
+	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
@@ -72,6 +73,6 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 
 // checks the request
 // struct fields should not be default
-func checkListAllPermGroupsOfTableRequest(obj *listAllPermGroupsOfTableRequest) bool {
+func checkListAllPermGroupsOfTableRequest(obj listAllPermGroupsOfTableRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != ""
 }

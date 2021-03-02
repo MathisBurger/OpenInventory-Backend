@@ -1,6 +1,7 @@
 package controller
 
 import (
+	json2 "encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -34,8 +35,8 @@ type getTableContentResponse struct {
 func GetTableContentController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(getTableContentRequest)
-	err := c.BodyParser(obj)
+	obj := getTableContentRequest{}
+	err := json2.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
@@ -80,6 +81,6 @@ func GetTableContentController(c *fiber.Ctx) error {
 
 // checks the request
 // struct fields should not be default
-func checkGetTableContentRequest(obj *getTableContentRequest) bool {
+func checkGetTableContentRequest(obj getTableContentRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != ""
 }

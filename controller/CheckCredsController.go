@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -18,8 +19,8 @@ import (
 func CheckCredsController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(models.LoginWithTokenRequest)
-	err := c.BodyParser(obj)
+	obj := models.LoginWithTokenRequest{}
+	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
@@ -47,6 +48,6 @@ func CheckCredsController(c *fiber.Ctx) error {
 
 // checks the request
 // struct fields should not be default
-func checkCheckCredsRequest(obj *models.LoginWithTokenRequest) bool {
+func checkCheckCredsRequest(obj models.LoginWithTokenRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != ""
 }

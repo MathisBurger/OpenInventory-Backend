@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -25,8 +26,8 @@ type deleteUserRequest struct {
 func DeleteUserController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(deleteUserRequest)
-	err := c.BodyParser(obj)
+	obj := deleteUserRequest{}
+	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
@@ -58,6 +59,6 @@ func DeleteUserController(c *fiber.Ctx) error {
 
 // checks the request
 // struct fields should not be default
-func checkDeleteUserRequest(obj *deleteUserRequest) bool {
+func checkDeleteUserRequest(obj deleteUserRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != ""
 }

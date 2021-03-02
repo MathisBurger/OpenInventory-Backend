@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -26,8 +27,8 @@ type editTableMinPermLvlRequest struct {
 func EditTableMinPermLvlController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(editTableMinPermLvlRequest)
-	err := c.BodyParser(obj)
+	obj := editTableMinPermLvlRequest{}
+	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
@@ -67,6 +68,6 @@ func EditTableMinPermLvlController(c *fiber.Ctx) error {
 
 // checks the request
 // struct fields should not be default
-func checkEditTableMinPermLvlRequest(obj *editTableMinPermLvlRequest) bool {
+func checkEditTableMinPermLvlRequest(obj editTableMinPermLvlRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.NewLvl > 0
 }

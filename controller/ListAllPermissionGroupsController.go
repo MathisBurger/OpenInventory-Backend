@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	dbModels "github.com/MathisBurger/OpenInventory-Backend/database/models"
@@ -24,8 +25,8 @@ type listAllPermissionGroupsResponse struct {
 func ListAllPermissionGroupsController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(models.LoginWithTokenRequest)
-	err := c.BodyParser(obj)
+	obj := models.LoginWithTokenRequest{}
+	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {

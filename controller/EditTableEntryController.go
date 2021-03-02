@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -30,8 +31,8 @@ type editTableEntryRequest struct {
 func EditTableEntryController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(editTableEntryRequest)
-	err := c.BodyParser(obj)
+	obj := editTableEntryRequest{}
+	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
@@ -105,6 +106,6 @@ func EditTableEntryController(c *fiber.Ctx) error {
 
 // checks the request
 // struct fields should not be default
-func checkEditTableEntryRequest(obj *editTableEntryRequest) bool {
+func checkEditTableEntryRequest(obj editTableEntryRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && len(obj.Row) > 0 && obj.ObjectID > 0
 }

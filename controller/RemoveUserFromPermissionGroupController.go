@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -27,8 +28,8 @@ type removeUserFromPermissionGroupRequest struct {
 func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(removeUserFromPermissionGroupRequest)
-	err := c.BodyParser(obj)
+	obj := removeUserFromPermissionGroupRequest{}
+	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
@@ -84,6 +85,6 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 
 // checks the request
 // struct fields should not be default
-func checkRemoveUserFromPermissionGroupRequest(obj *removeUserFromPermissionGroupRequest) bool {
+func checkRemoveUserFromPermissionGroupRequest(obj removeUserFromPermissionGroupRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.PermissionName != "" && obj.User != ""
 }

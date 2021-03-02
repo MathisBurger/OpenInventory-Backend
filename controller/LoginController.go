@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -18,8 +19,8 @@ import (
 func LoginController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(models.LoginRequest)
-	err := c.BodyParser(obj)
+	obj := models.LoginRequest{}
+	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
@@ -45,6 +46,6 @@ func LoginController(c *fiber.Ctx) error {
 
 }
 
-func checkLoginRequest(obj *models.LoginRequest) bool {
+func checkLoginRequest(obj models.LoginRequest) bool {
 	return obj.Username != "" && obj.Password != ""
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -30,8 +31,8 @@ type createPermissionGroupRequest struct {
 func CreatePermissionGroupController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(createPermissionGroupRequest)
-	err := c.BodyParser(obj)
+	obj := createPermissionGroupRequest{}
+	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
@@ -73,13 +74,13 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 
 // checks the request
 // struct fields should not be default
-func checkCreatePermissionGroupRequest(obj *createPermissionGroupRequest) bool {
+func checkCreatePermissionGroupRequest(obj createPermissionGroupRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.PermissionInfo.Name != "" && obj.PermissionInfo.ColorCode != "" && obj.PermissionInfo.PermissionLevel > 0
 }
 
 // checks for disallowed syntax in createPermissionGroupRequest object
 // returns a []byte response which can be send as response
-func checkPermissionGroupInput(obj *createPermissionGroupRequest) []byte {
+func checkPermissionGroupInput(obj createPermissionGroupRequest) []byte {
 
 	// check if permission-name contains ';'
 	if strings.Contains(obj.PermissionInfo.Name, ";") {

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	dbModels "github.com/MathisBurger/OpenInventory-Backend/database/models"
@@ -33,8 +34,8 @@ type listAllPermsOfUserResponse struct {
 func ListAllPermOfUserController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(listAllPermsOfUserRequest)
-	err := c.BodyParser(obj)
+	obj := listAllPermsOfUserRequest{}
+	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
@@ -65,6 +66,6 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 
 // checks the request
 // struct fields should not be default
-func checkListAllPermsOfUserRequest(obj *listAllPermsOfUserRequest) bool {
+func checkListAllPermsOfUserRequest(obj listAllPermsOfUserRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != ""
 }

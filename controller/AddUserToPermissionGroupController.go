@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -28,8 +29,8 @@ type addUserToPermissionGroupRequest struct {
 func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(addUserToPermissionGroupRequest)
-	err := c.BodyParser(obj)
+	obj := addUserToPermissionGroupRequest{}
+	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
@@ -91,6 +92,6 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 
 // checks the request
 // struct fields should not be default
-func checkAddUserToPermissionGroupRequest(obj *addUserToPermissionGroupRequest) bool {
+func checkAddUserToPermissionGroupRequest(obj addUserToPermissionGroupRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.Permission != "" && obj.User != ""
 }

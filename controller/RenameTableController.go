@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -26,8 +27,8 @@ type renameTableRequest struct {
 func RenameTableController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := new(renameTableRequest)
-	err := c.BodyParser(obj)
+	obj := renameTableRequest{}
+	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
@@ -73,6 +74,6 @@ func RenameTableController(c *fiber.Ctx) error {
 
 // checks the request
 // struct fields should not be default
-func checkRenameTableRequest(obj *renameTableRequest) bool {
+func checkRenameTableRequest(obj renameTableRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.NewName != ""
 }
