@@ -1,5 +1,6 @@
 package models
 
+// struct for user as response
 type OutputUserStruct struct {
 	Username     string  `json:"username"`
 	Root         bool    `json:"root"`

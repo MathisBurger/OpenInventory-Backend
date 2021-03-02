@@ -1,5 +1,6 @@
 package models
 
+// table model
 type TableModel struct {
 	ID         int    `json:"id"`
 	Name       string `json:"name"`

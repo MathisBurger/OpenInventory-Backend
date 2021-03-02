@@ -1,5 +1,6 @@
 package models
 
+// login with token request
 type LoginWithTokenRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`

@@ -7,6 +7,7 @@ import (
 
 type MessageModel map[string]string
 
+// general message model
 func GetJSONResponse(
 	message string,
 	alert string,
