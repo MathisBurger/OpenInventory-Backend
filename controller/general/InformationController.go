@@ -1,4 +1,4 @@
-package controller
+package general
 
 import (
 	"github.com/MathisBurger/OpenInventory-Backend/models"

@@ -38,26 +38,26 @@ func CreateTableController(c *fiber.Ctx) error {
 			utils.LogError(err.Error(), "CreateTableController.go", 26)
 		}
 
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkCreateTableRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check table name length
 	if !checkTableNameLength(obj.TableName) {
-		res, _ := models.GetJSONResponse("Table name is too long", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Table name is too long", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	if actions.CreateTable(obj.Username, obj.Password, obj.Token, obj.TableName, parse(obj.RowConfig), obj.MinPermLvl) {
-		res, _ := models.GetJSONResponse("successful", "alert alert-success", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("successful", "#1db004", "ok", "None", 200)
 		return c.Send(res)
 	}
 
-	res, _ := models.GetJSONResponse("creation failed", "alert alert-danger", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("creation failed", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 }
 

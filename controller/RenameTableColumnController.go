@@ -37,17 +37,17 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "RenameTableColumnController.go", 26)
 		}
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkRenameTableColumnRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check login
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "Failed", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "Failed", "None", 200)
 		return c.Send(res)
 	}
 
@@ -58,7 +58,7 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 
 	// check if user has permission for table
 	if len(columns) == 0 {
-		resp, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		resp, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 		return c.Send(resp)
 	}
 
@@ -87,11 +87,11 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 
 				// rename column
 				if !actions.RenameTableColumn(obj.TableName, obj.NewName, val.DATA_TYPE, length) {
-					res, _ := models.GetJSONResponse("Error while changing column name", "alert alert-danger", "ok", "None", 200)
+					res, _ := models.GetJSONResponse("Error while changing column name", "#d41717", "ok", "None", 200)
 					return c.Send(res)
 				}
 
-				res, _ := models.GetJSONResponse("Successfully changed column name", "alert alert-success", "ok", "None", 200)
+				res, _ := models.GetJSONResponse("Successfully changed column name", "#1db004", "ok", "None", 200)
 				return c.Send(res)
 			}
 		}

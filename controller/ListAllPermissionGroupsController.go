@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
+	"github.com/MathisBurger/OpenInventory-Backend/controller/general"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	dbModels "github.com/MathisBurger/OpenInventory-Backend/database/models"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -13,6 +14,7 @@ import (
 type listAllPermissionGroupsResponse struct {
 	Message          string                     `json:"message"`
 	PermissionGroups []dbModels.PermissionModel `json:"permission_groups"`
+	Alert            string                     `json:"alert"`
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -33,22 +35,23 @@ func ListAllPermissionGroupsController(c *fiber.Ctx) error {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "ListAllPermissionGroupsController.go", 21)
 		}
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !checkCheckCredsRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+	if !general.CheckCheckCredsRequest(obj) {
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check login
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	return c.JSON(listAllPermissionGroupsResponse{
 		"Successfully fetched all permission groups",
 		actions.GetAllPermissions(),
+		"#1db004",
 	})
 }

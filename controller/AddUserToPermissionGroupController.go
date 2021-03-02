@@ -38,17 +38,17 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 			utils.LogError(err.Error(), "AddUserToPermissionGroupController.go", 26)
 		}
 
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkAddUserToPermissionGroupRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check login status
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("Wrong login credentials", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong login credentials", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -60,21 +60,21 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 		userexists, user := actions.GetUserByUsername(obj.User)
 
 		if !userexists {
-			res, _ := models.GetJSONResponse("User does not exist", "alert alert-danger", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("User does not exist", "#d41717", "ok", "None", 200)
 			return c.Send(res)
 		}
 
 		// check if user already owns this permission
 		if utils.ContainsStr(strings.Split(user.Permissions, ";"), obj.Permission) {
 
-			res, _ := models.GetJSONResponse("The user is already member of this group", "alert alert-warning", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("The user is already member of this group", "#d41717", "ok", "None", 200)
 			return c.Send(res)
 		}
 
 		// check if permission exists
 		if permexists, _ := actions.GetPermissionByName(obj.Permission); !permexists {
 
-			res, _ := models.GetJSONResponse("This permissiongroup does not exist", "alert alert-warning", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("This permissiongroup does not exist", "#d41717", "ok", "None", 200)
 			return c.Send(res)
 		}
 
@@ -82,11 +82,11 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 
 		actions.UpdateUserPermission(obj.User, finalPermissions)
 
-		res, _ := models.GetJSONResponse("User added to permissiongroup", "alert alert-success", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("User added to permissiongroup", "#1db004", "ok", "None", 200)
 		return c.Send(res)
 	}
 
-	res, _ := models.GetJSONResponse("Your permission-level is too low", "alert alert-warning", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("Your permission-level is too low", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 }
 

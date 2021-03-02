@@ -36,17 +36,17 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 			utils.LogError(err.Error(), "DeletePermissionGroupController.go", 24)
 		}
 
-		res, _ := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
+		res, _ := models.GetJSONResponse("Invaild JSON body", "#d41717", "error", "None", 200)
 		return c.Send(res)
 	}
 	if !checkDeletePermissionGroupRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check login status
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -87,11 +87,11 @@ func DeletePermissionGroupController(c *fiber.Ctx) error {
 			utils.LogError(err.Error(), "DeletePermissionGroupController.go", 55)
 		}
 
-		res, _ := models.GetJSONResponse("Successfully deleted PermissionGroup", "alert alert-success", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Successfully deleted PermissionGroup", "#1db004", "ok", "None", 200)
 		return c.Send(res)
 	}
 
-	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 }
 

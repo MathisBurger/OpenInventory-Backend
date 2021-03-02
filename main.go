@@ -4,6 +4,7 @@ import (
 	"fmt"
 	config2 "github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/controller"
+	"github.com/MathisBurger/OpenInventory-Backend/controller/general"
 	"github.com/MathisBurger/OpenInventory-Backend/installation"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -25,8 +26,10 @@ func main() {
 		initWebpaths(app, config)
 
 		// Basic GET Requests
-		app.Get("/api", controller.DefaultController)
-		app.Get("/api/info", controller.InformationController)
+		app.Get("/api", general.DefaultController)
+		app.Get("/api/info", general.InformationController)
+		app.Post("/api/login", general.LoginController)
+		app.Post("/api/check-creds", general.CheckCredsController)
 
 		// user management
 		app.Post("/api/user-management/ListUser", controller.ListUserController)
@@ -34,8 +37,6 @@ func main() {
 		app.Post("/api/user-management/DeleteUser", controller.DeleteUserController)
 
 		// table management
-		app.Post("/api/login", controller.LoginController)
-		app.Post("/api/check-creds", controller.CheckCredsController)
 		app.Post("/api/table-management/getAllTables", controller.GetAllTablesController)
 		app.Post("/api/table-management/createTable", controller.CreateTableController)
 		app.Post("/api/table-management/getTableContent", controller.GetTableContentController)

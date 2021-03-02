@@ -35,11 +35,11 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "RemoveTableEntryController.go", 25)
 		}
-		res, _ := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
+		res, _ := models.GetJSONResponse("Invaild JSON body", "#d41717", "error", "None", 200)
 		return c.Send(res)
 	}
 	if !checkRemoveTableEntryRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -60,13 +60,13 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 
 			actions.ChangeNumOfEntrysBy(obj.TableName, -1)
 
-			res, _ := models.GetJSONResponse("Successfully deleted entry", "alert alert-success", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("Successfully deleted entry", "#1db004", "ok", "None", 200)
 			return c.Send(res)
 		}
-		res, _ := models.GetJSONResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission perform this", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
-	res, _ := models.GetJSONResponse("You do not have the permission perform this", "alert alert-danger", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("You do not have the permission perform this", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 }
 

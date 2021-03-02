@@ -41,11 +41,11 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "GetTableColumnsController.go", 23)
 		}
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkGetTableColumnsRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -53,14 +53,14 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 
 	// check response type
 	if fmt.Sprintf("%T", columns) == "bool" {
-		res, _ := models.GetJSONResponse("Error while fetching Array", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Error while fetching Array", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// if type of columns != bool
 	return c.JSON(getTableColumnsResponse{
 		Message: "successful",
-		Alert:   "alert alert-success",
+		Alert:   "#1db004",
 		Columns: columns,
 	})
 }

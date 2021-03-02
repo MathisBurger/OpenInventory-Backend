@@ -36,17 +36,17 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "RemoveUserFromPermissionGroupController.go", 25)
 		}
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkRemoveUserFromPermissionGroupRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check login
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "Failed", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "Failed", "None", 200)
 		return c.Send(res)
 	}
 
@@ -79,7 +79,7 @@ func RemoveUserFromPermissionGroupController(c *fiber.Ctx) error {
 	}
 	actions.UpdateUserPermission(obj.User, newPerms)
 
-	res, _ := models.GetJSONResponse("Successfully removed permission from user", "alert alert-success", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("Successfully removed permission from user", "#1db004", "ok", "None", 200)
 	return c.Send(res)
 }
 

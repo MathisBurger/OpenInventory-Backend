@@ -37,21 +37,21 @@ func AddTableEntryController(c *fiber.Ctx) error {
 			utils.LogError(err.Error(), "AddTableEntryController.go", 22)
 		}
 
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkAddTableEntryRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check adding status
 	if actions.AddTableEntry(obj.Username, obj.Password, obj.Token, obj.TableName, obj.Row) {
-		res, _ := models.GetJSONResponse("successful", "alert alert-success", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("successful", "#1db004", "ok", "None", 200)
 		return c.Send(res)
 	}
 
-	res, _ := models.GetJSONResponse("creation failed", "alert alert-danger", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("creation failed", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 }
 

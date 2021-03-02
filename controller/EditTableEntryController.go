@@ -9,9 +9,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// ---------------------------------------------
-//               editTableEntryRequest
-// ---------------------------------------------
 type editTableEntryRequest struct {
 	Username  string                 `json:"username"`
 	Password  string                 `json:"password"`
@@ -39,11 +36,11 @@ func EditTableEntryController(c *fiber.Ctx) error {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "EditTableEntryController.go", 23)
 		}
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkEditTableEntryRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -88,19 +85,19 @@ func EditTableEntryController(c *fiber.Ctx) error {
 			_, err = stmt.Exec(values...)
 
 			if err != nil {
-				resp, _ := models.GetJSONResponse("Illegal row-map", "alert alert-danger", "ok", "None", 200)
+				resp, _ := models.GetJSONResponse("Illegal row-map", "#d41717", "ok", "None", 200)
 				return c.Send(resp)
 			}
 
-			res, _ := models.GetJSONResponse("Successfully updated entry", "alert alert-success", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("Successfully updated entry", "#1db004", "ok", "None", 200)
 			return c.Send(res)
 		}
 
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
-	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 }
 

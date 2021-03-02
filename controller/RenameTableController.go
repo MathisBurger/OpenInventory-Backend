@@ -35,17 +35,17 @@ func RenameTableController(c *fiber.Ctx) error {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "RenameTableController.go", 24)
 		}
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkRenameTableRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check login
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -58,17 +58,17 @@ func RenameTableController(c *fiber.Ctx) error {
 	if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
 
 		if !actions.RenameTable(obj.TableName, obj.NewName) {
-			res, _ := models.GetJSONResponse("Error while renaming table", "alert alert-danger", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("Error while renaming table", "#d41717", "ok", "None", 200)
 			return c.Send(res)
 		}
 
 		actions.UpdateTablename(obj.TableName, obj.NewName)
 
-		res, _ := models.GetJSONResponse("Successfully updated tablename", "alert alert-success", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Successfully updated tablename", "#1db004", "ok", "None", 200)
 		return c.Send(res)
 	}
 
-	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 }
 

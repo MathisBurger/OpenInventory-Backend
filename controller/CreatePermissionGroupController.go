@@ -40,17 +40,17 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 			utils.LogError(err.Error(), "CreatePermissionGroupController.go", 29)
 		}
 
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkCreatePermissionGroupRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check login status
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -62,13 +62,13 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 	}
 
 	if exists, _ := actions.GetPermissionByName(obj.PermissionInfo.Name); exists {
-		res, _ := models.GetJSONResponse("This group already exists", "alert alert-warning", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("This group already exists", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	actions.InsertPermissionGroup(obj.PermissionInfo.Name, obj.PermissionInfo.ColorCode, obj.PermissionInfo.PermissionLevel)
 
-	res, _ := models.GetJSONResponse("Created permission-group", "alert alert-success", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("Created permission-group", "#1db004", "ok", "None", 200)
 	return c.Send(res)
 }
 
@@ -86,7 +86,7 @@ func checkPermissionGroupInput(obj createPermissionGroupRequest) []byte {
 	if strings.Contains(obj.PermissionInfo.Name, ";") {
 
 		// returns "';' is not allowed in group name" response if permission-name contains ';'
-		res, _ := models.GetJSONResponse("';' is not allowed in group name", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("';' is not allowed in group name", "#d41717", "ok", "None", 200)
 		return res
 	}
 
@@ -95,7 +95,7 @@ func checkPermissionGroupInput(obj createPermissionGroupRequest) []byte {
 
 	// check if user has higher permission
 	if !actions.CheckUserHasHigherPermission(conn, obj.Username, obj.PermissionInfo.PermissionLevel, "") {
-		res, _ := models.GetJSONResponse("Your permission is not high enough", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Your permission is not high enough", "#d41717", "ok", "None", 200)
 		return res
 	}
 

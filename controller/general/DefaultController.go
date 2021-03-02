@@ -1,4 +1,4 @@
-package controller
+package general
 
 import (
 	"github.com/MathisBurger/OpenInventory-Backend/models"
@@ -13,7 +13,7 @@ import (
 /////////////////////////////////////////////////////////////
 func DefaultController(c *fiber.Ctx) error {
 
-	res, _ := models.GetJSONResponse("API online", "alert alert-success", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("API online", "#1db004", "ok", "None", 200)
 	return c.Send(res)
 
 }

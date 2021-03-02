@@ -1,4 +1,4 @@
-package controller
+package general
 
 import (
 	"encoding/json"
@@ -28,26 +28,26 @@ func CheckCredsController(c *fiber.Ctx) error {
 			utils.LogError(err.Error(), "CheckCredsController.go", 17)
 		}
 
-		res, _ := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
+		res, _ := models.GetJSONResponse("Invaild JSON body", "#d41717", "error", "None", 200)
 		return c.Send(res)
 	}
-	if !checkCheckCredsRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+	if !CheckCheckCredsRequest(obj) {
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check login status
 	if actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("Login successful", "alert alert-success", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Login successful", "#1db004", "ok", "None", 200)
 		return c.Send(res)
 	}
 
-	res, _ := models.GetJSONResponse("Login failed", "alert alert-warning", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("Login failed", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 }
 
 // checks the request
 // struct fields should not be default
-func checkCheckCredsRequest(obj models.LoginWithTokenRequest) bool {
+func CheckCheckCredsRequest(obj models.LoginWithTokenRequest) bool {
 	return obj.Username != "" && obj.Password != "" && obj.Token != ""
 }

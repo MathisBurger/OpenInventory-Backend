@@ -35,11 +35,11 @@ func DeleteUserController(c *fiber.Ctx) error {
 			utils.LogError(err.Error(), "DeleteUserController.go", 40)
 		}
 
-		res, _ := models.GetJSONResponse("Invalid JSON body", "alert alert-danger", "error", "None", 200)
+		res, _ := models.GetJSONResponse("Invalid JSON body", "#d41717", "error", "None", 200)
 		return c.Send(res)
 	}
 	if !checkDeleteUserRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -48,11 +48,11 @@ func DeleteUserController(c *fiber.Ctx) error {
 
 		actions.DeleteUser(obj.User)
 
-		resp, _ := models.GetJSONResponse("Successfully deleted user", "alert alert-success", "ok", "None", 200)
+		resp, _ := models.GetJSONResponse("Successfully deleted user", "#1db004", "ok", "None", 200)
 		return c.Send(resp)
 	}
 
-	res, _ := models.GetJSONResponse("You do not have the permission to execute this", "alert alert-danger", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("You do not have the permission to execute this", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 
 }

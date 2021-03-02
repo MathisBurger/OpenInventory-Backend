@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
+	"github.com/MathisBurger/OpenInventory-Backend/controller/general"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -33,11 +34,11 @@ func ListUserController(c *fiber.Ctx) error {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "ListUserController.go", 16)
 		}
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !checkCheckCredsRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+	if !general.CheckCheckCredsRequest(obj) {
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -60,12 +61,12 @@ func ListUserController(c *fiber.Ctx) error {
 
 		return c.JSON(listUserResponse{
 			Message: "successfully fetched user",
-			Alert:   "alert alert-success",
+			Alert:   "#1db004",
 			User:    outputUser,
 		})
 	}
 
 	// no permission
-	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 }

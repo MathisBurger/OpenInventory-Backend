@@ -43,23 +43,23 @@ func AddUserController(c *fiber.Ctx) error {
 			utils.LogError(err.Error(), "AddUserController.go", 19)
 		}
 
-		res, _ := models.GetJSONResponse("Invaild JSON body", "alert alert-danger", "error", "None", 200)
+		res, _ := models.GetJSONResponse("Invaild JSON body", "#d41717", "error", "None", 200)
 		return c.Send(res)
 	}
 	if !checkAddUserRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check if the username is too long
 	if !checkUsernameLength(obj.User.Username) {
-		res, _ := models.GetJSONResponse("This username is too long", "alert alert-warning", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("This username is too long", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check if the mail is valid
 	if !checkEmail(obj.User.Mail) {
-		res, _ := models.GetJSONResponse("Your mail is not a email-address", "alert alert-warning", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Your mail is not a email-address", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -70,12 +70,12 @@ func AddUserController(c *fiber.Ctx) error {
 
 		actions.AddUser(obj.User.Username, hash, obj.User.Root, obj.User.Mail, obj.User.Status)
 
-		res, _ := models.GetJSONResponse("Successfully added user", "alert alert-success", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Successfully added user", "#1db004", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// login failed
-	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 }
 

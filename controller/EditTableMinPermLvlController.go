@@ -35,17 +35,17 @@ func EditTableMinPermLvlController(c *fiber.Ctx) error {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "EditTableMinPermLvlController.go", 24)
 		}
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkEditTableMinPermLvlRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check login
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -62,7 +62,7 @@ func EditTableMinPermLvlController(c *fiber.Ctx) error {
 	// update min perm lvl
 	actions.UpdateTableMinPermLvl(obj.TableName, obj.NewLvl)
 
-	res, _ := models.GetJSONResponse("Successfully updated minimum permission level of table", "alert alert-success", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("Successfully updated minimum permission level of table", "#1db004", "ok", "None", 200)
 	return c.Send(res)
 }
 

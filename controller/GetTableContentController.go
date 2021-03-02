@@ -44,11 +44,11 @@ func GetTableContentController(c *fiber.Ctx) error {
 			utils.LogError(err.Error(), "GetTableContentController.go", 24)
 		}
 
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkGetTableContentRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -65,13 +65,13 @@ func GetTableContentController(c *fiber.Ctx) error {
 	json, err := utils.QueryToJson(conn, stmt)
 
 	if err != nil {
-		res, _ := models.GetJSONResponse("Invalid table name", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Invalid table name", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	return c.JSON(getTableContentResponse{
 		Message:    "successful",
-		Alert:      "alert alert-success",
+		Alert:      "#1db004",
 		Status:     "ok",
 		HttpStatus: 200,
 		Elements:   strings.ReplaceAll(strings.ReplaceAll(string(json), "\n", ""), "\t", ""),

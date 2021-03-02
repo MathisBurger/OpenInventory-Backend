@@ -1,4 +1,4 @@
-package controller
+package general
 
 import (
 	"encoding/json"
@@ -38,10 +38,10 @@ func LoginController(c *fiber.Ctx) error {
 	// check login
 	status, token := actions.MysqlLogin(obj.Username, obj.Password)
 	if status {
-		res, _ := models.GetJSONResponse("Login successful", "alert alert-success", "ok", token, 200)
+		res, _ := models.GetJSONResponse("Login successful", "#1db004", "ok", token, 200)
 		return c.Send(res)
 	}
-	res, _ := models.GetJSONResponse("Login failed", "alert alert-warning", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("Login failed", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 
 }

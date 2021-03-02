@@ -35,11 +35,11 @@ func DeleteTableController(c *fiber.Ctx) error {
 			utils.LogError(err.Error(), "DeleteTableController.go", 23)
 		}
 
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkDeleteTableRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -56,16 +56,16 @@ func DeleteTableController(c *fiber.Ctx) error {
 
 			actions.DropTable(obj.TableName)
 
-			res, _ := models.GetJSONResponse("Successfully deleted table", "alert alert-success", "ok", "None", 200)
+			res, _ := models.GetJSONResponse("Successfully deleted table", "#1db004", "ok", "None", 200)
 			return c.Send(res)
 		}
 
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 
 	}
 
-	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 
 }

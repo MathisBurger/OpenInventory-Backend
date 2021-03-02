@@ -20,6 +20,7 @@ type listAllPermGroupsOfTableRequest struct {
 type listAllPermGroupsOfTableResponse struct {
 	PermGroups []dbModels.PermissionModel `json:"perm_groups"`
 	Message    string                     `json:"message"`
+	Alert      string                     `json:"alert"`
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -40,17 +41,17 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "ListAllPermGroupsOfTableController.go", 29)
 		}
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkListAllPermGroupsOfTableRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check login
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -61,13 +62,14 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 
 	// check permission
 	if !actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
-		res, _ := models.GetJSONResponse("Your permission is not high enough to view this table", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Your permission is not high enough to view this table", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	return c.JSON(listAllPermGroupsOfTableResponse{
 		actions.GetAllPermissionsWithHigherPermLvl(table.MinPermLvl),
 		"Successfully fetched all permissiongroups of table",
+		"#1db004",
 	})
 }
 

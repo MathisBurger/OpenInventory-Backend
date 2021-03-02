@@ -22,6 +22,7 @@ type listAllPermsOfUserResponse struct {
 	Permissions []dbModels.PermissionModel `json:"permissions"`
 	Status      string                     `json:"status"`
 	HttpStatus  int                        `json:"http_status"`
+	Alert       string                     `json:"alert"`
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -42,17 +43,17 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
 			utils.LogError(err.Error(), "ListAllPermsOfUserController.go", 31)
 		}
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 	if !checkListAllPermsOfUserRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
 	// check login
 	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-danger", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -61,6 +62,7 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 		actions.GetPermissionsOfUser(obj.User),
 		"ok",
 		200,
+		"#1db004",
 	})
 }
 
