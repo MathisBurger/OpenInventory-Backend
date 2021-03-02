@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// cache struct
 type UserStruct struct {
 	Id           int       `json:"id"`
 	Username     string    `json:"username"`
@@ -17,39 +18,42 @@ type UserStruct struct {
 	Status       string    `json:"status"`
 }
 
+// cache struct
 type DisplayNameStruct struct {
 	Displayname string `json:"displayname"`
 }
 
+////////////////////////////////////////
+// Checks login status of user        //
+// by username and password           //
+////////////////////////////////////////
 func MysqlLogin(username string, password string) (bool, string) {
+
 	conn := GetConn()
+	defer conn.Close()
+
 	hash := utils.HashWithSalt(password)
-	stmt, err := conn.Prepare("SELECT * FROM inv_users WHERE displayname=? AND password=?")
-	if err != nil {
-		utils.LogError(err.Error(), "Login.go", 29)
-	}
-	resp, err := stmt.Query(username, hash)
-	if err != nil {
-		utils.LogError(err.Error(), "Login.go", 33)
-	}
+
+	stmt, _ := conn.Prepare("SELECT * FROM inv_users WHERE displayname=? AND password=?")
+	defer stmt.Close()
+
+	resp, _ := stmt.Query(username, hash)
+	defer resp.Close()
+
 	var answers []string
 	for resp.Next() {
 		var user UserStruct
-		err = resp.Scan(&user.Username)
-		if err != nil {
-			utils.LogError(err.Error(), "Login.go", 40)
-		}
+		_ = resp.Scan(&user.Username)
+
 		answers = append(answers, user.Username)
 	}
-	defer resp.Close()
-	defer stmt.Close()
-	defer conn.Close()
+
 	if len(answers) == 1 {
-		stmt, err = conn.Prepare("UPDATE inv_users SET token = ? WHERE displayname=?")
-		if err != nil {
-			utils.LogError(err.Error(), "Login.go", 50)
-		}
+		stmt, _ = conn.Prepare("UPDATE inv_users SET token = ? WHERE displayname=?")
+		defer stmt.Close()
+
 		token := utils.GenerateToken()
+
 		_, _ = stmt.Exec(token, username)
 		return true, token
 	}
@@ -57,55 +61,58 @@ func MysqlLogin(username string, password string) (bool, string) {
 
 }
 
+//////////////////////////////////////
+// Checks login status by           //
+// username, password and token     //
+//////////////////////////////////////
 func MysqlLoginWithToken(username string, password string, token string) bool {
+
 	conn := GetConn()
+	defer conn.Close()
+
 	hash := utils.HashWithSalt(password)
-	stmt, err := conn.Prepare("SELECT `displayname` FROM inv_users WHERE displayname=? AND password=? AND token=?")
-	if err != nil {
-		utils.LogError(err.Error(), "Login.go", 65)
-	}
-	resp, err := stmt.Query(username, hash, token)
-	if err != nil {
-		utils.LogError(err.Error(), "Login.go", 69)
-	}
+
+	stmt, _ := conn.Prepare("SELECT `displayname` FROM inv_users WHERE displayname=? AND password=? AND token=?")
+	defer stmt.Close()
+
+	resp, _ := stmt.Query(username, hash, token)
+	defer stmt.Close()
+
 	var answers []string
 	for resp.Next() {
 		var user DisplayNameStruct
-		err = resp.Scan(&user.Displayname)
-		if err != nil {
-			utils.LogError(err.Error(), "Login.go", 76)
-		}
+		_ = resp.Scan(&user.Displayname)
+
 		answers = append(answers, user.Displayname)
 	}
-	defer resp.Close()
-	defer stmt.Close()
-	defer conn.Close()
+
 	return len(answers) == 1
 }
 
+//////////////////////////////////////////
+// Checks login as root status by       //
+// username, password and token         //
+//////////////////////////////////////////
 func MysqlLoginWithTokenRoot(username string, password string, token string) bool {
+
 	conn := GetConn()
+	defer conn.Close()
+
 	hash := utils.HashWithSalt(password)
-	stmt, err := conn.Prepare("SELECT * FROM inv_users WHERE displayname=? AND password=? AND token=? AND root=1;")
-	if err != nil {
-		utils.LogError(err.Error(), "Login.go", 91)
-	}
-	resp, err := stmt.Query(username, hash, token)
-	if err != nil {
-		utils.LogError(err.Error(), "Login.go", 95)
-	}
+
+	stmt, _ := conn.Prepare("SELECT * FROM inv_users WHERE displayname=? AND password=? AND token=? AND root=1;")
+	defer stmt.Close()
+
+	resp, _ := stmt.Query(username, hash, token)
+	defer resp.Close()
+
 	var answers []string
 	for resp.Next() {
 		var user UserStruct
-		err = resp.Scan(&user.Displayname)
-		if err != nil {
-			utils.LogError(err.Error(), "Login.go", 102)
-		}
+		_ = resp.Scan(&user.Displayname)
+
 		answers = append(answers, user.Displayname)
 	}
-	defer resp.Close()
-	defer stmt.Close()
-	defer conn.Close()
-	return len(answers) == 1
 
+	return len(answers) == 1
 }

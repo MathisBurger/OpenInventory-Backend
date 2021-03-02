@@ -1,5 +1,8 @@
 package actions
 
+////////////////////////////////
+// Creates permission group   //
+////////////////////////////////
 func InsertPermissionGroup(name string, color string, permLevel int) {
 	conn := GetConn()
 	defer conn.Close()
