@@ -4,6 +4,7 @@ import (
 	"database/sql"
 )
 
+// global model
 type UserModel struct {
 	ID           int     `json:"id"`
 	Username     string  `json:"username"`
@@ -17,12 +18,14 @@ type UserModel struct {
 	Status       string  `json:"status"`
 }
 
+// fetch only one [resp.Next() required]
 func (c UserModel) Parse(resp *sql.Rows) UserModel {
 	var mdl UserModel
 	_ = resp.Scan(&mdl.ID, &mdl.Username, &mdl.Password, &mdl.Token, &mdl.Permissions, &mdl.Root, &mdl.Mail, &mdl.Displayname, &mdl.RegisterDate, &mdl.Status)
 	return mdl
 }
 
+// fetch all
 func (c UserModel) ParseAll(resp *sql.Rows) []UserModel {
 	var answers []UserModel
 	for resp.Next() {
