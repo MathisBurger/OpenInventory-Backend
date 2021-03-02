@@ -1,5 +1,6 @@
 package utils
 
+// checks if array contains string
 func ContainsStr(arr []string, search string) (contains bool) {
 	contains = false
 	for _, el := range arr {

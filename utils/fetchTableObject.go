@@ -6,6 +6,7 @@ import (
 	"reflect"
 )
 
+// queries every table to json
 func QueryToJson(db *sql.DB, query string, args ...interface{}) ([]byte, error) {
 	var objects []map[string]interface{}
 
@@ -13,13 +14,19 @@ func QueryToJson(db *sql.DB, query string, args ...interface{}) ([]byte, error) 
 	if err != nil {
 		return nil, err
 	}
+
 	for rows.Next() {
+		// get column types
 		columns, err := rows.ColumnTypes()
 		if err != nil {
 			return nil, err
 		}
+
+		// Create row statics
 		values := make([]interface{}, len(columns))
 		object := map[string]interface{}{}
+
+		// fetch row into object
 		for i, column := range columns {
 			object[column.Name()] = reflect.New(column.ScanType()).Interface()
 			values[i] = object[column.Name()]
@@ -32,6 +39,7 @@ func QueryToJson(db *sql.DB, query string, args ...interface{}) ([]byte, error) 
 
 		objects = append(objects, object)
 	}
+
 	defer rows.Close()
 	return json.MarshalIndent(objects, "", "\t")
 }

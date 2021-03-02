@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 )
 
+// hashes with SHA512
 func HashWithSalt(pwd string) string {
 	hasher := sha512.New()
 	hasher.Write([]byte(pwd))
