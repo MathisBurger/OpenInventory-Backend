@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	// check installation status
 	if installation.Install() {
 		config, _ := config2.ParseConfig()
 		app := fiber.New(fiber.Config{
