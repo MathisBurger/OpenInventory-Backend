@@ -86,7 +86,7 @@ func RenameTableColumnController(c *fiber.Ctx) error {
 				}
 
 				// rename column
-				if !actions.RenameTableColumn(obj.TableName, obj.NewName, val.DATA_TYPE, length) {
+				if !actions.RenameTableColumn(obj.TableName, obj.OldName, obj.NewName, val.DATA_TYPE, length) {
 					res, _ := models.GetJSONResponse("Error while changing column name", "#d41717", "ok", "None", 200)
 					return c.Send(res)
 				}

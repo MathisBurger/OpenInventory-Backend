@@ -1,6 +1,8 @@
 package actions
 
-import "github.com/MathisBurger/OpenInventory-Backend/database/models"
+import (
+	"github.com/MathisBurger/OpenInventory-Backend/database/models"
+)
 
 /////////////////////////////////////////////
 // Queries all columns of specific table   //
@@ -14,14 +16,13 @@ func GetTableColumns(displayname string, password string, token string, Tablenam
 	}
 
 	conn := GetConn()
-	stmt, _ := conn.Prepare("SELECT `min-perm-lvl` FROM `inv_tables` WHERE `name`=?;")
+	defer conn.Close()
 
-	// defining struct for later use
-	type cacheStruct struct {
-		MinPermLvl int `json:"min-perm-lvl"`
-	}
+	stmt, _ := conn.Prepare("SELECT * FROM `inv_tables` WHERE `name`=?;")
+	defer stmt.Close()
 
 	resp, _ := stmt.Query(Tablename)
+	defer resp.Close()
 
 	minPermLvl := models.TableModel{}.ParseAll(resp)[0].MinPermLvl
 

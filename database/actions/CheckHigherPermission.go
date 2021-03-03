@@ -12,14 +12,12 @@ import (
 // than other user                           //
 ///////////////////////////////////////////////
 func CheckUserHasHigherPermission(conn *sql.DB, username string, permLevel int, permName string) bool {
-
 	// gets value from function below
 	highestPermission := GetHighestPermission(conn, username)
 
 	if permLevel > 0 {
 		return highestPermission >= permLevel
 	} else if permName != "" {
-
 		stmt, err := conn.Prepare("SELECT `permission-level` FROM `inv_permissions` WHERE `name`=?")
 		defer stmt.Close()
 		if err != nil {
@@ -33,6 +31,7 @@ func CheckUserHasHigherPermission(conn *sql.DB, username string, permLevel int, 
 		}
 
 		wantedPermissionLevel := models.PermissionModel{}.ParseAll(resp)[0].PermissionLevel
+
 		return highestPermission >= wantedPermissionLevel
 	} else {
 		return false
@@ -60,6 +59,5 @@ func GetHighestPermission(conn *sql.DB, username string) int {
 			highestPermission = perm.PermissionLevel
 		}
 	}
-
 	return highestPermission
 }

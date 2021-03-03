@@ -3,12 +3,12 @@ package actions
 ////////////////////////////////////
 // Renames a column of table      //
 ////////////////////////////////////
-func RenameTableColumn(tablename string, newname string, datatype string, length string) bool {
+func RenameTableColumn(tablename string, oldname string, newname string, datatype string, length string) bool {
 
 	conn := GetConn()
 	defer conn.Close()
 
-	stmt, err := conn.Prepare("ALTER TABLE `table_" + tablename + "` CHANGE `" + tablename + "`  `" + newname + "` " + datatype +
+	stmt, err := conn.Prepare("ALTER TABLE `table_" + tablename + "` CHANGE `" + oldname + "`  `" + newname + "` " + datatype +
 		"(" + length + ") NULL DEFAULT NULL;")
 	if err != nil {
 		return false

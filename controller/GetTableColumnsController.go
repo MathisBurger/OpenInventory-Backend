@@ -49,6 +49,10 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 
+	if !actions.CheckIfTableExists(obj.TableName) {
+		res, _ := models.GetJSONResponse("table does not exist", "#d41717", "ok", "None", 200)
+		return c.Send(res)
+	}
 	columns := actions.GetTableColumns(obj.Username, obj.Password, obj.Token, obj.TableName)
 
 	// check response type
