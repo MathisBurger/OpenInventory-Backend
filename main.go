@@ -47,7 +47,7 @@ func main() {
 		app.Delete("/api/table-management/RemoveTableEntry", table_management.RemoveTableEntryController)
 		app.Delete("/api/table-management/DeleteTable", table_management.DeleteTableController)
 		app.Patch("/api/table-management/editTableEntry", table_management.EditTableEntryController)
-		app.Post("/api/table-management/renameTableColumn", table_management.RenameTableColumnController)
+		app.Patch("/api/table-management/renameTableColumn", table_management.RenameTableColumnController)
 		app.Post("/api/table-management/renameTable", table_management.RenameTableController)
 
 		// permission management
