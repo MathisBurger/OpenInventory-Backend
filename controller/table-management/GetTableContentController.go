@@ -1,8 +1,6 @@
 package table_management
 
 import (
-	json2 "encoding/json"
-	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -35,18 +33,14 @@ type getTableContentResponse struct {
 func GetTableContentController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := getTableContentRequest{}
-	err := json2.Unmarshal(c.Body(), &obj)
+	obj := getTableContentRequest{
+		Username:  c.Query("username", ""),
+		Password:  c.Query("password", ""),
+		Token:     c.Query("token", ""),
+		TableName: c.Query("table_name", ""),
+	}
 
 	// check request
-	if err != nil {
-		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
-			utils.LogError(err.Error(), "GetTableContentController.go", 24)
-		}
-
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
-		return c.Send(res)
-	}
 	if !checkGetTableContentRequest(obj) {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)

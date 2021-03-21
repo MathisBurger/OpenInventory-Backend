@@ -41,7 +41,7 @@ func main() {
 		// table management
 		app.Get("/api/table-management/getAllTables", table_management.GetAllTablesController)
 		app.Post("/api/table-management/createTable", table_management.CreateTableController)
-		app.Post("/api/table-management/getTableContent", table_management.GetTableContentController)
+		app.Get("/api/table-management/getTableContent", table_management.GetTableContentController)
 		app.Post("/api/table-management/AddTableEntry", table_management.AddTableEntryController)
 		app.Post("/api/table-management/getTableColumns", table_management.GetTableColumnsController)
 		app.Post("/api/table-management/RemoveTableEntry", table_management.RemoveTableEntryController)
