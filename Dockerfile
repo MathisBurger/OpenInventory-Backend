@@ -11,4 +11,4 @@ RUN chmod +x ./backend
 
 EXPOSE 8080
 
-CMD ./backend
+CMD ["./backend"]

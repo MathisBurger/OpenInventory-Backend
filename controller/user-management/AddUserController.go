@@ -1,4 +1,4 @@
-package controller
+package user_management
 
 import (
 	"encoding/json"

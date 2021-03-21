@@ -4,6 +4,9 @@ import "fmt"
 import "github.com/MathisBurger/OpenInventory-Backend/config"
 
 func Install() bool {
+
+	FolderAutoCreation()
+
 	// check if config exists
 	if !config_exists() {
 		fmt.Println("Configuration file does not exist.  Please follow the instructions in the docs.")
