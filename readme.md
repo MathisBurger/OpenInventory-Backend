@@ -1,14 +1,39 @@
-# OpenInventory Backend
+<div align="center">
+    <h1>Open Inventory</h1>
+<hr>
+<strong>
+An open source inventory system<br>
+<img src="https://img.shields.io/github/languages/code-size/mathisburger/OpenInventory-Backend?style=for-the-badge">
+<img src="https://img.shields.io/github/license/mathisburger/OpenInventory-backend?style=for-the-badge">
+<img src="https://img.shields.io/github/downloads/mathisburger/openinventory-backend/total?style=for-the-badge">
+</strong>
+</div>
 
-This is the official repo of the OpenInventory-Backend.
-OpenInvenory is an open source inventory system written in Go and Typescript. This frontend is based on angular and is designed to have really short response times. Test it out yourself.
+<hr>
 
-## Setup
-If you want to use OpenInventory, take a look at the OpenInventory-Backend repository. From there you can download the application. You can find an setup tutorial on my Youtube Channel.
+<div align="center">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Go_Logo_Blue.svg/1200px-Go_Logo_Blue.svg.png" height="100">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Angular_full_color_logo.svg/1200px-Angular_full_color_logo.svg.png" height="120">
+</div>
 
-## Why OpenInventory?
-If you search on the internet, there are many good inventory solutions. But most of them are closed source and you have to pay much money for them. OpenInventory is the absolute opposite. It is open source and you are able to host it yourself without extra costs. Furthermore out there are many people, who can help to optimize OpenInventory and make it more secure and fast.
+# Information
 
-## API Documentation
-I will add an full API documentation later, because probably there will be some big changes.
+---
+Open Inventory is an open source inventory system build with go and angular. <br>
+It started as a fun project for private use, but scaled up to a production software.<br>
+Therefore I like everyone who is using OpenInventory as his inventory system.
 
+# Support
+
+---
+Because I am the only one developing this project, I can only handle a few issues.
+Therefore <br> I am only picking the best and most important one. But I am going to
+add every enhancement idea to this project. Just open an issue with the enhancement tag.
+
+# Updates
+
+---
+There will be some updates in the future adding new features. I am trying to add
+some new features every 3 months. Switching to a newer version is quite easy. You only
+need to download the newest web assets and <br>
+backend binary to update.
