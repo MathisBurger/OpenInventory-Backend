@@ -5,7 +5,7 @@
     "username": "root",
     "password": "",
     "host": "localhost:3306",
-    "database": "oopen_inv"
+    "database": "open_inv"
   },
 
   "server-config": {

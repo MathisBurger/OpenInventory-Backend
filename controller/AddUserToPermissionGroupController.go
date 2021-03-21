@@ -82,6 +82,10 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 
 		actions.UpdateUserPermission(obj.User, finalPermissions)
 
+		if obj.Permission == "default.root" {
+			actions.UpdateUserRoor(true, obj.User)
+		}
+
 		res, _ := models.GetJSONResponse("User added to permissiongroup", "#1db004", "ok", "None", 200)
 		return c.Send(res)
 	}
