@@ -33,7 +33,12 @@ type getTableColumnsResponse struct {
 func GetTableColumnsController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := getTableColumnsRequest{}
+	obj := getTableColumnsRequest{
+		Username:  c.Query("username", ""),
+		Password:  c.Query("password", ""),
+		Token:     c.Query("token", ""),
+		TableName: c.Query("table_name", ""),
+	}
 	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
