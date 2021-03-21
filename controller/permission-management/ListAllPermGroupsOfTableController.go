@@ -1,12 +1,9 @@
 package permission_management
 
 import (
-	"encoding/json"
-	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	dbModels "github.com/MathisBurger/OpenInventory-Backend/database/models"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -33,17 +30,14 @@ type listAllPermGroupsOfTableResponse struct {
 func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := listAllPermGroupsOfTableRequest{}
-	err := json.Unmarshal(c.Body(), &obj)
+	obj := listAllPermGroupsOfTableRequest{
+		Username:  c.Query("username", ""),
+		Password:  c.Query("password", ""),
+		Token:     c.Query("token", ""),
+		TableName: c.Query("table_name", ""),
+	}
 
 	// check request
-	if err != nil {
-		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
-			utils.LogError(err.Error(), "ListAllPermGroupsOfTableController.go", 29)
-		}
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
-		return c.Send(res)
-	}
 	if !checkListAllPermGroupsOfTableRequest(obj) {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)

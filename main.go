@@ -57,7 +57,7 @@ func main() {
 		app.Delete("/api/permission-management/removeUserFromPermissionGroup", permission_management.RemoveUserFromPermissionGroupController)
 		app.Patch("/api/permission-management/editTableMinPermLvl", permission_management.EditTableMinPermLvlController)
 		app.Get("/api/permission-management/listAllPermsOfUser", permission_management.ListAllPermOfUserController)
-		app.Post("/api/permission-management/listAllPermGroupsOfTable", permission_management.ListAllPermGroupsOfTableController)
+		app.Get("/api/permission-management/listAllPermGroupsOfTable", permission_management.ListAllPermGroupsOfTableController)
 		app.Post("/api/permission-management/listAllPermissionGroups", permission_management.ListAllPermissionGroupsController)
 
 		// App Configuration
