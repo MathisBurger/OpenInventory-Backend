@@ -58,7 +58,7 @@ func main() {
 		app.Patch("/api/permission-management/editTableMinPermLvl", permission_management.EditTableMinPermLvlController)
 		app.Get("/api/permission-management/listAllPermsOfUser", permission_management.ListAllPermOfUserController)
 		app.Get("/api/permission-management/listAllPermGroupsOfTable", permission_management.ListAllPermGroupsOfTableController)
-		app.Post("/api/permission-management/listAllPermissionGroups", permission_management.ListAllPermissionGroupsController)
+		app.Get("/api/permission-management/listAllPermissionGroups", permission_management.ListAllPermissionGroupsController)
 
 		// App Configuration
 		app.Listen(":" + config.ServerCFG.Port)
