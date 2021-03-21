@@ -36,7 +36,7 @@ func main() {
 		// user management
 		app.Get("/api/user-management/ListUser", user_management.ListUserController)
 		app.Post("/api/user-management/AddUser", user_management.AddUserController)
-		app.Post("/api/user-management/DeleteUser", user_management.DeleteUserController)
+		app.Delete("/api/user-management/DeleteUser", user_management.DeleteUserController)
 
 		// table management
 		app.Post("/api/table-management/getAllTables", table_management.GetAllTablesController)
