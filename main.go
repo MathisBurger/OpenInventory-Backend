@@ -36,7 +36,7 @@ func main() {
 		// user management
 		app.Get("/api/user-management/ListUser", user_management.ListUserController)
 		app.Post("/api/user-management/AddUser", user_management.AddUserController)
-		app.Delete("/api/user-management/DeleteUser", user_management.DeleteUserController)
+		app.Post("/api/user-management/DeleteUser", user_management.DeleteUserController)
 
 		// table management
 		app.Get("/api/table-management/getAllTables", table_management.GetAllTablesController)
@@ -44,8 +44,8 @@ func main() {
 		app.Get("/api/table-management/getTableContent", table_management.GetTableContentController)
 		app.Post("/api/table-management/AddTableEntry", table_management.AddTableEntryController)
 		app.Get("/api/table-management/getTableColumns", table_management.GetTableColumnsController)
-		app.Delete("/api/table-management/RemoveTableEntry", table_management.RemoveTableEntryController)
-		app.Delete("/api/table-management/DeleteTable", table_management.DeleteTableController)
+		app.Post("/api/table-management/RemoveTableEntry", table_management.RemoveTableEntryController)
+		app.Post("/api/table-management/DeleteTable", table_management.DeleteTableController)
 		app.Patch("/api/table-management/editTableEntry", table_management.EditTableEntryController)
 		app.Patch("/api/table-management/renameTableColumn", table_management.RenameTableColumnController)
 		app.Patch("/api/table-management/renameTable", table_management.RenameTableController)
@@ -53,8 +53,8 @@ func main() {
 		// permission management
 		app.Post("/api/permission-management/createPermissionGroup", permission_management.CreatePermissionGroupController)
 		app.Post("api/permission-management/addUserToPermissionGroup", permission_management.AddUserToPermissionGroupController)
-		app.Delete("/api/permission-management/deletePermissionGroup", permission_management.DeletePermissionGroupController)
-		app.Delete("/api/permission-management/removeUserFromPermissionGroup", permission_management.RemoveUserFromPermissionGroupController)
+		app.Post("/api/permission-management/deletePermissionGroup", permission_management.DeletePermissionGroupController)
+		app.Post("/api/permission-management/removeUserFromPermissionGroup", permission_management.RemoveUserFromPermissionGroupController)
 		app.Patch("/api/permission-management/editTableMinPermLvl", permission_management.EditTableMinPermLvlController)
 		app.Get("/api/permission-management/listAllPermsOfUser", permission_management.ListAllPermOfUserController)
 		app.Get("/api/permission-management/listAllPermGroupsOfTable", permission_management.ListAllPermGroupsOfTableController)
