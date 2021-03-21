@@ -39,7 +39,7 @@ func main() {
 		app.Delete("/api/user-management/DeleteUser", user_management.DeleteUserController)
 
 		// table management
-		app.Post("/api/table-management/getAllTables", table_management.GetAllTablesController)
+		app.Get("/api/table-management/getAllTables", table_management.GetAllTablesController)
 		app.Post("/api/table-management/createTable", table_management.CreateTableController)
 		app.Post("/api/table-management/getTableContent", table_management.GetTableContentController)
 		app.Post("/api/table-management/AddTableEntry", table_management.AddTableEntryController)

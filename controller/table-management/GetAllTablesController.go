@@ -1,12 +1,9 @@
 package table_management
 
 import (
-	"encoding/json"
-	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/controller/general"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -26,17 +23,13 @@ type getAllTablesResponse struct {
 func GetAllTablesController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := models.LoginWithTokenRequest{}
-	err := json.Unmarshal(c.Body(), &obj)
+	obj := models.LoginWithTokenRequest{
+		Username: c.Query("username", ""),
+		Password: c.Query("password", ""),
+		Token:    c.Query("token", ""),
+	}
 
 	// check request
-	if err != nil {
-		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
-			utils.LogError(err.Error(), "GetAllTablesController.go", 17)
-		}
-		res, _ := models.GetJSONResponse("Invaild JSON body", "#d41717", "error", "None", 200)
-		return c.Send(res)
-	}
 	if !general.CheckCheckCredsRequest(obj) {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
