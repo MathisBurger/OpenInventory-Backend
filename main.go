@@ -54,7 +54,7 @@ func main() {
 		app.Post("/api/permission-management/createPermissionGroup", permission_management.CreatePermissionGroupController)
 		app.Post("api/permission-management/addUserToPermissionGroup", permission_management.AddUserToPermissionGroupController)
 		app.Delete("/api/permission-management/deletePermissionGroup", permission_management.DeletePermissionGroupController)
-		app.Post("/api/permission-management/removeUserFromPermissionGroup", permission_management.RemoveUserFromPermissionGroupController)
+		app.Delete("/api/permission-management/removeUserFromPermissionGroup", permission_management.RemoveUserFromPermissionGroupController)
 		app.Post("/api/permission-management/editTableMinPermLvl", permission_management.EditTableMinPermLvlController)
 		app.Post("/api/permission-management/listAllPermsOfUser", permission_management.ListAllPermOfUserController)
 		app.Post("/api/permission-management/listAllPermGroupsOfTable", permission_management.ListAllPermGroupsOfTableController)
