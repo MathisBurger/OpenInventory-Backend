@@ -7,6 +7,9 @@ on:
       - master
       - dev
       - v0.0.3
+  pull_request:
+    branches:
+      - master
 
 jobs:
   test:
