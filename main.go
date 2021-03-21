@@ -34,7 +34,7 @@ func main() {
 		app.Post("/api/check-creds", general.CheckCredsController)
 
 		// user management
-		app.Post("/api/user-management/ListUser", user_management.ListUserController)
+		app.Get("/api/user-management/ListUser", user_management.ListUserController)
 		app.Post("/api/user-management/AddUser", user_management.AddUserController)
 		app.Post("/api/user-management/DeleteUser", user_management.DeleteUserController)
 
