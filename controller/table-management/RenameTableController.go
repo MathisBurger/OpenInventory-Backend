@@ -1,50 +1,44 @@
-package controller
+package table_management
 
 import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
-	dbModels "github.com/MathisBurger/OpenInventory-Backend/database/models"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
-type listAllPermGroupsOfTableRequest struct {
+type renameTableRequest struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
 	Token     string `json:"token"`
 	TableName string `json:"table_name"`
-}
-
-type listAllPermGroupsOfTableResponse struct {
-	PermGroups []dbModels.PermissionModel `json:"perm_groups"`
-	Message    string                     `json:"message"`
-	Alert      string                     `json:"alert"`
+	NewName   string `json:"new_name"`
 }
 
 ////////////////////////////////////////////////////////////////////
 //                                                                //
-//               ListAllPermGroupsOfTableController               //
-//      This controller fetches all permission groups of table    //
-//       It requires listAllPermGroupsOfTableRequest instance     //
+//                     RenameTableController                      //
+//               This controller renames the table                //
+//            It requires renameTableRequest instance             //
 //                                                                //
 ////////////////////////////////////////////////////////////////////
-func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
+func RenameTableController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := listAllPermGroupsOfTableRequest{}
+	obj := renameTableRequest{}
 	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
-			utils.LogError(err.Error(), "ListAllPermGroupsOfTableController.go", 29)
+			utils.LogError(err.Error(), "RenameTableController.go", 24)
 		}
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !checkListAllPermGroupsOfTableRequest(obj) {
+	if !checkRenameTableRequest(obj) {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -61,20 +55,25 @@ func ListAllPermGroupsOfTableController(c *fiber.Ctx) error {
 	table := actions.GetTableByName(obj.TableName)
 
 	// check permission
-	if !actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
-		res, _ := models.GetJSONResponse("Your permission is not high enough to view this table", "#d41717", "ok", "None", 200)
+	if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
+
+		if !actions.RenameTable(obj.TableName, obj.NewName) {
+			res, _ := models.GetJSONResponse("Error while renaming table", "#d41717", "ok", "None", 200)
+			return c.Send(res)
+		}
+
+		actions.UpdateTablename(obj.TableName, obj.NewName)
+
+		res, _ := models.GetJSONResponse("Successfully updated tablename", "#1db004", "ok", "None", 200)
 		return c.Send(res)
 	}
 
-	return c.JSON(listAllPermGroupsOfTableResponse{
-		actions.GetAllPermissionsWithHigherPermLvl(table.MinPermLvl),
-		"Successfully fetched all permissiongroups of table",
-		"#1db004",
-	})
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
+	return c.Send(res)
 }
 
 // checks the request
 // struct fields should not be default
-func checkListAllPermGroupsOfTableRequest(obj listAllPermGroupsOfTableRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != ""
+func checkRenameTableRequest(obj renameTableRequest) bool {
+	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.NewName != ""
 }

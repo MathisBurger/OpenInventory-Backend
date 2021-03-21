@@ -1,4 +1,4 @@
-package controller
+package table_management
 
 import (
 	json2 "encoding/json"

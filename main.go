@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	config2 "github.com/MathisBurger/OpenInventory-Backend/config"
-	"github.com/MathisBurger/OpenInventory-Backend/controller"
 	"github.com/MathisBurger/OpenInventory-Backend/controller/general"
+	"github.com/MathisBurger/OpenInventory-Backend/controller/permission-management"
+	"github.com/MathisBurger/OpenInventory-Backend/controller/table-management"
+	"github.com/MathisBurger/OpenInventory-Backend/controller/user-management"
 	"github.com/MathisBurger/OpenInventory-Backend/installation"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -32,31 +34,31 @@ func main() {
 		app.Post("/api/check-creds", general.CheckCredsController)
 
 		// user management
-		app.Post("/api/user-management/ListUser", controller.ListUserController)
-		app.Post("/api/user-management/AddUser", controller.AddUserController)
-		app.Post("/api/user-management/DeleteUser", controller.DeleteUserController)
+		app.Post("/api/user-management/ListUser", user_management.ListUserController)
+		app.Post("/api/user-management/AddUser", user_management.AddUserController)
+		app.Post("/api/user-management/DeleteUser", user_management.DeleteUserController)
 
 		// table management
-		app.Post("/api/table-management/getAllTables", controller.GetAllTablesController)
-		app.Post("/api/table-management/createTable", controller.CreateTableController)
-		app.Post("/api/table-management/getTableContent", controller.GetTableContentController)
-		app.Post("/api/table-management/AddTableEntry", controller.AddTableEntryController)
-		app.Post("/api/table-management/getTableColumns", controller.GetTableColumnsController)
-		app.Post("/api/table-management/RemoveTableEntry", controller.RemoveTableEntryController)
-		app.Post("/api/table-management/DeleteTable", controller.DeleteTableController)
-		app.Post("/api/table-management/editTableEntry", controller.EditTableEntryController)
-		app.Post("/api/table-management/renameTableColumn", controller.RenameTableColumnController)
-		app.Post("/api/table-management/renameTable", controller.RenameTableController)
+		app.Post("/api/table-management/getAllTables", table_management.GetAllTablesController)
+		app.Post("/api/table-management/createTable", table_management.CreateTableController)
+		app.Post("/api/table-management/getTableContent", table_management.GetTableContentController)
+		app.Post("/api/table-management/AddTableEntry", table_management.AddTableEntryController)
+		app.Post("/api/table-management/getTableColumns", table_management.GetTableColumnsController)
+		app.Post("/api/table-management/RemoveTableEntry", table_management.RemoveTableEntryController)
+		app.Post("/api/table-management/DeleteTable", table_management.DeleteTableController)
+		app.Post("/api/table-management/editTableEntry", table_management.EditTableEntryController)
+		app.Post("/api/table-management/renameTableColumn", table_management.RenameTableColumnController)
+		app.Post("/api/table-management/renameTable", table_management.RenameTableController)
 
 		// permission management
-		app.Post("/api/permission-management/createPermissionGroup", controller.CreatePermissionGroupController)
-		app.Post("api/permission-management/addUserToPermissionGroup", controller.AddUserToPermissionGroupController)
-		app.Post("/api/permission-management/deletePermissionGroup", controller.DeletePermissionGroupController)
-		app.Post("/api/permission-management/removeUserFromPermissionGroup", controller.RemoveUserFromPermissionGroupController)
-		app.Post("/api/permission-management/editTableMinPermLvl", controller.EditTableMinPermLvlController)
-		app.Post("/api/permission-management/listAllPermsOfUser", controller.ListAllPermOfUserController)
-		app.Post("/api/permission-management/listAllPermGroupsOfTable", controller.ListAllPermGroupsOfTableController)
-		app.Post("/api/permission-management/listAllPermissionGroups", controller.ListAllPermissionGroupsController)
+		app.Post("/api/permission-management/createPermissionGroup", permission_management.CreatePermissionGroupController)
+		app.Post("api/permission-management/addUserToPermissionGroup", permission_management.AddUserToPermissionGroupController)
+		app.Post("/api/permission-management/deletePermissionGroup", permission_management.DeletePermissionGroupController)
+		app.Post("/api/permission-management/removeUserFromPermissionGroup", permission_management.RemoveUserFromPermissionGroupController)
+		app.Post("/api/permission-management/editTableMinPermLvl", permission_management.EditTableMinPermLvlController)
+		app.Post("/api/permission-management/listAllPermsOfUser", permission_management.ListAllPermOfUserController)
+		app.Post("/api/permission-management/listAllPermGroupsOfTable", permission_management.ListAllPermGroupsOfTableController)
+		app.Post("/api/permission-management/listAllPermissionGroups", permission_management.ListAllPermissionGroupsController)
 
 		// App Configuration
 		app.Listen(":" + config.ServerCFG.Port)

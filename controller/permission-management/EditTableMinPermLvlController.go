@@ -1,4 +1,4 @@
-package controller
+package permission_management
 
 import (
 	"encoding/json"
@@ -9,36 +9,36 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type renameTableRequest struct {
+type editTableMinPermLvlRequest struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
 	Token     string `json:"token"`
 	TableName string `json:"table_name"`
-	NewName   string `json:"new_name"`
+	NewLvl    int    `json:"new_lvl"`
 }
 
 ////////////////////////////////////////////////////////////////////
 //                                                                //
-//                     RenameTableController                      //
-//               This controller renames the table                //
-//            It requires renameTableRequest instance             //
+//                EditTableMinPermLvlController                   //
+//    This controller changes the minPermLvl of the given table   //
+//          It requires editTableMinPermLvlRequest instance       //
 //                                                                //
 ////////////////////////////////////////////////////////////////////
-func RenameTableController(c *fiber.Ctx) error {
+func EditTableMinPermLvlController(c *fiber.Ctx) error {
 
 	// init and parse the request object
-	obj := renameTableRequest{}
+	obj := editTableMinPermLvlRequest{}
 	err := json.Unmarshal(c.Body(), &obj)
 
 	// check request
 	if err != nil {
 		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
-			utils.LogError(err.Error(), "RenameTableController.go", 24)
+			utils.LogError(err.Error(), "EditTableMinPermLvlController.go", 24)
 		}
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
-	if !checkRenameTableRequest(obj) {
+	if !checkEditTableMinPermLvlRequest(obj) {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -49,31 +49,25 @@ func RenameTableController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 
+	table := actions.GetTableByName(obj.TableName)
 	conn := actions.GetConn()
 	defer conn.Close()
 
-	table := actions.GetTableByName(obj.TableName)
-
-	// check permission
-	if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
-
-		if !actions.RenameTable(obj.TableName, obj.NewName) {
-			res, _ := models.GetJSONResponse("Error while renaming table", "#d41717", "ok", "None", 200)
-			return c.Send(res)
-		}
-
-		actions.UpdateTablename(obj.TableName, obj.NewName)
-
-		res, _ := models.GetJSONResponse("Successfully updated tablename", "#1db004", "ok", "None", 200)
+	// check higher permission
+	if !actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-warning", "ok", "None", 200)
 		return c.Send(res)
 	}
 
-	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
+	// update min perm lvl
+	actions.UpdateTableMinPermLvl(obj.TableName, obj.NewLvl)
+
+	res, _ := models.GetJSONResponse("Successfully updated minimum permission level of table", "#1db004", "ok", "None", 200)
 	return c.Send(res)
 }
 
 // checks the request
 // struct fields should not be default
-func checkRenameTableRequest(obj renameTableRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.NewName != ""
+func checkEditTableMinPermLvlRequest(obj editTableMinPermLvlRequest) bool {
+	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.NewLvl > 0
 }

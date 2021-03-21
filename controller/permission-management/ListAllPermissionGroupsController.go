@@ -1,4 +1,4 @@
-package controller
+package permission_management
 
 import (
 	"encoding/json"
