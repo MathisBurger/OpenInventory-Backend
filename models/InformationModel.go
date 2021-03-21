@@ -11,7 +11,7 @@ type InformationModel map[string]string
 // returns basic information
 func GetInformationResponse() ([]byte, error) {
 	msg := make(map[string]string)
-	msg["api_version"] = "v0.0.3-dev"
+	msg["api_version"] = "v0.0.3-production"
 	msg["api_language"] = "golang"
 	msg["operating_system"] = runtime.GOOS
 	msg["cpu_cores"] = strconv.Itoa(runtime.NumCPU())
