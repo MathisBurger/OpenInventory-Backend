@@ -1,20 +1,16 @@
 package actions
 
 import (
+	"strings"
+
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
-	"strings"
 )
 
 ////////////////////////////////////
 // Creates a table                //
 ////////////////////////////////////
-func CreateTable(displayname string, password string, token string, Tablename string, RowConfig []models.RowConfigModel, MinPermLvl int) bool {
-
-	// check user login
-	if !MysqlLoginWithToken(displayname, password, token) {
-		return false
-	}
+func CreateTable(displayname string, Tablename string, RowConfig []models.RowConfigModel, MinPermLvl int) bool {
 
 	if !CheckColumnNames(RowConfig) {
 		return false

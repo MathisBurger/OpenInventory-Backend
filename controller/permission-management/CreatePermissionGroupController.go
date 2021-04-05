@@ -2,18 +2,17 @@ package permission_management
 
 import (
 	"encoding/json"
+	"strings"
+
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
-	"strings"
 )
 
 type createPermissionGroupRequest struct {
-	Username       string `json:"username"`
-	Password       string `json:"password"`
-	Token          string `json:"token"`
 	PermissionInfo struct {
 		Name            string `json:"name"`
 		ColorCode       string `json:"color_code"`
@@ -49,38 +48,39 @@ func CreatePermissionGroupController(c *fiber.Ctx) error {
 	}
 
 	// check login status
-	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
+	if ok, ident := middleware.ValidateAccessToken(c); ok {
+
+		permGroupInputStatus := checkPermissionGroupInput(obj, ident)
+
+		// check if request contains invalid parameter
+		if permGroupInputStatus != nil {
+			return c.Send(permGroupInputStatus)
+		}
+
+		if exists, _ := actions.GetPermissionByName(obj.PermissionInfo.Name); exists {
+			res, _ := models.GetJSONResponse("This group already exists", "#d41717", "ok", "None", 200)
+			return c.Send(res)
+		}
+
+		actions.InsertPermissionGroup(obj.PermissionInfo.Name, obj.PermissionInfo.ColorCode, obj.PermissionInfo.PermissionLevel)
+
+		res, _ := models.GetJSONResponse("Created permission-group", "#1db004", "ok", "None", 200)
 		return c.Send(res)
 	}
 
-	permGroupInputStatus := checkPermissionGroupInput(obj)
-
-	// check if request contains invalid parameter
-	if permGroupInputStatus != nil {
-		return c.Send(permGroupInputStatus)
-	}
-
-	if exists, _ := actions.GetPermissionByName(obj.PermissionInfo.Name); exists {
-		res, _ := models.GetJSONResponse("This group already exists", "#d41717", "ok", "None", 200)
-		return c.Send(res)
-	}
-
-	actions.InsertPermissionGroup(obj.PermissionInfo.Name, obj.PermissionInfo.ColorCode, obj.PermissionInfo.PermissionLevel)
-
-	res, _ := models.GetJSONResponse("Created permission-group", "#1db004", "ok", "None", 200)
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 	return c.Send(res)
 }
 
 // checks the request
 // struct fields should not be default
 func checkCreatePermissionGroupRequest(obj createPermissionGroupRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.PermissionInfo.Name != "" && obj.PermissionInfo.ColorCode != "" && obj.PermissionInfo.PermissionLevel > 0
+	return obj.PermissionInfo.Name != "" && obj.PermissionInfo.ColorCode != "" && obj.PermissionInfo.PermissionLevel > 0
 }
 
 // checks for disallowed syntax in createPermissionGroupRequest object
 // returns a []byte response which can be send as response
-func checkPermissionGroupInput(obj createPermissionGroupRequest) []byte {
+func checkPermissionGroupInput(obj createPermissionGroupRequest, username string) []byte {
 
 	// check if permission-name contains ';'
 	if strings.Contains(obj.PermissionInfo.Name, ";") {
@@ -94,7 +94,8 @@ func checkPermissionGroupInput(obj createPermissionGroupRequest) []byte {
 	defer conn.Close()
 
 	// check if user has higher permission
-	if !actions.CheckUserHasHigherPermission(conn, obj.Username, obj.PermissionInfo.PermissionLevel, "") {
+	if !actions.CheckUserHasHigherPermission(conn, username, obj.PermissionInfo.PermissionLevel, "") {
+
 		res, _ := models.GetJSONResponse("Your permission is not high enough", "#d41717", "ok", "None", 200)
 		return res
 	}

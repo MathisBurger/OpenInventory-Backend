@@ -7,12 +7,7 @@ import (
 ////////////////////////////////////
 // Queries all tables             //
 ////////////////////////////////////
-func GetAllTables(username string, password string, token string) []models.TableModel {
-	status := MysqlLoginWithToken(username, password, token)
-
-	if !status {
-		return []models.TableModel{}
-	}
+func GetAllTables(username string) []models.TableModel {
 
 	conn := GetConn()
 	defer conn.Close()

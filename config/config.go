@@ -18,6 +18,7 @@ type database struct {
 // Contains also web endpoints and logging settings
 type serverconfig struct {
 	Prefork            bool              `json:"prefork"`
+	AllowedOrigins     string            `json:"origins"`
 	Port               string            `json:"port"`
 	LogRequestErrors   bool              `json:"logRequestErrors"`
 	WebEndpoints       map[string]string `json:"web-endpoints"`

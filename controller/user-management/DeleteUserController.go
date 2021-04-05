@@ -2,18 +2,17 @@ package user_management
 
 import (
 	"encoding/json"
+
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
 type deleteUserRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Token    string `json:"token"`
-	User     string `json:"user"`
+	User string `json:"user"`
 }
 
 /////////////////////////////////////////////////////////////
@@ -43,8 +42,12 @@ func DeleteUserController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 
+	conn := actions.GetConn()
+	defer conn.Close()
+
 	// check login status
-	if actions.MysqlLoginWithTokenRoot(obj.Username, obj.Password, obj.Token) {
+	if ok, ident := middleware.ValidateAccessToken(c); ok &&
+		actions.CheckUserHasHigherPermission(conn, ident, actions.GetHighestPermission(conn, obj.User), "") {
 
 		actions.DeleteUser(obj.User)
 
@@ -60,5 +63,5 @@ func DeleteUserController(c *fiber.Ctx) error {
 // checks the request
 // struct fields should not be default
 func checkDeleteUserRequest(obj deleteUserRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != ""
+	return obj.User != ""
 }

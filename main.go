@@ -2,36 +2,54 @@ package main
 
 import (
 	"fmt"
+
+	"github.com/MathisBurger/OpenInventory-Backend/auth"
 	config2 "github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/controller/general"
-	"github.com/MathisBurger/OpenInventory-Backend/controller/permission-management"
-	"github.com/MathisBurger/OpenInventory-Backend/controller/table-management"
-	"github.com/MathisBurger/OpenInventory-Backend/controller/user-management"
+	permission_management "github.com/MathisBurger/OpenInventory-Backend/controller/permission-management"
+	table_management "github.com/MathisBurger/OpenInventory-Backend/controller/table-management"
+	user_management "github.com/MathisBurger/OpenInventory-Backend/controller/user-management"
 	"github.com/MathisBurger/OpenInventory-Backend/installation"
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
+
+	// This function generates the key pair
+
 	// check installation status
 	if installation.Install() {
+
+		utils.GenerateKeys()
+
 		config, _ := config2.ParseConfig()
+
 		app := fiber.New(fiber.Config{
 			Prefork: config.ServerCFG.Prefork,
 		})
 
 		// Logger configuration
 		app.Use(logger.New())
-		app.Use(cors.New())
+		app.Use(cors.New(cors.Config{
+			AllowCredentials: true,
+			ExposeHeaders:    "Authorization",
+			AllowOrigins:     config.ServerCFG.AllowedOrigins,
+		}))
 
 		initWebpaths(app, config)
 
 		// Basic GET Requests
 		app.Get("/api", general.DefaultController)
 		app.Get("/api/info", general.InformationController)
-		app.Post("/api/login", general.LoginController)
-		app.Post("/api/check-creds", general.CheckCredsController)
+
+		// Auth Endpoints
+		app.Post("/api/auth/login", auth.LoginController)
+		app.Get("/api/auth/accessToken", auth.AccessTokenController)
+		app.Get("/api/auth/revokeSession", auth.RevokeSessionController)
+		app.Get("/api/auth/me", auth.StatusController)
 
 		// user management
 		app.Get("/api/user-management/ListUser", user_management.ListUserController)

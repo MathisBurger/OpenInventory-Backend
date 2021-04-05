@@ -3,15 +3,13 @@ package permission_management
 import (
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	dbModels "github.com/MathisBurger/OpenInventory-Backend/database/models"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/gofiber/fiber/v2"
 )
 
 type listAllPermsOfUserRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Token    string `json:"token"`
-	User     string `json:"user"`
+	User string `json:"user"`
 }
 
 type listAllPermsOfUserResponse struct {
@@ -33,10 +31,7 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 
 	// init and parse the request object
 	obj := listAllPermsOfUserRequest{
-		Username: c.Query("username", ""),
-		Password: c.Query("password", ""),
-		Token:    c.Query("token", ""),
-		User:     c.Query("user", ""),
+		User: c.Query("user", ""),
 	}
 
 	// check request
@@ -46,7 +41,7 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 	}
 
 	// check login
-	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+	if ok, _ := middleware.ValidateAccessToken(c); !ok {
 		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -63,5 +58,5 @@ func ListAllPermOfUserController(c *fiber.Ctx) error {
 // checks the request
 // struct fields should not be default
 func checkListAllPermsOfUserRequest(obj listAllPermsOfUserRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != ""
+	return obj.User != ""
 }

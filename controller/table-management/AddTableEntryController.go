@@ -2,17 +2,16 @@ package table_management
 
 import (
 	"encoding/json"
+
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
 type addTableEntryRequest struct {
-	Username  string                 `json:"username"`
-	Password  string                 `json:"password"`
-	Token     string                 `json:"token"`
 	TableName string                 `json:"table_name"`
 	Row       map[string]interface{} `json:"row"`
 }
@@ -46,7 +45,8 @@ func AddTableEntryController(c *fiber.Ctx) error {
 	}
 
 	// check adding status
-	if actions.AddTableEntry(obj.Username, obj.Password, obj.Token, obj.TableName, obj.Row) {
+	if ok, ident := middleware.ValidateAccessToken(c); ok {
+		actions.AddTableEntry(ident, obj.TableName, obj.Row)
 		res, _ := models.GetJSONResponse("successful", "#1db004", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -58,5 +58,5 @@ func AddTableEntryController(c *fiber.Ctx) error {
 // checks the request
 // struct fields should not be default
 func checkAddTableEntryRequest(obj addTableEntryRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && len(obj.Row) > 0
+	return obj.TableName != "" && len(obj.Row) > 0
 }

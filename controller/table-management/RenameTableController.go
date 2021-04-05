@@ -2,17 +2,16 @@ package table_management
 
 import (
 	"encoding/json"
+
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
 type renameTableRequest struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	Token     string `json:"token"`
 	TableName string `json:"table_name"`
 	NewName   string `json:"new_name"`
 }
@@ -44,27 +43,28 @@ func RenameTableController(c *fiber.Ctx) error {
 	}
 
 	// check login
-	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
-		return c.Send(res)
-	}
+	if ok, ident := middleware.ValidateAccessToken(c); ok {
 
-	conn := actions.GetConn()
-	defer conn.Close()
+		conn := actions.GetConn()
+		defer conn.Close()
 
-	table := actions.GetTableByName(obj.TableName)
+		table := actions.GetTableByName(obj.TableName)
 
-	// check permission
-	if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
+		// check permission
+		if actions.CheckUserHasHigherPermission(conn, ident, table.MinPermLvl, "") {
 
-		if !actions.RenameTable(obj.TableName, obj.NewName) {
-			res, _ := models.GetJSONResponse("Error while renaming table", "#d41717", "ok", "None", 200)
+			if !actions.RenameTable(obj.TableName, obj.NewName) {
+				res, _ := models.GetJSONResponse("Error while renaming table", "#d41717", "ok", "None", 200)
+				return c.Send(res)
+			}
+
+			actions.UpdateTablename(obj.TableName, obj.NewName)
+
+			res, _ := models.GetJSONResponse("Successfully updated tablename", "#1db004", "ok", "None", 200)
 			return c.Send(res)
 		}
 
-		actions.UpdateTablename(obj.TableName, obj.NewName)
-
-		res, _ := models.GetJSONResponse("Successfully updated tablename", "#1db004", "ok", "None", 200)
+		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "#d41717", "ok", "None", 200)
 		return c.Send(res)
 	}
 
@@ -75,5 +75,5 @@ func RenameTableController(c *fiber.Ctx) error {
 // checks the request
 // struct fields should not be default
 func checkRenameTableRequest(obj renameTableRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.NewName != ""
+	return obj.TableName != "" && obj.NewName != ""
 }

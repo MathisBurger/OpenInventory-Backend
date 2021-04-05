@@ -1,8 +1,8 @@
 package user_management
 
 import (
-	"github.com/MathisBurger/OpenInventory-Backend/controller/general"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -22,21 +22,8 @@ type listUserResponse struct {
 ////////////////////////////////////////////////////////////////////
 func ListUserController(c *fiber.Ctx) error {
 
-	// init and parse the request object
-	obj := models.LoginWithTokenRequest{
-		Username: c.Query("username", ""),
-		Password: c.Query("password", ""),
-		Token:    c.Query("token", ""),
-	}
-
-	// check request
-	if !general.CheckCheckCredsRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
-		return c.Send(res)
-	}
-
 	// check login
-	if actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+	if ok, _ := middleware.ValidateAccessToken(c); ok {
 
 		user := actions.GetAllUser()
 		var outputUser []models.OutputUserStruct

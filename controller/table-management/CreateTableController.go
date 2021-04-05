@@ -2,18 +2,17 @@ package table_management
 
 import (
 	"encoding/json"
+	"strings"
+
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
-	"strings"
 )
 
 type createTableRequest struct {
-	Username   string `json:"username"`
-	Password   string `json:"password"`
-	Token      string `json:"token"`
 	TableName  string `json:"table_name"`
 	MinPermLvl int    `json:"min_perm_lvl"`
 	RowConfig  string `json:"row_config"`
@@ -52,7 +51,9 @@ func CreateTableController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 
-	if actions.CreateTable(obj.Username, obj.Password, obj.Token, obj.TableName, parse(obj.RowConfig), obj.MinPermLvl) {
+	if ok, ident := middleware.ValidateAccessToken(c); ok {
+
+		actions.CreateTable(ident, obj.TableName, parse(obj.RowConfig), obj.MinPermLvl)
 		res, _ := models.GetJSONResponse("successful", "#1db004", "ok", "None", 200)
 		return c.Send(res)
 	}
@@ -92,7 +93,7 @@ func parse(val string) (ans []models.RowConfigModel) {
 // checks the request
 // struct fields should not be default
 func checkCreateTableRequest(obj createTableRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.RowConfig != ""
+	return obj.TableName != "" && obj.RowConfig != ""
 }
 
 // replacing old with new chars

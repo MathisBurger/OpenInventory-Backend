@@ -1,8 +1,8 @@
 package table_management
 
 import (
-	"github.com/MathisBurger/OpenInventory-Backend/controller/general"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -22,30 +22,18 @@ type getAllTablesResponse struct {
 ////////////////////////////////////////////////////////////////////
 func GetAllTablesController(c *fiber.Ctx) error {
 
-	// init and parse the request object
-	obj := models.LoginWithTokenRequest{
-		Username: c.Query("username", ""),
-		Password: c.Query("password", ""),
-		Token:    c.Query("token", ""),
-	}
-
-	// check request
-	if !general.CheckCheckCredsRequest(obj) {
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
-		return c.Send(res)
-	}
-
 	// check login
-	if !actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
-		res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-warning", "Failed", "None", 200)
-		return c.Send(res)
+	if ok, ident := middleware.ValidateAccessToken(c); ok {
+
+		tables := actions.GetAllTables(ident)
+
+		return c.JSON(getAllTablesResponse{
+			"Successfully queried all tables",
+			"#1db004",
+			tables,
+		})
 	}
 
-	tables := actions.GetAllTables(obj.Username, obj.Password, obj.Token)
-
-	return c.JSON(getAllTablesResponse{
-		"Successfully queried all tables",
-		"#1db004",
-		tables,
-	})
+	res, _ := models.GetJSONResponse("You do not have the permission to perform this", "alert alert-warning", "Failed", "None", 200)
+	return c.Send(res)
 }

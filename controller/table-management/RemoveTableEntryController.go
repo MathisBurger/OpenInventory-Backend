@@ -2,17 +2,16 @@ package table_management
 
 import (
 	"encoding/json"
+
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
 type removeTableEntryRequest struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	Token     string `json:"token"`
 	TableName string `json:"table_name"`
 	RowID     int    `json:"row_id"`
 }
@@ -44,13 +43,13 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 	}
 
 	// check login
-	if actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+	if ok, ident := middleware.ValidateAccessToken(c); ok {
 		table := actions.GetTableByName(obj.TableName)
 		conn := actions.GetConn()
 		defer conn.Close()
 
 		// check permission
-		if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
+		if actions.CheckUserHasHigherPermission(conn, ident, table.MinPermLvl, "") {
 
 			// check deletion status
 			if !actions.DeleteTableEntry(obj.RowID, obj.TableName) {
@@ -73,5 +72,5 @@ func RemoveTableEntryController(c *fiber.Ctx) error {
 // checks the request
 // struct fields should not be default
 func checkRemoveTableEntryRequest(obj removeTableEntryRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && obj.RowID > 0
+	return obj.TableName != "" && obj.RowID > 0
 }

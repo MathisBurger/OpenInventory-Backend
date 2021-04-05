@@ -14,7 +14,7 @@ var cfg = "./config/config.json"
 
 // cache struct
 type Table struct {
-	name string `json:"name"`
+	name string
 }
 
 // checks if config exists
@@ -75,13 +75,13 @@ func CheckForTables(cfg *config.Config) bool {
 		}
 		activeTables = append(activeTables, table.name)
 	}
-	if len(activeTables) == 3 {
+	if len(activeTables) == 4 {
 		fmt.Println("All required tables are existing")
 		return true
 	}
 
 	// defined required tables
-	requiredTables := [3]string{"inv_users", "inv_tables", "inv_permissions"}
+	requiredTables := [4]string{"inv_users", "inv_tables", "inv_permissions", "inv_refresh-token"}
 	var outstandingTables []string
 
 	// checking if table exists
@@ -123,7 +123,10 @@ func GenerateTable(conn *sql.DB, name string) {
 		conn.Exec(creationString)
 		InsertDefaultPermissionGroups(conn)
 		break
-
+	case "inv_refresh-token":
+		creationString := "CREATE TABLE `inv_refresh-token` ( `ID` INT NOT NULL AUTO_INCREMENT , `username` TEXT NOT NULL , `token` TEXT NOT NULL , `Deadline` DATETIME NOT NULL, PRIMARY KEY (`ID`) );"	
+		conn.Exec(creationString)
+		break
 	}
 	fmt.Println("created table", name)
 }

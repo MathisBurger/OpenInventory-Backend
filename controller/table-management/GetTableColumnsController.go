@@ -3,17 +3,16 @@ package table_management
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
 type getTableColumnsRequest struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	Token     string `json:"token"`
 	TableName string `json:"table_name"`
 }
 
@@ -34,9 +33,6 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 
 	// init and parse the request object
 	obj := getTableColumnsRequest{
-		Username:  c.Query("username", ""),
-		Password:  c.Query("password", ""),
-		Token:     c.Query("token", ""),
 		TableName: c.Query("table_name", ""),
 	}
 	err := json.Unmarshal(c.Body(), &obj)
@@ -54,28 +50,35 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 
-	if !actions.CheckIfTableExists(obj.TableName) {
-		res, _ := models.GetJSONResponse("table does not exist", "#d41717", "ok", "None", 200)
-		return c.Send(res)
-	}
-	columns := actions.GetTableColumns(obj.Username, obj.Password, obj.Token, obj.TableName)
+	if ok, ident := middleware.ValidateAccessToken(c); ok {
 
-	// check response type
-	if fmt.Sprintf("%T", columns) == "bool" {
-		res, _ := models.GetJSONResponse("Error while fetching Array", "#d41717", "ok", "None", 200)
-		return c.Send(res)
+		if !actions.CheckIfTableExists(obj.TableName) {
+			res, _ := models.GetJSONResponse("table does not exist", "#d41717", "ok", "None", 200)
+			return c.Send(res)
+		}
+
+		columns := actions.GetTableColumns(ident, obj.TableName)
+
+		// check response type
+		if fmt.Sprintf("%T", columns) == "bool" {
+			res, _ := models.GetJSONResponse("Error while fetching Array", "#d41717", "ok", "None", 200)
+			return c.Send(res)
+		}
+
+		// if type of columns != bool
+		return c.JSON(getTableColumnsResponse{
+			Message: "successful",
+			Alert:   "#1db004",
+			Columns: columns,
+		})
 	}
 
-	// if type of columns != bool
-	return c.JSON(getTableColumnsResponse{
-		Message: "successful",
-		Alert:   "#1db004",
-		Columns: columns,
-	})
+	res, _ := models.GetJSONResponse("Unauthorized", "#d41717", "ok", "None", 200)
+	return c.Send(res)
 }
 
 // checks the request
 // struct fields cannot contain default value
 func checkGetTableColumnsRequest(obj getTableColumnsRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != ""
+	return obj.TableName != ""
 }

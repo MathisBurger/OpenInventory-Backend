@@ -1,8 +1,9 @@
 package actions
 
 import (
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"strings"
+
+	"github.com/MathisBurger/OpenInventory-Backend/utils"
 )
 
 type Entries struct {
@@ -13,12 +14,7 @@ type Entries struct {
 // Adds entry to given table       //
 // returns status of action        //
 /////////////////////////////////////
-func AddTableEntry(displayname string, password string, token string, Tablename string, row map[string]interface{}) bool {
-
-	// check login
-	if !MysqlLoginWithToken(displayname, password, token) {
-		return false
-	}
+func AddTableEntry(displayname string, Tablename string, row map[string]interface{}) bool {
 
 	conn := GetConn()
 	defer conn.Close()

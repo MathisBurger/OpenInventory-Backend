@@ -2,19 +2,18 @@ package user_management
 
 import (
 	"encoding/json"
+	"strings"
+
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
-	"strings"
 )
 
 type addUserRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Token    string `json:"token"`
-	User     struct {
+	User struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
 		Root     bool   `json:"root"`
@@ -63,8 +62,11 @@ func AddUserController(c *fiber.Ctx) error {
 		return c.Send(res)
 	}
 
+	conn := actions.GetConn()
+	defer conn.Close()
+
 	// check login status
-	if actions.MysqlLoginWithTokenRoot(obj.Username, obj.Password, obj.Token) {
+	if ok, ident := middleware.ValidateAccessToken(c); ok && actions.CheckUserHasHigherPermission(conn, ident, 0, "default.root") {
 
 		hash := utils.HashWithSalt(obj.User.Password)
 
@@ -82,7 +84,7 @@ func AddUserController(c *fiber.Ctx) error {
 // checks the request
 // struct fields should not be default
 func checkAddUserRequest(obj addUserRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.User != addUserRequest{}.User
+	return obj.User != addUserRequest{}.User
 }
 
 // check if username is too long

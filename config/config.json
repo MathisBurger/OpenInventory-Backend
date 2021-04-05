@@ -5,12 +5,13 @@
     "username": "root",
     "password": "",
     "host": "localhost:3306",
-    "database": "open_inv"
+    "database": "openinv"
   },
 
   "server-config": {
     "prefork": false,
     "port": "8080",
+    "origins": "http://localhost:4200",
     "logRequestErrors": true,
     "web-endpoints": {
     "/": "./web",

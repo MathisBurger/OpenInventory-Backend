@@ -7,13 +7,7 @@ import (
 /////////////////////////////////////////////
 // Queries all columns of specific table   //
 /////////////////////////////////////////////
-func GetTableColumns(displayname string, password string, token string, Tablename string) []Column {
-
-	perms := MysqlLoginWithToken(displayname, password, token)
-
-	if !perms {
-		return []Column{}
-	}
+func GetTableColumns(displayname string, Tablename string) []Column {
 
 	conn := GetConn()
 	defer conn.Close()

@@ -2,17 +2,16 @@ package table_management
 
 import (
 	"encoding/json"
+
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
 type editTableEntryRequest struct {
-	Username  string                 `json:"username"`
-	Password  string                 `json:"password"`
-	Token     string                 `json:"token"`
 	TableName string                 `json:"table_name"`
 	ObjectID  int                    `json:"object_id"`
 	Row       map[string]interface{} `json:"row"`
@@ -45,7 +44,7 @@ func EditTableEntryController(c *fiber.Ctx) error {
 	}
 
 	// check login
-	if actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+	if ok, ident := middleware.ValidateAccessToken(c); ok {
 
 		table := actions.GetTableByName(obj.TableName)
 
@@ -53,7 +52,7 @@ func EditTableEntryController(c *fiber.Ctx) error {
 		defer conn.Close()
 
 		// check higher permission
-		if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
+		if actions.CheckUserHasHigherPermission(conn, ident, table.MinPermLvl, "") {
 
 			// build sql statement for editing table entry
 			sql := "UPDATE `table_" + obj.TableName + "` SET "
@@ -104,5 +103,5 @@ func EditTableEntryController(c *fiber.Ctx) error {
 // checks the request
 // struct fields should not be default
 func checkEditTableEntryRequest(obj editTableEntryRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != "" && len(obj.Row) > 0 && obj.ObjectID > 0
+	return obj.TableName != "" && len(obj.Row) > 0 && obj.ObjectID > 0
 }

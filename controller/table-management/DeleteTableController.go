@@ -2,17 +2,16 @@ package table_management
 
 import (
 	"encoding/json"
+
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
 type deleteTableRequest struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	Token     string `json:"token"`
 	TableName string `json:"table_name"`
 }
 
@@ -44,7 +43,7 @@ func DeleteTableController(c *fiber.Ctx) error {
 	}
 
 	// check login status
-	if actions.MysqlLoginWithToken(obj.Username, obj.Password, obj.Token) {
+	if ok, ident := middleware.ValidateAccessToken(c); ok {
 
 		conn := actions.GetConn()
 		defer conn.Close()
@@ -52,7 +51,7 @@ func DeleteTableController(c *fiber.Ctx) error {
 		table := actions.GetTableByName(obj.TableName)
 
 		// check permission of user
-		if actions.CheckUserHasHigherPermission(conn, obj.Username, table.MinPermLvl, "") {
+		if actions.CheckUserHasHigherPermission(conn, ident, table.MinPermLvl, "") {
 
 			actions.DropTable(obj.TableName)
 
@@ -73,5 +72,5 @@ func DeleteTableController(c *fiber.Ctx) error {
 // checks the request
 // struct fields should not be default
 func checkDeleteTableRequest(obj deleteTableRequest) bool {
-	return obj.Username != "" && obj.Password != "" && obj.Token != "" && obj.TableName != ""
+	return obj.TableName != ""
 }

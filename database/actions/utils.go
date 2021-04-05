@@ -2,6 +2,7 @@ package actions
 
 import (
 	"database/sql"
+
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	_ "github.com/go-sql-driver/mysql"
@@ -14,7 +15,7 @@ func GetConn() (conn *sql.DB) {
 
 	cfg, _ := config.ParseConfig()
 
-	connstr := cfg.Db.Username + ":" + cfg.Db.Password + "@tcp(" + cfg.Db.Host + ")/" + cfg.Db.Database
+	connstr := cfg.Db.Username + ":" + cfg.Db.Password + "@tcp(" + cfg.Db.Host + ")/" + cfg.Db.Database + "?parseTime=true"
 
 	conn, err := sql.Open("mysql", connstr)
 	if err != nil {
