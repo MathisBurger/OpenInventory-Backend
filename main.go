@@ -36,7 +36,6 @@ func main() {
 		app.Use(cors.New(cors.Config{
 			AllowCredentials: true,
 			ExposeHeaders:    "Authorization",
-			AllowOrigins:     config.ServerCFG.AllowedOrigins,
 		}))
 
 		initWebpaths(app, config)
