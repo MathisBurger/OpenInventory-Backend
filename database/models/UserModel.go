@@ -2,20 +2,21 @@ package models
 
 import (
 	"database/sql"
+	"time"
 )
 
 // global model
 type UserModel struct {
-	ID           int     `json:"id"`
-	Username     string  `json:"username"`
-	Password     string  `json:"password"`
-	Token        string  `json:"token"`
-	Permissions  string  `json:"permissions"`
-	Root         bool    `json:"root"`
-	Mail         string  `json:"mail"`
-	Displayname  string  `json:"displayname"`
-	RegisterDate []uint8 `json:"register_date"`
-	Status       string  `json:"status"`
+	ID           int       `json:"id"`
+	Username     string    `json:"username"`
+	Password     string    `json:"password"`
+	Token        string    `json:"token"`
+	Permissions  string    `json:"permissions"`
+	Root         bool      `json:"root"`
+	Mail         string    `json:"mail"`
+	Displayname  string    `json:"displayname"`
+	RegisterDate time.Time `json:"register_date"`
+	Status       string    `json:"status"`
 }
 
 // fetch only one [resp.Next() required]

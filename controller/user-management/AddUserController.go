@@ -68,7 +68,7 @@ func AddUserController(c *fiber.Ctx) error {
 	// check login status
 	if ok, ident := middleware.ValidateAccessToken(c); ok && actions.CheckUserHasHigherPermission(conn, ident, 0, "default.root") {
 
-		hash := utils.HashWithSalt(obj.User.Password)
+		hash := utils.HashPassword(obj.User.Password)
 
 		actions.AddUser(obj.User.Username, hash, obj.User.Root, obj.User.Mail, obj.User.Status)
 

@@ -124,7 +124,7 @@ func GenerateTable(conn *sql.DB, name string) {
 		InsertDefaultPermissionGroups(conn)
 		break
 	case "inv_refresh-token":
-		creationString := "CREATE TABLE `inv_refresh-token` ( `ID` INT NOT NULL AUTO_INCREMENT , `username` TEXT NOT NULL , `token` TEXT NOT NULL , `Deadline` DATETIME NOT NULL, PRIMARY KEY (`ID`) );"	
+		creationString := "CREATE TABLE `inv_refresh-token` ( `ID` INT NOT NULL AUTO_INCREMENT , `username` TEXT NOT NULL , `token` TEXT NOT NULL , `Deadline` DATETIME NOT NULL, PRIMARY KEY (`ID`) );"
 		conn.Exec(creationString)
 		break
 	}
@@ -135,7 +135,7 @@ func GenerateTable(conn *sql.DB, name string) {
 func InsertDefaultUser(conn *sql.DB) {
 
 	// "Admin123" as MD5
-	hash := utils.HashWithSalt("e64b78fc3bc91bcbc7dc232ba8ec59e0")
+	hash := utils.HashPassword("e64b78fc3bc91bcbc7dc232ba8ec59e0")
 	stmt, _ := conn.Prepare("INSERT INTO inv_users (id, username, password, token, permissions, root, mail, displayname, register_date, status) VALUES (NULL, 'root',  ?, 'None', 'default.everyone;default.root', '1', 'example@mail.de', 'root', current_timestamp(), 'enabled');")
 
 	stmt.Exec(hash)

@@ -52,6 +52,7 @@ func LoginController(c *fiber.Ctx) error {
 	cookie.Expires = expires
 	cookie.Secure = false
 	cookie.HTTPOnly = true
+	cookie.SameSite = "None" // Only for development
 	c.Cookie(cookie)
 
 	return c.SendStatus(200)
