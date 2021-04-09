@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/MathisBurger/OpenInventory-Backend/auth"
 	config2 "github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/controller/general"
@@ -14,11 +13,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"io/ioutil"
 )
 
 func main() {
 
-	// This function generates the key pair
+	ioutil.WriteFile("./VERSION", []byte("v0.0.5-production"), 0644)
 
 	// check installation status
 	if installation.Install() {
