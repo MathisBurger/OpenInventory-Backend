@@ -15,6 +15,7 @@ type UserModel struct {
 	Root         bool      `json:"root"`
 	Mail         string    `json:"mail"`
 	Displayname  string    `json:"displayname"`
+	TwoFactor    bool      `json:"two_factor"`
 	RegisterDate time.Time `json:"register_date"`
 	Status       string    `json:"status"`
 }
@@ -22,7 +23,7 @@ type UserModel struct {
 // fetch only one [resp.Next() required]
 func (c UserModel) Parse(resp *sql.Rows) UserModel {
 	var mdl UserModel
-	_ = resp.Scan(&mdl.ID, &mdl.Username, &mdl.Password, &mdl.Token, &mdl.Permissions, &mdl.Root, &mdl.Mail, &mdl.Displayname, &mdl.RegisterDate, &mdl.Status)
+	_ = resp.Scan(&mdl.ID, &mdl.Username, &mdl.Password, &mdl.Token, &mdl.Permissions, &mdl.Root, &mdl.Mail, &mdl.Displayname, &mdl.TwoFactor, &mdl.RegisterDate, &mdl.Status)
 	return mdl
 }
 
@@ -31,7 +32,7 @@ func (c UserModel) ParseAll(resp *sql.Rows) []UserModel {
 	var answers []UserModel
 	for resp.Next() {
 		var mdl UserModel
-		_ = resp.Scan(&mdl.ID, &mdl.Username, &mdl.Password, &mdl.Token, &mdl.Permissions, &mdl.Root, &mdl.Mail, &mdl.Displayname, &mdl.RegisterDate, &mdl.Status)
+		_ = resp.Scan(&mdl.ID, &mdl.Username, &mdl.Password, &mdl.Token, &mdl.Permissions, &mdl.Root, &mdl.Mail, &mdl.Displayname, &mdl.TwoFactor, &mdl.RegisterDate, &mdl.Status)
 		answers = append(answers, mdl)
 	}
 	return answers

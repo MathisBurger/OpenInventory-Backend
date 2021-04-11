@@ -9,6 +9,7 @@ import (
 	table_management "github.com/MathisBurger/OpenInventory-Backend/controller/table-management"
 	user_management "github.com/MathisBurger/OpenInventory-Backend/controller/user-management"
 	"github.com/MathisBurger/OpenInventory-Backend/installation"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -24,6 +25,8 @@ func main() {
 	if installation.Install() {
 
 		utils.GenerateKeys()
+
+		middleware.TwoFactorService()
 
 		config, _ := config2.ParseConfig()
 
@@ -50,11 +53,13 @@ func main() {
 		app.Get("/api/auth/accessToken", auth.AccessTokenController)
 		app.Get("/api/auth/revokeSession", auth.RevokeSessionController)
 		app.Get("/api/auth/me", auth.StatusController)
+		app.Post("/api/auth/2fa", auth.TwoFactorAuthController)
 
 		// user management
 		app.Get("/api/user-management/ListUser", user_management.ListUserController)
 		app.Post("/api/user-management/AddUser", user_management.AddUserController)
 		app.Post("/api/user-management/DeleteUser", user_management.DeleteUserController)
+		app.Patch("/api/user-management/Enable2FA", user_management.EnableTwoFactorController)
 
 		// table management
 		app.Get("/api/table-management/getAllTables", table_management.GetAllTablesController)

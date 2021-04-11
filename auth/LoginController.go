@@ -2,20 +2,17 @@ package auth
 
 import (
 	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/accesstoken"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
-	"github.com/MathisBurger/OpenInventory-Backend/database/models"
+	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
-	"time"
 )
 
 type loginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
-
-// define lifetime of the session token (long lifetime token)
-const sessionLifetime = 24 * 7 * time.Hour
 
 // This endpoint generates an refresh token
 // if login credentials are right
@@ -34,26 +31,13 @@ func LoginController(c *fiber.Ctx) error {
 		return c.SendStatus(401)
 	}
 
-	// generate token
-	tokenStr := utils.Base64(64)
-	expires := time.Now().Add(sessionLifetime)
-	token := &models.RefreshTokenModel{
-		Username: data.Username,
-		Token:    tokenStr,
-		Deadline: expires,
+	if _, usr := actions.GetUserByUsername(data.Username); usr.TwoFactor {
+		tkn := utils.GenerateToken()
+		middleware.TwoFactorCommunicationChannel <- middleware.TwoFactorPair{data.Username, tkn}
+		return c.SendString(tkn)
 	}
 
-	actions.AddRefreshToken(token)
-
-	// define cookie
-	cookie := new(fiber.Cookie)
-	cookie.Name = "refreshToken"
-	cookie.Value = tokenStr
-	cookie.Expires = expires
-	cookie.Secure = false
-	cookie.HTTPOnly = true
-	cookie.SameSite = "None" // Only for development
-	c.Cookie(cookie)
+	accesstoken.GenerateRefreshToken(c, data.Username)
 
 	return c.SendStatus(200)
 }

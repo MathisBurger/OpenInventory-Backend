@@ -8,7 +8,7 @@ import "github.com/MathisBurger/OpenInventory-Backend/utils"
 func AddUser(username string, hash string, root bool, mail string, status string) {
 	conn := GetConn()
 
-	stmt, err := conn.Prepare("INSERT INTO `inv_users` (`id`, `username`, `password`, `token`, `permissions`, `root`, `mail`, `displayname`, `register_date`, `status`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), ?);")
+	stmt, err := conn.Prepare("INSERT INTO `inv_users` (`id`, `username`, `password`, `token`, `permissions`, `root`, `mail`, `displayname`, `2fa` `register_date`, `status`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, '0', CURRENT_TIMESTAMP(), ?);")
 	if err != nil {
 		utils.LogError(err.Error(), "AddUser.go", 9)
 	}

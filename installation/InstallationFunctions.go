@@ -75,13 +75,13 @@ func CheckForTables(cfg *config.Config) bool {
 		}
 		activeTables = append(activeTables, table.name)
 	}
-	if len(activeTables) == 4 {
+	if len(activeTables) == 5 {
 		fmt.Println("All required tables are existing")
 		return true
 	}
 
 	// defined required tables
-	requiredTables := [4]string{"inv_users", "inv_tables", "inv_permissions", "inv_refresh-token"}
+	requiredTables := [5]string{"inv_users", "inv_tables", "inv_permissions", "inv_refresh-token", "inv_2fa-sessions"}
 	var outstandingTables []string
 
 	// checking if table exists
@@ -109,7 +109,7 @@ func GenerateTable(conn *sql.DB, name string) {
 	// check table name
 	switch name {
 	case "inv_users":
-		creationString := "CREATE TABLE inv_users(id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32), password VARCHAR(1024), token VARCHAR(32), permissions TEXT, root TINYINT(1), mail VARCHAR(128), displayname VARCHAR(32), register_date DATETIME, status VARCHAR(16));"
+		creationString := "CREATE TABLE inv_users(id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32), password VARCHAR(1024), token VARCHAR(32), permissions TEXT, root TINYINT(1), mail VARCHAR(128), displayname VARCHAR(32), 2fa BOOLEAN, register_date DATETIME, status VARCHAR(16));"
 		conn.Exec(creationString)
 		InsertDefaultUser(conn)
 		fmt.Println("Created default user")
@@ -127,6 +127,10 @@ func GenerateTable(conn *sql.DB, name string) {
 		creationString := "CREATE TABLE `inv_refresh-token` ( `ID` INT NOT NULL AUTO_INCREMENT , `username` TEXT NOT NULL , `token` TEXT NOT NULL , `Deadline` DATETIME NOT NULL, PRIMARY KEY (`ID`) );"
 		conn.Exec(creationString)
 		break
+	case "inv_2fa-sessions":
+		creationString := "CREATE TABLE `inv_2fa-sessions` ( `ID` INT NOT NULL AUTO_INCREMENT , `secret` TEXT NOT NULL , `owner` TEXT NOT NULL , PRIMARY KEY (`ID`))"
+		conn.Exec(creationString)
+		break
 	}
 	fmt.Println("created table", name)
 }
@@ -136,7 +140,7 @@ func InsertDefaultUser(conn *sql.DB) {
 
 	// "Admin123" as MD5
 	hash := utils.HashPassword("e64b78fc3bc91bcbc7dc232ba8ec59e0")
-	stmt, _ := conn.Prepare("INSERT INTO inv_users (id, username, password, token, permissions, root, mail, displayname, register_date, status) VALUES (NULL, 'root',  ?, 'None', 'default.everyone;default.root', '1', 'example@mail.de', 'root', current_timestamp(), 'enabled');")
+	stmt, _ := conn.Prepare("INSERT INTO inv_users (id, username, password, token, permissions, root, mail, displayname, 2fa, register_date, status) VALUES (NULL, 'root',  ?, 'None', 'default.everyone;default.root', '1', 'example@mail.de', 'root', '0', current_timestamp(), 'enabled');")
 
 	stmt.Exec(hash)
 	defer stmt.Close()
