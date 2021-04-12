@@ -8,6 +8,7 @@ import (
 	permission_management "github.com/MathisBurger/OpenInventory-Backend/controller/permission-management"
 	table_management "github.com/MathisBurger/OpenInventory-Backend/controller/table-management"
 	user_management "github.com/MathisBurger/OpenInventory-Backend/controller/user-management"
+	"github.com/MathisBurger/OpenInventory-Backend/e2e"
 	"github.com/MathisBurger/OpenInventory-Backend/installation"
 	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
@@ -25,6 +26,8 @@ func main() {
 	if installation.Install() {
 
 		utils.GenerateKeys()
+
+		e2e.SaveKeys()
 
 		middleware.TwoFactorService()
 
@@ -47,6 +50,7 @@ func main() {
 		// Basic GET Requests
 		app.Get("/api", general.DefaultController)
 		app.Get("/api/info", general.InformationController)
+		app.Get("/api/publicKey", general.GetPublicKeyController)
 
 		// Auth Endpoints
 		app.Post("/api/auth/login", auth.LoginController)

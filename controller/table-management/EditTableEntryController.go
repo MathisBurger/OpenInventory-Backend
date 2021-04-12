@@ -2,6 +2,7 @@ package table_management
 
 import (
 	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/e2e"
 
 	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
@@ -28,7 +29,11 @@ func EditTableEntryController(c *fiber.Ctx) error {
 
 	// init and parse the request object
 	obj := editTableEntryRequest{}
-	err := json.Unmarshal(c.Body(), &obj)
+	decrypted, err := e2e.DecryptBytes(c.Body())
+	if err != nil {
+		return c.SendStatus(400)
+	}
+	err = json.Unmarshal(decrypted, &obj)
 
 	// check request
 	if err != nil {

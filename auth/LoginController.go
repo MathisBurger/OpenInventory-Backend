@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/MathisBurger/OpenInventory-Backend/accesstoken"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
+	"github.com/MathisBurger/OpenInventory-Backend/e2e"
 	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
@@ -19,7 +20,11 @@ type loginRequest struct {
 func LoginController(c *fiber.Ctx) error {
 
 	data := loginRequest{}
-	if err := json.Unmarshal(c.Body(), &data); err != nil {
+	decrypted, err := e2e.DecryptBytes(c.Body())
+	if err != nil {
+		return c.SendStatus(400)
+	}
+	if err := json.Unmarshal(decrypted, &data); err != nil {
 		return c.SendStatus(400)
 	}
 

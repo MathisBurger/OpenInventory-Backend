@@ -2,6 +2,7 @@ package permission_management
 
 import (
 	"encoding/json"
+	"github.com/MathisBurger/OpenInventory-Backend/e2e"
 	"strings"
 
 	"github.com/MathisBurger/OpenInventory-Backend/config"
@@ -29,7 +30,11 @@ func AddUserToPermissionGroupController(c *fiber.Ctx) error {
 
 	// init and parse the request object
 	obj := addUserToPermissionGroupRequest{}
-	err := json.Unmarshal(c.Body(), &obj)
+	decrypted, err := e2e.DecryptBytes(c.Body())
+	if err != nil {
+		return c.SendStatus(400)
+	}
+	err = json.Unmarshal(decrypted, &obj)
 
 	// check request
 	if err != nil {
