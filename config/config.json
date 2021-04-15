@@ -21,7 +21,8 @@
       "/view-table": "./web/index.html",
       "/permissions": "./web/index.html",
       "/user": "./web/index.html",
-      "/system-information": "./web/index.html"
+      "/system-information": "./web/index.html",
+      "/settings": "./web/index.html"
     }
   }
 }

@@ -1,7 +1,6 @@
 package twoFactorAuth
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/url"
 	qr "rsc.io/qr"
@@ -26,7 +25,6 @@ func GenerateQR(acc string, secret string) {
 	params.Add("issuer", issuer)
 
 	URL.RawQuery = params.Encode()
-	fmt.Printf("URL is %s\n", URL.String())
 
 	code, err := qr.Encode(URL.String(), qr.Q)
 	if err != nil {

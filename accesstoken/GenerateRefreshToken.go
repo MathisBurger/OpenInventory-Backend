@@ -33,6 +33,6 @@ func GenerateRefreshToken(c *fiber.Ctx, username string) {
 	cookie.Expires = expires
 	cookie.Secure = false
 	cookie.HTTPOnly = true
-	cookie.SameSite = "None" // Only for development
+	//cookie.SameSite = "None" // Only for development
 	c.Cookie(cookie)
 }

@@ -55,7 +55,7 @@ func main() {
 		// Auth Endpoints
 		app.Post("/api/auth/login", auth.LoginController)
 		app.Get("/api/auth/accessToken", auth.AccessTokenController)
-		app.Get("/api/auth/revokeSession", auth.RevokeSessionController)
+		app.Post("/api/auth/revokeSession", auth.RevokeSessionController)
 		app.Get("/api/auth/me", auth.StatusController)
 		app.Post("/api/auth/2fa", auth.TwoFactorAuthController)
 
