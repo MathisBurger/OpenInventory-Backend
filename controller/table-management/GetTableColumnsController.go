@@ -1,14 +1,11 @@
 package table_management
 
 import (
-	"encoding/json"
 	"fmt"
 
-	"github.com/MathisBurger/OpenInventory-Backend/config"
 	"github.com/MathisBurger/OpenInventory-Backend/database/actions"
 	"github.com/MathisBurger/OpenInventory-Backend/middleware"
 	"github.com/MathisBurger/OpenInventory-Backend/models"
-	"github.com/MathisBurger/OpenInventory-Backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -35,16 +32,7 @@ func GetTableColumnsController(c *fiber.Ctx) error {
 	obj := getTableColumnsRequest{
 		TableName: c.Query("table_name", ""),
 	}
-	err := json.Unmarshal(c.Body(), &obj)
 
-	// check request
-	if err != nil {
-		if cfg, _ := config.ParseConfig(); cfg.ServerCFG.LogRequestErrors {
-			utils.LogError(err.Error(), "GetTableColumnsController.go", 23)
-		}
-		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
-		return c.Send(res)
-	}
 	if !checkGetTableColumnsRequest(obj) {
 		res, _ := models.GetJSONResponse("Wrong JSON syntax", "#d41717", "ok", "None", 200)
 		return c.Send(res)
