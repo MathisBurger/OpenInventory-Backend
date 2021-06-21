@@ -33,7 +33,8 @@ add every enhancement idea to this project. Just open an issue with the enhancem
 # Updates
 
 ---
-There will be some updates in the future adding new features. I am trying to add
-some new features every 3 months. Switching to a newer version is quite easy. You only
-need to download the newest web assets and <br>
-backend binary to update.
+There will be no future updates of this project. The last stable build is
+v0.0.5 Mango. There are some new features in the development branch. You can 
+build the executable and the web-assets by yourself, if you want to use
+features like barcode support. I do recommend doing this, because I will not
+publish this feature as stable build.
