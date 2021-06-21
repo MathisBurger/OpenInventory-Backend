@@ -76,6 +76,7 @@ func main() {
 		app.Patch("/api/table-management/editTableEntry", table_management.EditTableEntryController)
 		app.Patch("/api/table-management/renameTableColumn", table_management.RenameTableColumnController)
 		app.Patch("/api/table-management/renameTable", table_management.RenameTableController)
+		app.Get("/api/table-management/globalSearch", table_management.GlobalSearchController)
 
 		// permission management
 		app.Post("/api/permission-management/createPermissionGroup", permission_management.CreatePermissionGroupController)
